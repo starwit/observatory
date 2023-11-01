@@ -61,42 +61,36 @@ jobs:
       with:
         distribution: 'zulu'
         java-version: 17
-    - name: npm install
-      run: |
-        if [ -d "webclient/app" ]; then
-          cd webclient/app
-          npm install --legacy-peer-deps
-        fi
     - name: Build with Maven
-      run: mvn -B package -P frontend --file pom.xml
+      run: mvn -B package --file pom.xml
       env:
          CI: false
-    - name: Upload Maven build artifact
-      uses: actions/upload-artifact@v1
-      with:
-        name: artifact
-        path: application/target/application-0.0.1-SNAPSHOT.jar
+    # - name: Upload Maven build artifact
+    #   uses: actions/upload-artifact@v1
+    #   with:
+    #     name: artifact
+    #     path: application/target/application-0.0.1-SNAPSHOT.jar
 
-    - name: Log in to the Container registry
-      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    # - name: Log in to the Container registry
+    #   uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+    #   with:
+    #     registry: ${{ env.REGISTRY }}
+    #     username: ${{ github.actor }}
+    #     password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build and push Docker image
-      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-      with:
-        context: .
-        push: true
-        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.publish_tag.outputs.tag_name }}
+    # - name: Build and push Docker image
+    #   uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+    #   with:
+    #     context: .
+    #     push: true
+    #     tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.publish_tag.outputs.tag_name }}
 
-    - name: Build docker image with tag version and push to dockerhub
-      uses: docker/build-push-action@v1
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME  }}
-        password: ${{ secrets.DOCKERHUB_PASSWORD }}
-        repository: starwitorg/databackend
-        tags: ${{ steps.publish_tag.outputs.tag_name }}
-        path: .
-        dockerfile: ./Dockerfile
+    # - name: Build docker image with tag version and push to dockerhub
+    #   uses: docker/build-push-action@v1
+    #   with:
+    #     username: ${{ secrets.DOCKERHUB_USERNAME  }}
+    #     password: ${{ secrets.DOCKERHUB_PASSWORD }}
+    #     repository: starwitorg/databackend
+    #     tags: ${{ steps.publish_tag.outputs.tag_name }}
+    #     path: .
+    #     dockerfile: ./Dockerfile
