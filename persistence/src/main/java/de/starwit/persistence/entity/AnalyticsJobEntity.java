@@ -1,0 +1,72 @@
+package de.starwit.persistence.entity;
+
+import java.util.List;
+
+import de.starwit.persistence.enumeration.JobType;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "analytics_job")
+public class AnalyticsJobEntity extends AbstractEntity<Long> {
+    
+    @Column(name = "name")
+    private String name;
+    
+    @Column(name = "parkingareaid")
+    private String parkingAreaId;
+
+    @Column(name = "type")
+    private JobType type;
+
+    @Column(name = "enabled")
+    private Boolean enabled;
+
+    @OneToMany(mappedBy = "analyticsJob", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<PointEntity> geometryPoints;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getParkingAreaId() {
+        return parkingAreaId;
+    }
+
+    public void setParkingAreaId(String parkingAreaId) {
+        this.parkingAreaId = parkingAreaId;
+    }
+
+    public JobType getType() {
+        return type;
+    }
+
+    public void setType(JobType type) {
+        this.type = type;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public List<PointEntity> getGeometryPoints() {
+        return geometryPoints;
+    }
+
+    public void setGeometryPoints(List<PointEntity> geometryPoints) {
+        this.geometryPoints = geometryPoints;
+    }
+
+}

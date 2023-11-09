@@ -39,7 +39,7 @@ public interface ServiceInterface<E extends AbstractEntity<Long>, R extends JpaR
         return entity;
     }
 
-    public default void delete(Long id) throws NotificationException {
+    public default void delete(Long id) {
         this.getRepository().deleteById(id);
     }
 

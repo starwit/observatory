@@ -1,0 +1,16 @@
+{
+	"name": "job1",
+	"parkingAreaId": "parkinglot1",
+	"type": "LINE_CROSSING",
+	"enabled": false,
+	"geometryPoints": [
+		{
+			"x": 0.1,
+			"y": 0.1
+		},
+		{
+			"x": 0.9,
+			"y": 0.9
+		}
+	]
+}

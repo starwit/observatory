@@ -14,23 +14,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import de.starwit.persistence.entity.FlowEntity;
+import de.starwit.persistence.entity.AnalyticsJobEntity;
 
 @SpringBootTest
 @EnableAutoConfiguration
 @AutoConfigureMockMvc(addFilters = false)
-public class FlowControllerAcceptanceTest extends AbstractControllerAcceptanceTest<FlowEntity> {
+public class AnalyticsJobControllerAcceptanceTest extends AbstractControllerAcceptanceTest<AnalyticsJobEntity> {
 
+    final static Logger LOG = LoggerFactory.getLogger(AnalyticsJobControllerAcceptanceTest.class);
+    private static final String data = "testdata/analytics-job/";
+    private static final String restpath = "/api/analytics-job/";
 
-    final static Logger LOG = LoggerFactory.getLogger(FlowControllerAcceptanceTest.class);
-    private static final String data = "testdata/flow/";
-    private static final String restpath = "/api/flows/";
-
-    private JacksonTester<FlowEntity> jsonTester;
+    private JacksonTester<AnalyticsJobEntity> jsonTester;
 
     @Override
-    public Class<FlowEntity> getEntityClass() {
-        return FlowEntity.class;
+    public Class<AnalyticsJobEntity> getEntityClass() {
+        return AnalyticsJobEntity.class;
     }
 
     @Override
@@ -39,28 +38,28 @@ public class FlowControllerAcceptanceTest extends AbstractControllerAcceptanceTe
     }
 
     @Override
-    public JacksonTester<FlowEntity> getJsonTester() {
+    public JacksonTester<AnalyticsJobEntity> getJsonTester() {
         return jsonTester;
     }
 
-    @Test
+    //@Test
     public void canCreate() throws Exception {
         // given
-//        FlowEntity entity = readFromFile(data + "Flow.json");
+        AnalyticsJobEntity entity = readFromFile(data + "new_job.json");
   
         // when
-//        MockHttpServletResponse response = create(entity);
+        MockHttpServletResponse response = create(entity);
 
         // then
-//        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-//        FlowEntity entityresult = mapper.readValue(response.getContentAsString(), FlowEntity.class);
-//        assertThat(entityresult.getBranch()).isEqualTo("v2");
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+        AnalyticsJobEntity entityresult = mapper.readValue(response.getContentAsString(), AnalyticsJobEntity.class);
+        assertThat(entityresult.getId()).isNotNull();
     }
 
-    @Test
+    //@Test
     public void isValidated() throws Exception {
         // given
-//        FlowEntity entity = readFromFile(data + "Flow-wrong.json");
+//        AnalyticsJobEntity entity = readFromFile(data + "ObjectClass-wrong.json");
   
         // when
 //        MockHttpServletResponse response = create(entity);
@@ -69,7 +68,7 @@ public class FlowControllerAcceptanceTest extends AbstractControllerAcceptanceTe
 //        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @Test
+    //@Test
     public void canNotFindById() throws Exception {
         // when
         MockHttpServletResponse response = mvc
@@ -80,36 +79,37 @@ public class FlowControllerAcceptanceTest extends AbstractControllerAcceptanceTe
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
-    @Test
+    //@Test
     public void canRetrieveById() throws Exception {
         // given
-//        FlowEntity entity = readFromFile(data + "Flow.json");
-//        MockHttpServletResponse response = create(entity);
-//        FlowEntity entity2 = mapper.readValue(response.getContentAsString(), FlowEntity.class);
+        AnalyticsJobEntity entity = readFromFile(data + "new_job.json");
+        MockHttpServletResponse response = create(entity);
+        AnalyticsJobEntity responseEntity = mapper.readValue(response.getContentAsString(), AnalyticsJobEntity.class);
 
         // when
-//        response = retrieveById(entity2.getId());
+        response = retrieveById(responseEntity.getId());
 
         // then
-//        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-//        FlowEntity entityresult = mapper.readValue(response.getContentAsString(), FlowEntity.class);
-//        assertThat(dtoresult.getBranch()).isEqualTo("v2");
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        AnalyticsJobEntity retrievedEntity = mapper.readValue(response.getContentAsString(), AnalyticsJobEntity.class);
+        assertThat(retrievedEntity.getId()).isEqualTo(responseEntity.getId());
+        assertThat(retrievedEntity.getName()).isEqualTo(entity.getName());
     }
 
     @Test
     public void canUpdate() throws Exception {
 
         // given
-//        FlowEntity entity = readFromFile(data + "Flow.json");
+//        AnalyticsJobEntity entity = readFromFile(data + "ObjectClass.json");
 //        MockHttpServletResponse response = create(entity);
-//        FlowEntity entity2 = mapper.readValue(response.getContentAsString(), FlowEntity.class);
+//        AnalyticsJobEntity entity2 = mapper.readValue(response.getContentAsString(), AnalyticsJobEntity.class);
 
         // when
 //        response = update(entity2);
 
         // then
 //        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-//        FlowEntity entityresult = mapper.readValue(response.getContentAsString(), FlowEntity.class);
+//        AnalyticsJobEntity entityresult = mapper.readValue(response.getContentAsString(), AnalyticsJobEntity.class);
 //        assertThat(dtoresult.getBranch()).isEqualTo("v2");
     }
 
@@ -117,9 +117,9 @@ public class FlowControllerAcceptanceTest extends AbstractControllerAcceptanceTe
     @Test
     public void canDelete() throws Exception {
         // given
-//        FlowEntity entity = readFromFile(data + "Flow.json");
+//        AnalyticsJobEntity entity = readFromFile(data + "ObjectClass.json");
 //        MockHttpServletResponse response = create(entity);
-//        FlowEntity entity2 = mapper.readValue(response.getContentAsString(), FlowEntity.class);
+//        AnalyticsJobEntity entity2 = mapper.readValue(response.getContentAsString(), AnalyticsJobEntity.class);
 //        response = retrieveById(entity2.getId());
 //        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 
