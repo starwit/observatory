@@ -1,12 +1,13 @@
 package de.starwit.service.impl;
 import de.starwit.persistence.entity.ObjectClassEntity;
+import de.starwit.persistence.repository.FlowRepository;
 import de.starwit.persistence.repository.ObjectClassRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
 import de.starwit.persistence.entity.FlowEntity;
-import de.starwit.persistence.repository.FlowRepository;
 
 /**
  * 
