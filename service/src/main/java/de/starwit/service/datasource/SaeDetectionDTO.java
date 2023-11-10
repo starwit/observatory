@@ -1,32 +1,13 @@
 package de.starwit.service.datasource;
 
-import java.time.ZonedDateTime;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.Instant;
 
-import jakarta.persistence.EntityResult;
-import jakarta.persistence.FieldResult;
-import jakarta.persistence.SqlResultSetMapping;
-
-@SqlResultSetMapping(
-    name = "SaeDetectionDTO",
-    entities = {
-        @EntityResult(entityClass = SaeDetectionDTO.class, fields = {
-            @FieldResult(name = "detectionId", column = "DETECTION_ID"),
-            @FieldResult(name = "captureTs", column = "CAPTURE_TS"),
-            @FieldResult(name = "cameraId", column = "CAMERA_ID"),
-            @FieldResult(name = "objectId", column = "OBJECT_ID"),
-            @FieldResult(name = "classId", column = "CLASS_ID"),
-            @FieldResult(name = "confidence", column = "CONFIDENCE"),
-            @FieldResult(name = "minX", column = "MIN_X"),
-            @FieldResult(name = "maxX", column = "MAX_X"),
-            @FieldResult(name = "minY", column = "MIN_Y"),
-            @FieldResult(name = "maxY", column = "MAX_Y")
-        })
-    }
-)
 public class SaeDetectionDTO {
 
     private Long detectionId;
-    private ZonedDateTime captureTs;
+    private Instant captureTs;
     private String cameraId;
     private String objectId;
     private Integer classId;
@@ -44,11 +25,11 @@ public class SaeDetectionDTO {
         this.detectionId = detectionId;
     }
 
-    public ZonedDateTime getCaptureTs() {
+    public Instant getCaptureTs() {
         return captureTs;
     }
 
-    public void setCaptureTs(ZonedDateTime captureTs) {
+    public void setCaptureTs(Instant captureTs) {
         this.captureTs = captureTs;
     }
 
@@ -116,6 +97,19 @@ public class SaeDetectionDTO {
         this.maxY = maxY;
     }
 
-    
+    public static SaeDetectionDTO from(ResultSet rs) throws SQLException {
+        SaeDetectionDTO dto = new SaeDetectionDTO();
+        dto.setDetectionId(rs.getLong("DETECTION_ID"));
+        dto.setCaptureTs(rs.getTimestamp("CAPTURE_TS").toInstant());
+        dto.setCameraId(rs.getString("CAMERA_ID"));
+        dto.setObjectId(rs.getString("OBJECT_ID"));
+        dto.setClassId(rs.getInt("CLASS_ID"));
+        dto.setConfidence(rs.getDouble("CONFIDENCE"));
+        dto.setMinX(rs.getDouble("MIN_X"));
+        dto.setMinY(rs.getDouble("MIN_Y"));
+        dto.setMaxX(rs.getDouble("MAX_X"));
+        dto.setMaxY(rs.getDouble("MAX_Y"));
+        return dto;
+    }
 
 }

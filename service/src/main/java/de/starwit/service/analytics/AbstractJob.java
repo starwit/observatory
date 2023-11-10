@@ -9,22 +9,24 @@ import org.slf4j.LoggerFactory;
 import de.starwit.persistence.entity.AnalyticsJobEntity;
 import de.starwit.persistence.entity.output.Result;
 import de.starwit.service.datasource.SaeDetectionDTO;
+import de.starwit.service.datasource.SaeDataSource;
 
-public class Job {
-
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+public abstract class AbstractJob {
+    final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private ArrayBlockingQueue<SaeDetectionDTO> inputData;
-    private final Algorithm algorithm;
     private final AnalyticsJobEntity config;
+    private final SaeDataSource dataSource;
 
-    Job(Algorithm algorithm, AnalyticsJobEntity config) {
-        this.algorithm = algorithm;
+    public AbstractJob(AnalyticsJobEntity config, SaeDataSource dataSource) {
         this.inputData = new ArrayBlockingQueue<>(100);
         this.config = config;
+        this.dataSource = dataSource;
     }
 
-    public void feed(List<SaeDetectionDTO> newData) {
+    public void tick() {
+        List<SaeDetectionDTO> newData = this.dataSource.getNewData();
+
         int discardCount = 0;
         boolean success = false;
         for (int i = newData.size() - 1; i >= 0; i--) {
@@ -37,10 +39,12 @@ public class Job {
             log.warn("Discarded {} elements", discardCount);
         }
 
-        List<? extends Result> results = this.algorithm.process(this.inputData);
+        List<? extends Result> results = this.process();
         
         // Pass data to database output / writer
     }
+
+    abstract List<? extends Result> process();
 
     public AnalyticsJobEntity getConfig() {
         return config;
@@ -49,23 +53,9 @@ public class Job {
     @Override
     public String toString() {
         return String.format(
-                "Job(algorithm=%s, name=%s, parkingareaid=%s)",
-                this.algorithm.getClass().getSimpleName(),
+                "Job(type=%s, name=%s, parkingareaid=%s)",
+                this.config.getType(),
                 this.config.getName(),
                 this.config.getParkingAreaId());
     }
-
-    public static Job from(AnalyticsJobEntity jobConfig) {
-        switch (jobConfig.getType()) {
-            case LINE_CROSSING:
-                return new Job(new LineCrossingAlgorithm(), jobConfig);
-
-            case AREA_OCCUPANCY:
-                return new Job(new AreaOccpancyAlgorithm(), jobConfig);
-
-            default:
-                return null;
-        }
-    }
-
 }

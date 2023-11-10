@@ -26,7 +26,7 @@ public class AnalyticsJobEntity extends AbstractEntity<Long> {
     @Column(name = "cameraid")
     private String cameraId;
 
-    @Column(name = "detectionclassId")
+    @Column(name = "detectionclassid")
     private Integer detectionClassId;
 
     @Column(name = "enabled")
