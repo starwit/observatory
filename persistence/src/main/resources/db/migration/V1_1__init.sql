@@ -4,6 +4,8 @@ create table ANALYTICS_JOB (
     TYPE smallint check (TYPE between 0 and 2),
     NAME varchar(255),
     PARKINGAREAID varchar(255),
+    DETECTIONCLASSID integer,
+    CAMERAID varchar(255),
     primary key (ID)
 );
 

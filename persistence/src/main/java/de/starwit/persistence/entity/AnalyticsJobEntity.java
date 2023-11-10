@@ -23,6 +23,12 @@ public class AnalyticsJobEntity extends AbstractEntity<Long> {
     @Column(name = "type")
     private JobType type;
 
+    @Column(name = "cameraid")
+    private String cameraId;
+
+    @Column(name = "detectionclassId")
+    private Integer detectionClassId;
+
     @Column(name = "enabled")
     private Boolean enabled;
 
@@ -51,6 +57,22 @@ public class AnalyticsJobEntity extends AbstractEntity<Long> {
 
     public void setType(JobType type) {
         this.type = type;
+    }
+
+    public String getCameraId() {
+        return cameraId;
+    }
+
+    public void setCameraId(String cameraId) {
+        this.cameraId = cameraId;
+    }
+
+    public Integer getDetectionClassId() {
+        return detectionClassId;
+    }
+
+    public void setDetectionClassId(Integer detectionClassId) {
+        this.detectionClassId = detectionClassId;
     }
 
     public Boolean getEnabled() {

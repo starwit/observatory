@@ -7,14 +7,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.starwit.persistence.entity.AnalyticsJobEntity;
-import de.starwit.persistence.entity.input.SaeInput;
 import de.starwit.persistence.entity.output.Result;
+import de.starwit.service.datasource.SaeDetectionDTO;
 
 public class Job {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private ArrayBlockingQueue<SaeInput> inputData;
+    private ArrayBlockingQueue<SaeDetectionDTO> inputData;
     private final Algorithm algorithm;
     private final AnalyticsJobEntity config;
 
@@ -24,7 +24,7 @@ public class Job {
         this.config = config;
     }
 
-    public void feed(List<SaeInput> newData) {
+    public void feed(List<SaeDetectionDTO> newData) {
         int discardCount = 0;
         boolean success = false;
         for (int i = newData.size() - 1; i >= 0; i--) {
