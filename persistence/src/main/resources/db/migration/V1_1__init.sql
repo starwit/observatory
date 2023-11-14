@@ -1,7 +1,7 @@
 create table ANALYTICS_JOB (
     ID bigserial not null,
     ENABLED boolean,
-    TYPE smallint check (TYPE between 0 and 2),
+    TYPE varchar(255) check (TYPE in ('LINE_CROSSING', 'AREA_OCCUPANCY')),
     NAME varchar(255),
     PARKINGAREAID varchar(255),
     DETECTIONCLASSID integer,

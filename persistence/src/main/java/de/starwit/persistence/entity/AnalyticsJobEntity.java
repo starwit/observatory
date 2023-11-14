@@ -6,6 +6,8 @@ import de.starwit.persistence.enumeration.JobType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -20,6 +22,7 @@ public class AnalyticsJobEntity extends AbstractEntity<Long> {
     @Column(name = "parkingareaid")
     private String parkingAreaId;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "type")
     private JobType type;
 
