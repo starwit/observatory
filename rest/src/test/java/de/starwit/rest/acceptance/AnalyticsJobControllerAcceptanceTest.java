@@ -12,14 +12,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.transaction.annotation.Transactional;
 
+import de.starwit.persistence.config.PrimaryDataSourceConfig;
 import de.starwit.persistence.entity.AnalyticsJobEntity;
+import de.starwit.rest.RestApplication;
 import de.starwit.service.datasource.SaeDataSource;
-import de.starwit.service.datasource.SaeDataSourceConfiguration;
 
 @SpringBootTest
 @EnableAutoConfiguration
@@ -28,9 +30,6 @@ public class AnalyticsJobControllerAcceptanceTest extends AbstractControllerAcce
 
     @MockBean
     SaeDataSource saeDataSource;
-
-    @MockBean
-    SaeDataSourceConfiguration saeDataSourceConfiguration;
 
     final static Logger LOG = LoggerFactory.getLogger(AnalyticsJobControllerAcceptanceTest.class);
     private static final String data = "testdata/analytics-job/";

@@ -17,7 +17,6 @@ public class SaeDataSource {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private SaeDataSourceConfiguration config;
     private Connection dbConn;
     private PreparedStatement preparedStatement;
     
@@ -26,35 +25,35 @@ public class SaeDataSource {
     private String cameraId;
     private Integer detectionClassId;
 
-    public SaeDataSource(SaeDataSourceConfiguration config, String cameraId, Integer detectionClassId) {
-        this.config = config;
+    public SaeDataSource(String cameraId, Integer detectionClassId) {
         this.cameraId = cameraId;
         this.detectionClassId = detectionClassId;
     }
 
     private boolean ensureConnection() {
-        if (this.dbConn == null) {
-            try {
-                this.dbConn = DriverManager.getConnection(config.getJdbcUrl(), config.getUsername(), config.getPassword());
-                this.preparedStatement = this.dbConn.prepareStatement("""
-                    SELECT * 
-                    FROM \s""" + config.getDetectionsTableName() + """
-                    \s t 
-                    WHERE t."CAPTURE_TS" > ? AND t."CAMERA_ID" = ? AND t."CLASS_ID" = ?
-                    ORDER BY t."CAPTURE_TS" ASC
-                    """);
-                this.preparedStatement.setString(2, cameraId);
-                this.preparedStatement.setInt(3, detectionClassId);
-                log.info("Successfully connected to database at {}", config.getJdbcUrl());
-                return true;
-            } catch (SQLException ex) {
-                log.error("Could not connect to database at {}", config.getJdbcUrl(), ex);
-                this.close();
-                return false;
-            }
-        } else {
-            return true;
-        }
+        // if (this.dbConn == null) {
+        //     try {
+        //         this.dbConn = DriverManager.getConnection(config.getJdbcUrl(), config.getUsername(), config.getPassword());
+        //         this.preparedStatement = this.dbConn.prepareStatement("""
+        //             SELECT * 
+        //             FROM \s""" + config.getDetectionsTableName() + """
+        //             \s t 
+        //             WHERE t."CAPTURE_TS" > ? AND t."CAMERA_ID" = ? AND t."CLASS_ID" = ?
+        //             ORDER BY t."CAPTURE_TS" ASC
+        //             """);
+        //         this.preparedStatement.setString(2, cameraId);
+        //         this.preparedStatement.setInt(3, detectionClassId);
+        //         log.info("Successfully connected to database at {}", config.getJdbcUrl());
+        //         return true;
+        //     } catch (SQLException ex) {
+        //         log.error("Could not connect to database at {}", config.getJdbcUrl(), ex);
+        //         this.close();
+        //         return false;
+        //     }
+        // } else {
+        //     return true;
+        // }
+        return false;
     }
 
     private void close() {

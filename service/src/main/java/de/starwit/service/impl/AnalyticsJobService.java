@@ -19,7 +19,6 @@ import de.starwit.persistence.repository.PointRepository;
 import de.starwit.service.analytics.AbstractJob;
 import de.starwit.service.analytics.LineCrossingJob;
 import de.starwit.service.datasource.SaeDataSource;
-import de.starwit.service.datasource.SaeDataSourceConfiguration;
 import jakarta.annotation.PostConstruct;
 
 @Service
@@ -35,9 +34,6 @@ public class AnalyticsJobService {
 
     @Autowired
     private PointRepository pointRepository;
-
-    @Autowired 
-    SaeDataSourceConfiguration dataSourceConfiguration;
 
     private ScheduledExecutorService jobRunner;
 
@@ -100,7 +96,7 @@ public class AnalyticsJobService {
         for (AnalyticsJobEntity jobConfig : enabledJobs) {
             jobsToRun.add(new LineCrossingJob(
                 jobConfig, 
-                new SaeDataSource(dataSourceConfiguration, jobConfig.getCameraId(), jobConfig.getDetectionClassId())));
+                new SaeDataSource(jobConfig.getCameraId(), jobConfig.getDetectionClassId())));
         }
 
         this.startJobRunner(jobsToRun);
