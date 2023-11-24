@@ -17,6 +17,7 @@ import de.starwit.persistence.entity.PointEntity;
 import de.starwit.persistence.repository.AnalyticsJobRepository;
 import de.starwit.persistence.repository.PointRepository;
 import de.starwit.service.analytics.AbstractJob;
+import de.starwit.service.analytics.AreaOccupancyJob;
 import de.starwit.service.analytics.LineCrossingJob;
 import de.starwit.service.datasource.SaeDataSource;
 import jakarta.annotation.PostConstruct;
@@ -51,13 +52,13 @@ public class AnalyticsJobService {
         AnalyticsJobEntity savedEntity = analyticsJobRepository.save(newJob);
 
         refreshJobs();
-        
+
         return savedEntity;
     }
 
     public AnalyticsJobEntity update(Long id, AnalyticsJobEntity jobUpdate) {
         AnalyticsJobEntity existingJob = this.findById(id);
-        
+
         if (existingJob == null) {
             return null;
         }
@@ -86,7 +87,7 @@ public class AnalyticsJobService {
 
         refreshJobs();
     }
-    
+
     @PostConstruct
     public void refreshJobs() {
         this.stopJobFeeder();
@@ -94,9 +95,20 @@ public class AnalyticsJobService {
         List<AbstractJob> jobsToRun = new ArrayList<>();
         List<AnalyticsJobEntity> enabledJobs = analyticsJobRepository.findByEnabledTrue();
         for (AnalyticsJobEntity jobConfig : enabledJobs) {
-            jobsToRun.add(new LineCrossingJob(
-                jobConfig, 
-                new SaeDataSource(jobConfig.getCameraId(), jobConfig.getDetectionClassId())));
+            switch (jobConfig.getType()) {
+                case LINE_CROSSING:
+                    jobsToRun.add(new LineCrossingJob(
+                            jobConfig,
+                            new SaeDataSource(jobConfig.getCameraId(), jobConfig.getDetectionClassId())));
+                    break;
+                case AREA_OCCUPANCY:
+                    jobsToRun.add(new AreaOccupancyJob(
+                            jobConfig,
+                            new SaeDataSource(jobConfig.getCameraId(), jobConfig.getDetectionClassId())));
+                    break;
+                default:
+                    break;
+            }
         }
 
         this.startJobRunner(jobsToRun);
@@ -118,7 +130,7 @@ public class AnalyticsJobService {
                 log.debug("Running job: {}", job.getConfig().getName());
                 job.tick();
             }
-        
+
         }, 1000, dataRetrievalRate, TimeUnit.MILLISECONDS);
     }
 
