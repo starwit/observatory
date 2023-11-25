@@ -1,10 +1,6 @@
 package de.starwit.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,11 +12,6 @@ import de.starwit.persistence.entity.AnalyticsJobEntity;
 import de.starwit.persistence.entity.PointEntity;
 import de.starwit.persistence.repository.AnalyticsJobRepository;
 import de.starwit.persistence.repository.PointRepository;
-import de.starwit.service.analytics.AbstractJob;
-import de.starwit.service.analytics.AreaOccupancyJob;
-import de.starwit.service.analytics.LineCrossingJob;
-import de.starwit.service.datasource.SaeDataSource;
-import jakarta.annotation.PostConstruct;
 
 @Service
 public class AnalyticsJobService {
@@ -36,8 +27,6 @@ public class AnalyticsJobService {
     @Autowired
     private PointRepository pointRepository;
 
-    private ScheduledExecutorService jobRunner;
-
     public List<AnalyticsJobEntity> findAll() {
         return analyticsJobRepository.findAll();
     }
@@ -46,13 +35,14 @@ public class AnalyticsJobService {
         return analyticsJobRepository.findById(id).orElse(null);
     }
 
+    public List<AnalyticsJobEntity> findByEnabledTrue() {
+        return analyticsJobRepository.findByEnabledTrue();
+    }
+
     public AnalyticsJobEntity saveNew(AnalyticsJobEntity newJob) {
         newJob.getGeometryPoints().forEach(p -> p.setAnalyticsJob(newJob));
 
         AnalyticsJobEntity savedEntity = analyticsJobRepository.save(newJob);
-
-        refreshJobs();
-
         return savedEntity;
     }
 
@@ -76,68 +66,10 @@ public class AnalyticsJobService {
         updatedJob.getGeometryPoints().forEach(p -> p.setAnalyticsJob(updatedJob));
 
         pointRepository.deleteAll(oldPoints);
-
-        refreshJobs();
-
         return updatedJob;
     }
 
     public void deleteById(Long id) {
         analyticsJobRepository.deleteById(id);
-
-        refreshJobs();
-    }
-
-    @PostConstruct
-    public void refreshJobs() {
-        this.stopJobFeeder();
-
-        List<AbstractJob> jobsToRun = new ArrayList<>();
-        List<AnalyticsJobEntity> enabledJobs = analyticsJobRepository.findByEnabledTrue();
-        for (AnalyticsJobEntity jobConfig : enabledJobs) {
-            switch (jobConfig.getType()) {
-                case LINE_CROSSING:
-                    jobsToRun.add(new LineCrossingJob(
-                            jobConfig,
-                            new SaeDataSource(jobConfig.getCameraId(), jobConfig.getDetectionClassId())));
-                    break;
-                case AREA_OCCUPANCY:
-                    jobsToRun.add(new AreaOccupancyJob(
-                            jobConfig,
-                            new SaeDataSource(jobConfig.getCameraId(), jobConfig.getDetectionClassId())));
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        this.startJobRunner(jobsToRun);
-    }
-
-    public void startJobRunner(List<AbstractJob> jobs) {
-        if (this.jobRunner != null && !this.jobRunner.isShutdown()) {
-            log.info("Runner is already running.");
-            return;
-        }
-
-        log.info("Starting job runner on an {}ms interval", dataRetrievalRate);
-        log.info("Configured jobs: {}", jobs);
-
-        this.jobRunner = Executors.newSingleThreadScheduledExecutor();
-        this.jobRunner.scheduleAtFixedRate(() -> {
-
-            for (AbstractJob job : jobs) {
-                log.debug("Running job: {}", job.getConfig().getName());
-                job.tick();
-            }
-
-        }, 1000, dataRetrievalRate, TimeUnit.MILLISECONDS);
-    }
-
-    public void stopJobFeeder() {
-        if (this.jobRunner != null) {
-            log.info("Stopping job feeder");
-            this.jobRunner.shutdown();
-        }
     }
 }

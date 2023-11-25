@@ -2,7 +2,9 @@ package de.starwit.service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
+@EnableScheduling
 @SpringBootApplication(scanBasePackages = "de.starwit.persistence")
 public class ServiceApplication {
 

@@ -1,10 +1,10 @@
-package de.starwit.service.datasource;
+package de.starwit.analytics.dtos;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
 
-public class SaeDetectionDTO {
+public class SaeDetectionDto {
 
     private Long detectionId;
     private Instant captureTs;
@@ -97,8 +97,8 @@ public class SaeDetectionDTO {
         this.maxY = maxY;
     }
 
-    public static SaeDetectionDTO from(ResultSet rs) throws SQLException {
-        SaeDetectionDTO dto = new SaeDetectionDTO();
+    public static SaeDetectionDto from(ResultSet rs) throws SQLException {
+        SaeDetectionDto dto = new SaeDetectionDto();
         dto.setDetectionId(rs.getLong("DETECTION_ID"));
         dto.setCaptureTs(rs.getTimestamp("CAPTURE_TS").toInstant());
         dto.setCameraId(rs.getString("CAMERA_ID"));
