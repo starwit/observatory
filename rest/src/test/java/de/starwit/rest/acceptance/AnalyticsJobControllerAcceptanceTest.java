@@ -9,20 +9,15 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import de.starwit.persistence.entity.AnalyticsJobEntity;
-import de.starwit.service.datasource.SaeDataSource;
+import de.starwit.persistence.databackendconfig.entity.AnalyticsJobEntity;
 
 @SpringBootTest
 @EnableAutoConfiguration
 @AutoConfigureMockMvc(addFilters = false)
 public class AnalyticsJobControllerAcceptanceTest extends AbstractControllerAcceptanceTest<AnalyticsJobEntity> {
-
-    @MockBean
-    SaeDataSource saeDataSource;
 
     final static Logger LOG = LoggerFactory.getLogger(AnalyticsJobControllerAcceptanceTest.class);
     private static final String data = "testdata/analytics-job/";

@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import de.starwit.persistence.entity.AbstractEntity;
+import de.starwit.persistence.common.entity.AbstractEntity;
 import jakarta.persistence.EntityNotFoundException;
 
 /**

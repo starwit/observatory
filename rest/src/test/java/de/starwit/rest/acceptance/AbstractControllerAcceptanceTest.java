@@ -26,7 +26,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.starwit.persistence.entity.AbstractEntity;
+import de.starwit.persistence.common.entity.AbstractEntity;
 
 public abstract class AbstractControllerAcceptanceTest<ENTITY extends AbstractEntity<Long>> {
 

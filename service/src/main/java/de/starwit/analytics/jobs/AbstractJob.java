@@ -5,15 +5,15 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.starwit.analytics.dtos.SaeDetectionDto;
-import de.starwit.persistence.entity.output.Result;
+import de.starwit.persistence.common.entity.output.Result;
+import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 
 public abstract class AbstractJob {
     final Logger log = LoggerFactory.getLogger(this.getClass());
 
     public void getAndProcessNewData(JobData jobData) {
 
-        List<SaeDetectionDto> newData = this.getData(jobData);
+        List<SaeDetectionEntity> newData = this.getData(jobData);
 
         if (newData != null && !newData.isEmpty()) {
             jobData.setLastRetrievedTime(newData.get(newData.size() - 1).getCaptureTs());
@@ -36,7 +36,7 @@ public abstract class AbstractJob {
         // Pass data to database output / writer
     }
 
-    abstract List<SaeDetectionDto> getData(JobData jobData);
+    abstract List<SaeDetectionEntity> getData(JobData jobData);
 
     abstract List<? extends Result> process(JobData jobData);
 }

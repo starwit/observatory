@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import de.starwit.persistence.entity.AnalyticsJobEntity;
+import de.starwit.persistence.databackendconfig.entity.AnalyticsJobEntity;
 import de.starwit.service.impl.AnalyticsJobService;
 
 @Component

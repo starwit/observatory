@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import de.starwit.persistence.entity.AnalyticsJobEntity;
+import de.starwit.persistence.databackendconfig.entity.AnalyticsJobEntity;
 import de.starwit.service.impl.AnalyticsJobService;
 
 @RestController
@@ -53,7 +53,7 @@ public class AnalyticsJobController {
         if (analyticsJobService.findById(id) == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        
+
         AnalyticsJobEntity updatedEntity = analyticsJobService.update(id, job);
         return new ResponseEntity<>(updatedEntity, HttpStatus.OK);
     }
