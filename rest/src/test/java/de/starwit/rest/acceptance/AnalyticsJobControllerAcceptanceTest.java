@@ -1,7 +1,6 @@
 package de.starwit.rest.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -11,16 +10,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.transaction.annotation.Transactional;
 
-import de.starwit.persistence.config.PrimaryDataSourceConfig;
 import de.starwit.persistence.entity.AnalyticsJobEntity;
-import de.starwit.rest.RestApplication;
 import de.starwit.service.datasource.SaeDataSource;
 
 @SpringBootTest
@@ -56,7 +49,7 @@ public class AnalyticsJobControllerAcceptanceTest extends AbstractControllerAcce
     public void canCreate() throws Exception {
         // given
         AnalyticsJobEntity entity = readFromFile(data + "job1.json");
-  
+
         // when
         MockHttpServletResponse response = create(entity);
 
@@ -70,7 +63,7 @@ public class AnalyticsJobControllerAcceptanceTest extends AbstractControllerAcce
     public void createIsValidated() throws Exception {
         // given
         AnalyticsJobEntity entity = readFromFile(data + "job1_with_id.json");
-  
+
         // when
         MockHttpServletResponse response = create(entity);
 

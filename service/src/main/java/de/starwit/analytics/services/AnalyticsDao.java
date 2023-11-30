@@ -19,6 +19,12 @@ import de.starwit.analytics.dtos.SaeDetectionRowMapper;
 @Repository
 public class AnalyticsDao {
 
+    private static String getDetectionDataSql = "select * from detection2 "
+            + "where \"CAPTURE_TS\" > ? "
+            + "and \"CAMERA_ID\" = ? "
+            + "and \"CLASS_ID\" = ?"
+            + "order by \"CAPTURE_TS\" ASC";
+
     @Autowired
     @Qualifier("saeJdbcTemplate")
     private JdbcTemplate saeJdbcTemplate;
@@ -32,14 +38,9 @@ public class AnalyticsDao {
             Integer detectionClassId) {
         try {
             LocalDateTime ldt = LocalDateTime.ofInstant(lastRetrievedTime, java.time.ZoneId.systemDefault());
-            List<SaeDetectionDto> result = saeJdbcTemplate.query(
-                    "select * from detection2 "
-                            + "where \"CAPTURE_TS\" > ? "
-                            + "and \"CAMERA_ID\" = ? "
-                            + "and \"CLASS_ID\" = ?"
-                            + "order by \"CAPTURE_TS\" ASC",
+            List<SaeDetectionDto> result = saeJdbcTemplate.query(getDetectionDataSql,
                     new SaeDetectionRowMapper(), ldt, cameraId, detectionClassId);
-            log.info("count in getDetectingData {}", result.size());
+            log.info("count in getDetectingData{}", result.size());
             return result;
         } catch (Exception e) {
             log.error("Error in getDetectionData", e);
