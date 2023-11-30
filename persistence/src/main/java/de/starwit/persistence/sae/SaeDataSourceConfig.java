@@ -48,6 +48,7 @@ public class SaeDataSourceConfig {
         return builder
                 .dataSource(saeDataSource())
                 .packages("de.starwit.persistence.sae.entity")
+                .persistenceUnit("sae")
                 .build();
     }
 

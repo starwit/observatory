@@ -12,7 +12,7 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import de.starwit.persistence.databackendconfig.entity.AnalyticsJobEntity;
+import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
 
 @SpringBootTest
 @EnableAutoConfiguration

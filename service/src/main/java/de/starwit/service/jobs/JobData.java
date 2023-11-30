@@ -1,10 +1,10 @@
 
-package de.starwit.analytics.jobs;
+package de.starwit.service.jobs;
 
 import java.time.Instant;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import de.starwit.persistence.databackendconfig.entity.AnalyticsJobEntity;
+import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
 import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 
 public class JobData {

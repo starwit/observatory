@@ -1,4 +1,4 @@
-package de.starwit.service.impl;
+package de.starwit.service.databackend;
 
 import java.util.List;
 
@@ -8,10 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import de.starwit.persistence.databackendconfig.entity.AnalyticsJobEntity;
-import de.starwit.persistence.databackendconfig.entity.PointEntity;
-import de.starwit.persistence.databackendconfig.repository.AnalyticsJobRepository;
-import de.starwit.persistence.databackendconfig.repository.PointRepository;
+import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
+import de.starwit.persistence.databackend.entity.PointEntity;
+import de.starwit.persistence.databackend.repository.AnalyticsJobRepository;
+import de.starwit.persistence.databackend.repository.PointRepository;
 
 @Service
 public class AnalyticsJobService {

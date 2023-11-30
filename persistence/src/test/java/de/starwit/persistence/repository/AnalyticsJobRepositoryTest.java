@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
-import de.starwit.persistence.databackendconfig.entity.AnalyticsJobEntity;
-import de.starwit.persistence.databackendconfig.repository.AnalyticsJobRepository;
+import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
+import de.starwit.persistence.databackend.repository.AnalyticsJobRepository;
 
 /**
  * Tests for FlowRepository

@@ -1,4 +1,4 @@
-package de.starwit.analytics.jobs;
+package de.starwit.service.jobs;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 import de.starwit.persistence.sae.repository.SaeRepository;
 
 @Service
-public class AreaOccupancyJob extends AbstractJob {
+public class LineCrossingJob extends AbstractJob {
 
     @Autowired
     private SaeRepository saeRepository;
@@ -22,9 +22,9 @@ public class AreaOccupancyJob extends AbstractJob {
     }
 
     @Override
-    List<? extends Result> process(JobData jobDate) {
+    List<? extends Result> process(JobData jobData) {
         log.info("Processing data");
-        log.info("TESTTESTTESTTEST");
         return null;
     }
+
 }

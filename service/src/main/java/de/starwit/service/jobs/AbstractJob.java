@@ -1,4 +1,4 @@
-package de.starwit.analytics.jobs;
+package de.starwit.service.jobs;
 
 import java.util.List;
 

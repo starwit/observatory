@@ -13,7 +13,7 @@ import jakarta.persistence.Query;
 @Repository
 public class SaeRepository {
 
-    @PersistenceContext(unitName = "saeEntityManagerFactory")
+    @PersistenceContext(unitName = "sae")
     EntityManager em;
 
     private static String getDetectionData = "select * from detection2 where \"CAPTURE_TS\" > :capturets and \"CAMERA_ID\" = :cameraid and \"CLASS_ID\" = :classid order by \"CAPTURE_TS\" ASC";

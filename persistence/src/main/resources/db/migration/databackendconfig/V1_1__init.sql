@@ -23,25 +23,3 @@ alter table if exists POINT
     foreign key (ANALYTICS_JOB_ID)
     references ANALYTICS_JOB;
 
-create table FLOW (
-    FLOWTIME timestamp(6) with time zone,
-    ID bigserial not null,
-    OBJECTCLASS_ID bigint,
-    PARKINGAREAID bigint not null,
-    DIRECTION varchar(255) check (DIRECTION in ('in','out')),
-    OBJECTID varchar(255),
-    primary key (ID)
-);
-
-create table OBJECTCLASS (
-    CLASSID integer,
-    ID bigserial not null,
-    NAME varchar(255),
-    primary key (ID)
-);
-
-alter table if exists FLOW
-    add constraint "fk_flow_objectclass"
-    foreign key (OBJECTCLASS_ID)
-    references OBJECTCLASS;
-

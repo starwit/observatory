@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import de.starwit.persistence.databackendconfig.entity.AnalyticsJobEntity;
-import de.starwit.service.impl.AnalyticsJobService;
+import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
+import de.starwit.service.databackend.AnalyticsJobService;
 
 @RestController
 @RequestMapping("${rest.base-path}/analytics-job")

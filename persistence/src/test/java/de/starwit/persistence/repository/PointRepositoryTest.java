@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
-import de.starwit.persistence.databackendconfig.entity.PointEntity;
-import de.starwit.persistence.databackendconfig.repository.PointRepository;
+import de.starwit.persistence.databackend.entity.PointEntity;
+import de.starwit.persistence.databackend.repository.PointRepository;
 
 /**
  * Tests for ObjectClassRepository

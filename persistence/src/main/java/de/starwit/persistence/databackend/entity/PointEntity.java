@@ -1,4 +1,4 @@
-package de.starwit.persistence.databackendconfig.entity;
+package de.starwit.persistence.databackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

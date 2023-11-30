@@ -1,9 +1,8 @@
-package de.starwit.persistence.databackendconfig.entity;
+package de.starwit.persistence.databackend.entity;
 
 import java.util.List;
 
 import de.starwit.persistence.common.entity.AbstractEntity;
-import de.starwit.persistence.databackendconfig.enumeration.JobType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

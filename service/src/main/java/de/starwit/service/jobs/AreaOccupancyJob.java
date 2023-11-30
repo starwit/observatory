@@ -1,4 +1,4 @@
-package de.starwit.analytics.jobs;
+package de.starwit.service.jobs;
 
 import java.util.List;
 
@@ -10,21 +10,21 @@ import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 import de.starwit.persistence.sae.repository.SaeRepository;
 
 @Service
-public class LineCrossingJob extends AbstractJob {
+public class AreaOccupancyJob extends AbstractJob {
 
     @Autowired
-    private SaeRepository analyticsDao;
+    private SaeRepository saeRepository;
 
     @Override
     List<SaeDetectionEntity> getData(JobData jobData) {
-        return analyticsDao.getDetectionData(jobData.getLastRetrievedTime(), jobData.getConfig().getCameraId(),
+        return saeRepository.getDetectionData(jobData.getLastRetrievedTime(), jobData.getConfig().getCameraId(),
                 jobData.getConfig().getDetectionClassId());
     }
 
     @Override
-    List<? extends Result> process(JobData jobData) {
+    List<? extends Result> process(JobData jobDate) {
         log.info("Processing data");
+        log.info("TESTTESTTESTTEST");
         return null;
     }
-
 }
