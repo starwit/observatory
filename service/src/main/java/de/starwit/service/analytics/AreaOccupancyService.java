@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import de.starwit.persistence.analytics.entity.AreaOccupancyEntity;
 import de.starwit.persistence.analytics.repository.AreaOccupancyRepository;
+import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 import de.starwit.service.impl.ServiceInterface;
 
 /**
@@ -23,6 +24,10 @@ public class AreaOccupancyService implements ServiceInterface<AreaOccupancyEntit
     @Override
     public AreaOccupancyRepository getRepository() {
         return areaoccupancyRepository;
+    }
+
+    public void addEntry(SaeDetectionEntity saeEntry) {
+
     }
 
 }

@@ -22,7 +22,7 @@ public class LineCrossingJob extends AbstractJob {
     }
 
     @Override
-    List<? extends Result> process(JobData jobData) {
+    List<? extends Result> process(JobData jobData, List<SaeDetectionEntity> newData) {
         log.info("Processing data");
         return null;
     }

@@ -22,9 +22,8 @@ public class AreaOccupancyJob extends AbstractJob {
     }
 
     @Override
-    List<? extends Result> process(JobData jobDate) {
-        log.info("Processing data");
-        log.info("TESTTESTTESTTEST");
+    List<? extends Result> process(JobData jobDate, List<SaeDetectionEntity> newData) {
+
         return null;
     }
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.starwit.persistence.common.entity.AbstractEntity;
 import de.starwit.persistence.common.entity.output.Result;
 import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 
@@ -31,12 +32,12 @@ public abstract class AbstractJob {
             log.warn("Discarded {} elements", discardCount);
         }
 
-        List<? extends Result> results = this.process(jobData);
+        List<? extends Result> results = this.process(jobData, newData);
 
         // Pass data to database output / writer
     }
 
     abstract List<SaeDetectionEntity> getData(JobData jobData);
 
-    abstract List<? extends Result> process(JobData jobData);
+    abstract List<? extends Result> process(JobData jobData, List<SaeDetectionEntity> data);
 }

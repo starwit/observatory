@@ -24,8 +24,7 @@ public class SaeRepository {
         q.setParameter("capturets", lastRetrievedTime);
         q.setParameter("cameraid", cameraId);
         q.setParameter("classid", detectionClassId);
-        List<SaeDetectionEntity> test = q.getResultList();
-        return test;
+        return q.getResultList();
     }
 
 }
