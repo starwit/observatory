@@ -1,7 +1,6 @@
 package de.starwit.persistence.databackend;
 
 import java.util.Objects;
-import java.util.Properties;
 
 import javax.sql.DataSource;
 
