@@ -23,7 +23,7 @@ public class AreaOccupancyJob extends AbstractJob {
 
     @Override
     List<? extends Result> process(JobData jobDate, List<SaeDetectionEntity> newData) {
-
+        // unique object_ids for last ten seconds and every object classes
         return null;
     }
 }
