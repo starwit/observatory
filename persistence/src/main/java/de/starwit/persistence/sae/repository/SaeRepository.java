@@ -16,7 +16,7 @@ public class SaeRepository {
     @PersistenceContext(unitName = "sae")
     EntityManager em;
 
-    private static String getDetectionData = "select * from detection2 where \"CAPTURE_TS\" > :capturets and \"CAMERA_ID\" = :cameraid and \"CLASS_ID\" = :classid order by \"CAPTURE_TS\" ASC";
+    private static String getDetectionData = "select * from detection2 where capture_ts > :capturets and camera_id = :cameraid and class_id = :classid order by capture_ts ASC";
 
     public List<SaeDetectionEntity> getDetectionData(Instant lastRetrievedTime, String cameraId,
             Integer detectionClassId) {

@@ -12,34 +12,34 @@ import jakarta.persistence.Id;
 public class SaeDetectionEntity {
 
     @Id
-    @Column(name = "CAPTURE_TS")
+    @Column(name = "capture_ts")
     private Instant captureTs;
 
-    @Column(name = "DETECTION_ID")
+    @Column(name = "detection_id")
     private Long detectionId;
 
-    @Column(name = "CAMERA_ID")
+    @Column(name = "camera_id")
     private String cameraId;
 
-    @Column(name = "OBJECT_ID")
+    @Column(name = "object_id")
     private String objectId;
 
-    @Column(name = "CLASS_ID")
+    @Column(name = "class_id")
     private Integer classId;
 
-    @Column(name = "CONFIDENCE")
+    @Column(name = "confidence")
     private Double confidence;
 
-    @Column(name = "MIN_X")
+    @Column(name = "min_x")
     private Double minX;
 
-    @Column(name = "MIN_Y")
+    @Column(name = "min_y")
     private Double minY;
 
-    @Column(name = "MAX_X")
+    @Column(name = "max_x")
     private Double maxX;
 
-    @Column(name = "MAX_Y")
+    @Column(name = "max_y")
     private Double maxY;
 
     public Long getDetectionId() {
