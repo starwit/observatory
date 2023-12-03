@@ -15,16 +15,17 @@ public abstract class AbstractJob {
 
         List<SaeDetectionEntity> newData = this.getData(jobData);
 
-        if (newData != null && !newData.isEmpty()) {
-            jobData.setLastRetrievedTime(newData.get(newData.size() - 1).getCaptureTs());
-        }
-
         int discardCount = 0;
         boolean success = false;
-        for (int i = newData.size() - 1; i >= 0; i--) {
-            success = jobData.getInputData().offer(newData.get(i));
-            if (!success) {
-                discardCount++;
+
+        if (newData != null && !newData.isEmpty()) {
+            jobData.setLastRetrievedTime(newData.get(newData.size() - 1).getCaptureTs());
+
+            for (int i = newData.size() - 1; i >= 0; i--) {
+                success = jobData.getInputData().offer(newData.get(i));
+                if (!success) {
+                    discardCount++;
+                }
             }
         }
         if (discardCount > 0) {

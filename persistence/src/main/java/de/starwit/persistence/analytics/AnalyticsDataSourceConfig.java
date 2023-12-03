@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = "de.starwit.persistence.analytics.repository", entityManagerFactoryRef = "analyticsEntityManagerFactory", transactionManagerRef = "analyticsTransactionManager")
+@EnableJpaRepositories(basePackages = "de.starwit.persistence.analytics", entityManagerFactoryRef = "analyticsEntityManagerFactory", transactionManagerRef = "analyticsTransactionManager")
 public class AnalyticsDataSourceConfig {
 
     @Bean
@@ -43,24 +43,24 @@ public class AnalyticsDataSourceConfig {
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean analyticsEntityManagerFactory(
-            EntityManagerFactoryBuilder builder, Environment env) {
-        final DataSource dataSource = analyticsDataSource();
+    public LocalContainerEntityManagerFactoryBean analyticsEntityManagerFactory(EntityManagerFactoryBuilder builder,
+            Environment env) {
         Flyway.configure()
-                .dataSource(dataSource)
+                .dataSource(analyticsDataSource())
                 .locations("db/migration/analytics")
                 .load()
                 .migrate();
         return builder
                 .dataSource(analyticsDataSource())
-                .packages("de.starwit.persistence.analytics.entity")
+                .packages("de.starwit.persistence.analytics")
                 .persistenceUnit("analytics")
                 .build();
     }
 
     @Bean
     public PlatformTransactionManager analyticsTransactionManager(
-            LocalContainerEntityManagerFactoryBean factoryBean) {
+            @Qualifier("analyticsEntityManagerFactory") LocalContainerEntityManagerFactoryBean factoryBean) {
         return new JpaTransactionManager(Objects.requireNonNull(factoryBean.getObject()));
     }
+
 }

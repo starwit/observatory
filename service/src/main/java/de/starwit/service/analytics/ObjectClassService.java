@@ -38,7 +38,7 @@ public class ObjectClassService implements ServiceInterface<ObjectClassEntity, O
         if (entity.getId() != null) {
             ObjectClassEntity entityPrev = this.findById(entity.getId());
             for (LineCrossingEntity item : entityPrev.getFlow()) {
-                LineCrossingEntity existingItem = linecrossingRepository.getById(item.getId());
+                LineCrossingEntity existingItem = linecrossingRepository.getReferenceById(item.getId());
                 existingItem.setObjectClass(null);
                 this.linecrossingRepository.save(existingItem);
             }
@@ -50,11 +50,11 @@ public class ObjectClassService implements ServiceInterface<ObjectClassEntity, O
 
         if (flowToSave != null && !flowToSave.isEmpty()) {
             for (LineCrossingEntity item : flowToSave) {
-                LineCrossingEntity newItem = linecrossingRepository.getById(item.getId());
+                LineCrossingEntity newItem = linecrossingRepository.getReferenceById(item.getId());
                 newItem.setObjectClass(entity);
                 linecrossingRepository.save(newItem);
             }
         }
-        return this.getRepository().getById(entity.getId());
+        return this.getRepository().getReferenceById(entity.getId());
     }
 }

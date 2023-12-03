@@ -3,13 +3,13 @@ package de.starwit.service.jobs;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import de.starwit.persistence.common.entity.output.Result;
 import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 import de.starwit.persistence.sae.repository.SaeRepository;
 
-@Service
+@Component
 public class LineCrossingJob extends AbstractJob {
 
     @Autowired
