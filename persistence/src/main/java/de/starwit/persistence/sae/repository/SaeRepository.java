@@ -20,7 +20,7 @@ public class SaeRepository {
 
     public List<SaeDetectionEntity> getDetectionData(Instant lastRetrievedTime, String cameraId,
             Integer detectionClassId) {
-        Query q = em.createNativeQuery(getDetectionData, SaeDetectionEntity.class);
+        Query q = em.createNativeQuery(SaeRepository.getDetectionData, SaeDetectionEntity.class);
         q.setParameter("capturets", lastRetrievedTime);
         q.setParameter("cameraid", cameraId);
         q.setParameter("classid", detectionClassId);

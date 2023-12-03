@@ -10,5 +10,4 @@ import de.starwit.persistence.analytics.entity.LineCrossingEntity;
  */
 @Repository
 public interface LineCrossingRepository extends JpaRepository<LineCrossingEntity, Long> {
-
 }

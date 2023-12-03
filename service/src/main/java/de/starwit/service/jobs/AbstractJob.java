@@ -11,7 +11,7 @@ import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 public abstract class AbstractJob {
     final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public void getAndProcessNewData(JobData jobData) {
+    public void getAndProcessNewData(JobData jobData) throws InterruptedException {
 
         List<SaeDetectionEntity> newData = this.getData(jobData);
 
@@ -32,12 +32,12 @@ public abstract class AbstractJob {
             log.warn("Discarded {} elements", discardCount);
         }
 
-        List<? extends Result> results = this.process(jobData, newData);
+        List<? extends Result> results = this.process(jobData);
 
         // Pass data to database output / writer
     }
 
     abstract List<SaeDetectionEntity> getData(JobData jobData);
 
-    abstract List<? extends Result> process(JobData jobData, List<SaeDetectionEntity> data);
+    abstract List<? extends Result> process(JobData jobData) throws InterruptedException;
 }

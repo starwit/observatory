@@ -22,7 +22,7 @@ public class ObjectClassEntity extends AbstractEntity<Long> {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "classid")
+    @Column(name = "classid", unique = true)
     private Integer classId;
 
     // entity relations
