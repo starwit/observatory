@@ -30,7 +30,7 @@ services:
       POSTGRES_PASSWORD: analytics
       PGDATA: /var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U databackend']
+      test: ['CMD-SHELL', 'pg_isready -U analytics']
       interval: 5s
       timeout: 60s
       retries: 30
@@ -51,6 +51,7 @@ services:
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     volumes:
        - databackend-pgadmin:/var/lib/pgadmin
+       - ./pgadmin/postgreslocal-servers-config.json:/pgadmin4/servers.json
     ports:
       - "5050:80"
     networks:
@@ -62,4 +63,5 @@ networks:
 
 volumes:
   databackend-db:
+  analytics-db:
   databackend-pgadmin:
