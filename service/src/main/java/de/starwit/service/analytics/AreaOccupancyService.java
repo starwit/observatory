@@ -51,7 +51,7 @@ public class AreaOccupancyService implements ServiceInterface<AreaOccupancyEntit
         if (objectClassList != null && !objectClassList.isEmpty()) {
             entity.setObjectClass(objectClassList.get(0));
             List<AreaOccupancyEntity> entityList = areaoccupancyRepository.findByOccupancyTimeAndObjectClass(timeUnit,
-                    saeEntry.getClassId());
+                    objectClassList.get(0).getId());
             if (entityList != null && !entityList.isEmpty()) {
                 entity = entityList.get(0);
                 entity.setCount(entity.getCount() + 1);

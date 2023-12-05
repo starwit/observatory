@@ -32,7 +32,7 @@ public class AnalyticsJobCreator {
     @Autowired
     private LineCrossingJob lineCrossingJob;
 
-    // @Scheduled(initialDelay = 0, fixedRate = 1000)
+    @Scheduled(initialDelay = 0, fixedRate = 1000000)
     private void refreshJobs() {
         log.info("in refreshJobs");
         jobsToRun = new ArrayList<>();
@@ -45,7 +45,6 @@ public class AnalyticsJobCreator {
     @Scheduled(initialDelay = 1000, fixedRate = 10000)
     private void runJobs() {
         log.info("in runJobs");
-        refreshJobs();
         try {
             if (jobsToRun != null && !jobsToRun.isEmpty()) {
                 for (JobData job : jobsToRun) {

@@ -19,8 +19,8 @@ public interface AreaOccupancyRepository extends JpaRepository<AreaOccupancyEnti
     @Query(value = "SELECT COUNT(a.objectId) FROM areaoccupancy a WHERE a.occupancytime = :startTime", nativeQuery = true)
     long countDetectionId(@Param("startTime") ZonedDateTime startTime);
 
-    @Query(value = "SELECT a FROM areaoccupancy a WHERE a.occupancytime = :startTime and a.objectclass_id = :objectClassId", nativeQuery = true)
+    @Query(value = "SELECT * FROM areaoccupancy a WHERE a.occupancytime = :startTime and a.objectclass_id = :objectClassId", nativeQuery = true)
     List<AreaOccupancyEntity> findByOccupancyTimeAndObjectClass(@Param("startTime") ZonedDateTime occupancyTime,
-            @Param("objectClassId") Integer objectClassId);
+            @Param("objectClassId") Long objectClassId);
 
 }

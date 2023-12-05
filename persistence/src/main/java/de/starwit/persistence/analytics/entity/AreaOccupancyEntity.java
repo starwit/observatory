@@ -9,11 +9,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.starwit.persistence.common.entity.AbstractEntity;
 import de.starwit.persistence.common.serializer.ZonedDateTimeDeserializer;
 import de.starwit.persistence.common.serializer.ZonedDateTimeSerializer;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
@@ -37,8 +36,8 @@ public class AreaOccupancyEntity extends AbstractEntity<Long> {
 
     // entity relations
     @JsonFilter("filterId")
-    @OneToOne(cascade = CascadeType.REFRESH)
-    @JoinColumn(name = "objectclass_id", referencedColumnName = "id", unique = true)
+    @ManyToOne
+    @JoinColumn(name = "objectclass_id")
     private ObjectClassEntity objectClass;
 
     // entity fields getters and setters

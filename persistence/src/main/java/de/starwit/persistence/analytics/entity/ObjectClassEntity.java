@@ -8,7 +8,6 @@ import de.starwit.persistence.common.entity.AbstractEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 /**
@@ -22,7 +21,7 @@ public class ObjectClassEntity extends AbstractEntity<Long> {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "classid", unique = true)
+    @Column(name = "classid")
     private Integer classId;
 
     // entity relations
@@ -30,8 +29,9 @@ public class ObjectClassEntity extends AbstractEntity<Long> {
     @OneToMany(mappedBy = "objectClass")
     private Set<LineCrossingEntity> flow;
 
-    @OneToOne(mappedBy = "objectClass")
-    private AreaOccupancyEntity areaOccupancy;
+    @JsonFilter("filterId")
+    @OneToMany(mappedBy = "objectClass")
+    private Set<AreaOccupancyEntity> areaOccupancy;
 
     // entity fields getters and setters
     public String getName() {
@@ -59,11 +59,11 @@ public class ObjectClassEntity extends AbstractEntity<Long> {
         this.flow = flow;
     }
 
-    public AreaOccupancyEntity getAreaOccupancy() {
+    public Set<AreaOccupancyEntity> getAreaOccupancy() {
         return areaOccupancy;
     }
 
-    public void setAreaOccupancy(AreaOccupancyEntity areaOccupancy) {
+    public void setAreaOccupancy(Set<AreaOccupancyEntity> areaOccupancy) {
         this.areaOccupancy = areaOccupancy;
     }
 

@@ -27,7 +27,7 @@ CREATE TABLE "areaoccupancy"
 (
     "occupancytime" TIMESTAMP WITH TIME ZONE NOT NULL ,
     "count" INTEGER NOT NULL ,
-    "objectclass_id" BIGINT UNIQUE,
+    "objectclass_id" BIGINT,
     "id" BIGINT NOT NULL DEFAULT nextval('areaoccupancy_id_seq'),
     CONSTRAINT "areaoccupancy_pkey" PRIMARY KEY ("id")
 );

@@ -22,7 +22,7 @@ public class SaeTester {
 
     private String INSERT_QUERY = "INSERT INTO detection(capture_ts, class_id, confidence, object_id, min_x, min_y, max_x, max_y, camera_id) VALUES (?,?,?,?,?,?,?,?,?)";
 
-    @Scheduled(initialDelay = 100, fixedRate = 1000)
+    @Scheduled(initialDelay = 0, fixedRate = 10)
     @Transactional
     public void insertDetectionData() {
         Timestamp captureTimestamp = new Timestamp(System.currentTimeMillis());
