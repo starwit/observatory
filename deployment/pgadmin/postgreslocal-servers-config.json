@@ -1,0 +1,24 @@
+{
+    "Servers": {
+        "databackend": {
+            "Name": "Databackend",
+            "Group": "Servers",
+            "Port": 5432,
+            "Username": "databackend",
+            "Host": "postgres",
+            "SSLMode": "prefer",
+            "MaintenanceDB": "postgres",
+            "PasswordExecCommand": "echo 'databackend'"
+        },
+        "analytics": {
+            "Name": "Analytics",
+            "Group": "Servers",
+            "Port": 5432,
+            "Username": "analytics",
+            "Host": "analytics",
+            "SSLMode": "prefer",
+            "MaintenanceDB": "postgres",
+            "PasswordExecCommand": "echo 'analytics'"
+        }
+    }
+}

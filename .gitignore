@@ -26,6 +26,9 @@ HELP.md
 /.nb-gradle/
 /build/
 
+### VSCode ###
+.vscode
+
 ### webclient (npm builds) ###
 application/src/main/resources/static
 
@@ -53,3 +56,5 @@ webclient/src/main/app/yarn-error.log*
 
 webclient/src/main/app/package-lock.json
 test.log
+
+*.drawio.*

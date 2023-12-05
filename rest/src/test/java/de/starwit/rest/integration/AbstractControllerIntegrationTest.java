@@ -7,6 +7,8 @@ import java.net.URL;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.starwit.persistence.common.entity.AbstractEntity;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -21,8 +23,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-
-import de.starwit.persistence.entity.AbstractEntity;
 
 @WithMockUser(username = "admin", roles = { "ADMIN", "PBUSER" })
 @WebMvcTest()
@@ -66,10 +66,10 @@ public abstract class AbstractControllerIntegrationTest<ENTITY extends AbstractE
     protected MockHttpServletResponse retrieveById(Long id) throws Exception {
         // when
         MockHttpServletResponse response = mvc.perform(
-        get(getRestPath() + id)
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn().getResponse();
+                get(getRestPath() + id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse();
 
         LOG.info(response.getContentAsString());
         return response;

@@ -1,7 +1,7 @@
-FROM openjdk:11-jre-slim-buster
+FROM eclipse-temurin:21-jre-jammy
 # copy application JAR (with libraries inside)
 
 ADD application/target/application-*.jar /opt/application.jar
 RUN chmod +x /opt/application.jar
 # specify default command
-CMD ["/usr/local/openjdk-11/bin/java", "-jar", "/opt/application.jar"]
+CMD ["java", "-jar", "/opt/application.jar"]
