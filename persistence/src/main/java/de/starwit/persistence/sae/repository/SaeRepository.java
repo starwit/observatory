@@ -3,6 +3,7 @@ package de.starwit.persistence.sae.repository;
 import java.time.Instant;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import de.starwit.persistence.sae.entity.SaeDetectionEntity;
@@ -16,11 +17,18 @@ public class SaeRepository {
     @PersistenceContext(unitName = "sae")
     EntityManager em;
 
-    private static String getDetectionData = "select * from detection2 where capture_ts > :capturets and camera_id = :cameraid and class_id = :classid order by capture_ts ASC";
+    @Value("${sae.detection.tablename}")
+    private String hyperTableName;
 
     public List<SaeDetectionEntity> getDetectionData(Instant lastRetrievedTime, String cameraId,
             Integer detectionClassId) {
-        Query q = em.createNativeQuery(SaeRepository.getDetectionData, SaeDetectionEntity.class);
+
+        String getDetectionData = "select * from " 
+                    + hyperTableName 
+                    + " where capture_ts > :capturets and camera_id = :cameraid"
+                    + " and class_id = :classid order by capture_ts ASC";                
+
+        Query q = em.createNativeQuery(getDetectionData, SaeDetectionEntity.class);
         q.setParameter("capturets", lastRetrievedTime);
         q.setParameter("cameraid", cameraId);
         q.setParameter("classid", detectionClassId);
