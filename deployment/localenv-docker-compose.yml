@@ -42,6 +42,27 @@ services:
       - backend
     restart: unless-stopped
 
+  sae:
+    container_name: sae-db
+    image:   timescale/timescaledb-ha:pg14-latest
+    environment:
+      POSTGRES_DB: sae
+      POSTGRES_USER: sae
+      POSTGRES_PASSWORD: sae
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U sae']
+      interval: 5s
+      timeout: 60s
+      retries: 30
+    volumes:
+      - ./data/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - sae-db:/home/postgres/pgdata/data
+    ports:
+      - "5435:5432"
+    networks:
+      - backend
+    restart: unless-stopped
+
   pgadmin:
     container_name: pgadmin_container
     image: dpage/pgadmin4
@@ -106,4 +127,5 @@ volumes:
   databackend-pgadmin:
   databackend-keycloak-db:
   analytics-db:
+  sae-db:
 
