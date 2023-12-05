@@ -17,11 +17,15 @@ import de.starwit.persistence.sae.entity.SaeDetectionRowMapper;
 
 public class SaeDao {
 
-    private static String getDetectionDataSql = "select * from detection2 "
-            + "where \"CAPTURE_TS\" > ? "
-            + "and \"CAMERA_ID\" = ? "
-            + "and \"CLASS_ID\" = ?"
-            + "order by \"CAPTURE_TS\" ASC";
+    @Value("${sae.detection.tablename}")
+    private static String hyperTableName;
+
+    private static String getDetectionDataSql = "select * from " 
+            + hyperTableName 
+            + " where \"capture_ts\" > ? "
+            + "and \"camera_id\" = ? "
+            + "and \"class_id\" = ?"
+            + "order by \"capture_ts\" ASC";
 
     @Autowired
     @Qualifier("saeJdbcTemplate")

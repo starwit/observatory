@@ -4,14 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-/**
- * Main SpringApplication to start the whole project
- */
 @EnableScheduling
 @SpringBootApplication(scanBasePackages = {
         "de.starwit.rest",
@@ -23,6 +21,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
         org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class,
         org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration.class })
 public class Application {
+
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
