@@ -1,13 +1,39 @@
 package de.starwit.persistence.analytics.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import de.starwit.persistence.analytics.entity.LineCrossingEntity;
+import de.starwit.persistence.sae.entity.SaeCountEntity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
-/**
- * LineCrossing Repository class
- */
 @Repository
-public interface LineCrossingRepository extends JpaRepository<LineCrossingEntity, Long> {
+@Transactional(readOnly = true)
+public class LineCrossingRepository {
+
+    @PersistenceContext(unitName = "analytics")
+    EntityManager em;
+
+    @Transactional("analyticsTransactionManager")
+    public void insert(SaeCountEntity entity) {
+        // TODO
+        String insertString = "insert into linecrossing(crossingtime, parkingareaid, objectid, objectclassid) values(:crossingtime, :parkingareaid, :objectid, :classId)";
+
+        em.createNativeQuery(insertString)
+                .setParameter("crossingtime", entity.getCaptureTs())
+                .setParameter("parkingareaid", 1)
+                .setParameter("objectid", "unknown")
+                .setParameter("classId", entity.getObjectClassId())
+                .executeUpdate();
+    }
+
+    // TODO
+    public List<LineCrossingEntity> findFirst100() {
+        String queryString = "select * from linecrossing order by crossingtime desc limit 100";
+        return em.createNativeQuery(queryString).getResultList();
+    }
+
 }

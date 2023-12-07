@@ -6,13 +6,12 @@ import java.util.concurrent.ArrayBlockingQueue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import de.starwit.persistence.common.entity.output.Result;
-import de.starwit.persistence.sae.entity.SaeDetectionEntity;
+import de.starwit.persistence.sae.entity.SaeCountEntity;
 import de.starwit.persistence.sae.repository.SaeRepository;
 import de.starwit.service.analytics.AreaOccupancyService;
 
 @Component
-public class AreaOccupancyJob extends AbstractJob {
+public class AreaOccupancyJob extends AbstractJob<SaeCountEntity> {
 
     @Autowired
     private AreaOccupancyService areaOccupancyService;
@@ -21,20 +20,19 @@ public class AreaOccupancyJob extends AbstractJob {
     private SaeRepository saeRepository;
 
     @Override
-    List<SaeDetectionEntity> getData(JobData jobData) {
+    List<SaeCountEntity> getData(JobData<SaeCountEntity> jobData) {
         return saeRepository.getDetectionData(jobData.getLastRetrievedTime(),
                 jobData.getConfig().getCameraId(),
                 jobData.getConfig().getDetectionClassId());
     }
 
     @Override
-    List<? extends Result> process(JobData jobData) throws InterruptedException {
+    void process(JobData<SaeCountEntity> jobData) throws InterruptedException {
         if (jobData != null) {
-            ArrayBlockingQueue<SaeDetectionEntity> queue = jobData.getInputData();
+            ArrayBlockingQueue<SaeCountEntity> queue = jobData.getInputData();
             while (queue != null && !queue.isEmpty()) {
                 areaOccupancyService.addEntry(queue.take());
             }
         }
-        return null;
     }
 }

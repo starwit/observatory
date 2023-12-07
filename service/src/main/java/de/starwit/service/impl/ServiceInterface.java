@@ -18,7 +18,7 @@ import jakarta.persistence.EntityNotFoundException;
  *
  * @param <E>
  */
-public interface ServiceInterface<E extends AbstractEntity<Long>, R extends JpaRepository<E, Long>> {
+public interface ServiceInterface<E, R extends JpaRepository<E, Long>> {
 
     static Logger LOG = LoggerFactory.getLogger(ServiceInterface.class);
 

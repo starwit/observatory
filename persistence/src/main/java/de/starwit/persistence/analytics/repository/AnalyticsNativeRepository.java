@@ -16,7 +16,7 @@ public class AnalyticsNativeRepository {
 
     public static String insertString = "insert into areaoccupancy(occupancytime, count) values(:occupancytime,:count)";
 
-    @Transactional
+    @Transactional("analyticsTransactionManager")
     public void insertAreaOccupancy() {
 
         em.createNativeQuery(insertString)
