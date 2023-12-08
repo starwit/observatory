@@ -12,14 +12,18 @@ import jakarta.persistence.PersistenceContext;
 public class AnalyticsNativeRepository {
 
     @PersistenceContext(unitName = "analytics")
-    EntityManager em;
+    EntityManager entityManager;
+
+    EntityManager getEntityManager() {
+        return entityManager;
+    }
 
     public static String insertString = "insert into areaoccupancy(occupancytime, count) values(:occupancytime,:count)";
 
     @Transactional("analyticsTransactionManager")
     public void insertAreaOccupancy() {
 
-        em.createNativeQuery(insertString)
+        getEntityManager().createNativeQuery(insertString)
                 .setParameter("occupancytime", ZonedDateTime.now())
                 .setParameter("count", 4)
                 .executeUpdate();
