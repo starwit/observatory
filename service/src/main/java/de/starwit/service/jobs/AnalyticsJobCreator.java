@@ -6,7 +6,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -17,9 +16,6 @@ import de.starwit.service.databackend.AnalyticsJobService;
 public class AnalyticsJobCreator {
 
     Logger log = LoggerFactory.getLogger(this.getClass());
-
-    @Value("${analytics.dataRetrievalRate:2000}")
-    private int dataRetrievalRate;
 
     private List<JobData> jobsToRun = null;
 
@@ -32,7 +28,7 @@ public class AnalyticsJobCreator {
     @Autowired
     private LineCrossingJob lineCrossingJob;
 
-    @Scheduled(initialDelay = 0, fixedRate = 1000000)
+    @Scheduled(initialDelay = 0, fixedRate = 10000)
     private void refreshJobs() {
         log.info("in refreshJobs");
         jobsToRun = new ArrayList<>();
@@ -42,27 +38,27 @@ public class AnalyticsJobCreator {
         }
     }
 
-    @Scheduled(initialDelay = 1000, fixedRate = 10000)
+    @Scheduled(initialDelay = 1000, fixedRateString = "${analytics.jobRunInterval:10000}")
     private void runJobs() {
         log.info("in runJobs");
-        try {
-            if (jobsToRun != null && !jobsToRun.isEmpty()) {
-                for (JobData job : jobsToRun) {
+        if (jobsToRun != null && !jobsToRun.isEmpty()) {
+            for (JobData job : jobsToRun) {
+                try {
+                    log.debug("Running job: {}", job.getConfig().getName());
                     switch (job.getConfig().getType()) {
                         case LINE_CROSSING:
-                            lineCrossingJob.getAndProcessNewData(job);
+                            lineCrossingJob.run(job);
                             break;
                         case AREA_OCCUPANCY:
-                            areaOccupancyJob.getAndProcessNewData(job);
+                            areaOccupancyJob.run(job);
                             break;
                         default:
                             break;
                     }
-                    log.debug("Running job: {}", job.getConfig().getName());
+                } catch (Exception e) {
+                    log.error("Exception during job run {}", job.getConfig().getName(), e);
                 }
             }
-        } catch (Exception e) {
-            log.error("Exception during running the job", e);
         }
     }
 }

@@ -1,16 +1,26 @@
 package de.starwit.service.jobs;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 import de.starwit.persistence.common.entity.AbstractCaptureEntity;
 
 public abstract class AbstractJob<E extends AbstractCaptureEntity> {
+
+    @Value("${analytics.maxDataInterval:10000}")
+    int maxDataInterval;
+    
     final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public void getAndProcessNewData(JobData<E> jobData) throws InterruptedException {
+    public void run(JobData<E> jobData) throws InterruptedException {
+
+        if (jobData.getLastRetrievedTime().isBefore(Instant.now().minusMillis(maxDataInterval))) {
+            jobData.setLastRetrievedTime(Instant.now().minusMillis(maxDataInterval));
+        }
 
         List<E> newData = this.getData(jobData);
 
@@ -32,8 +42,6 @@ public abstract class AbstractJob<E extends AbstractCaptureEntity> {
         }
 
         this.process(jobData);
-
-        // Pass data to database output / writer
     }
 
     abstract List<E> getData(JobData<E> jobData);

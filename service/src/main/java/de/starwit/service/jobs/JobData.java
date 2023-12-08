@@ -2,6 +2,7 @@
 package de.starwit.service.jobs;
 
 import java.time.Instant;
+import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import de.starwit.persistence.common.entity.AbstractCaptureEntity;
@@ -9,22 +10,18 @@ import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
 
 public class JobData<E extends AbstractCaptureEntity> {
 
-    private ArrayBlockingQueue<E> inputData;
+    private Queue<E> inputData;
     private final AnalyticsJobEntity config;
     private Instant lastRetrievedTime;
 
     JobData(AnalyticsJobEntity config) {
-        this.inputData = new ArrayBlockingQueue<>(100);
+        this.inputData = new ArrayBlockingQueue<>(200);
         this.config = config;
         this.lastRetrievedTime = Instant.now();
     }
 
-    public ArrayBlockingQueue<E> getInputData() {
+    public Queue<E> getInputData() {
         return inputData;
-    }
-
-    public void setInputData(ArrayBlockingQueue<E> inputData) {
-        this.inputData = inputData;
     }
 
     public AnalyticsJobEntity getConfig() {
