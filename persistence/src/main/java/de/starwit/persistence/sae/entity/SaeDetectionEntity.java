@@ -4,12 +4,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
 
+import de.starwit.persistence.common.entity.AbstractCaptureEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 @Entity
-public class SaeDetectionEntity {
+public class SaeDetectionEntity implements AbstractCaptureEntity {
 
     @Id
     @Column(name = "capture_ts")
@@ -42,20 +43,20 @@ public class SaeDetectionEntity {
     @Column(name = "max_y")
     private Double maxY;
 
-    public Long getDetectionId() {
-        return detectionId;
-    }
-
-    public void setDetectionId(Long detectionId) {
-        this.detectionId = detectionId;
-    }
-
     public Instant getCaptureTs() {
         return captureTs;
     }
 
     public void setCaptureTs(Instant captureTs) {
         this.captureTs = captureTs;
+    }
+
+    public Long getDetectionId() {
+        return detectionId;
+    }
+
+    public void setDetectionId(Long detectionId) {
+        this.detectionId = detectionId;
     }
 
     public String getCameraId() {

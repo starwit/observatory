@@ -5,15 +5,14 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.starwit.persistence.common.entity.output.Result;
-import de.starwit.persistence.sae.entity.SaeDetectionEntity;
+import de.starwit.persistence.common.entity.AbstractCaptureEntity;
 
-public abstract class AbstractJob {
+public abstract class AbstractJob<E extends AbstractCaptureEntity> {
     final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public void getAndProcessNewData(JobData jobData) throws InterruptedException {
+    public void getAndProcessNewData(JobData<E> jobData) throws InterruptedException {
 
-        List<SaeDetectionEntity> newData = this.getData(jobData);
+        List<E> newData = this.getData(jobData);
 
         int discardCount = 0;
         boolean success = false;
@@ -32,12 +31,12 @@ public abstract class AbstractJob {
             log.warn("Discarded {} elements", discardCount);
         }
 
-        List<? extends Result> results = this.process(jobData);
+        this.process(jobData);
 
         // Pass data to database output / writer
     }
 
-    abstract List<SaeDetectionEntity> getData(JobData jobData);
+    abstract List<E> getData(JobData<E> jobData);
 
-    abstract List<? extends Result> process(JobData jobData) throws InterruptedException;
+    abstract void process(JobData<E> jobData) throws InterruptedException;
 }

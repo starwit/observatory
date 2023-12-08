@@ -2,10 +2,10 @@ package de.starwit.service.analytics;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import de.starwit.persistence.analytics.entity.LineCrossingEntity;
 import de.starwit.persistence.analytics.repository.LineCrossingRepository;
-import de.starwit.service.impl.ServiceInterface;
+import de.starwit.persistence.sae.entity.SaeCountEntity;
 
 /**
  * 
@@ -13,13 +13,13 @@ import de.starwit.service.impl.ServiceInterface;
  *
  */
 @Service
-public class LineCrossingService implements ServiceInterface<LineCrossingEntity, LineCrossingRepository> {
+public class LineCrossingService {
 
     @Autowired
     private LineCrossingRepository linecrossingRepository;
 
-    @Override
-    public LineCrossingRepository getRepository() {
-        return linecrossingRepository;
+    @Transactional
+    public void addEntry(SaeCountEntity entity) {
+        linecrossingRepository.insert(entity);
     }
 }

@@ -6,13 +6,13 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import de.starwit.persistence.common.entity.AbstractEntity;
 import de.starwit.persistence.common.serializer.ZonedDateTimeDeserializer;
 import de.starwit.persistence.common.serializer.ZonedDateTimeSerializer;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -23,7 +23,13 @@ import jakarta.validation.constraints.NotNull;
  */
 @Entity
 @Table(name = "linecrossing")
-public class LineCrossingEntity extends AbstractEntity<Long> {
+public class LineCrossingEntity {
+
+    @Id
+    @Column(name = "crossingtime")
+    @JsonSerialize(using = ZonedDateTimeSerializer.class)
+    @JsonDeserialize(using = ZonedDateTimeDeserializer.class)
+    private ZonedDateTime crossingTime;
 
     // entity fields
     @NotNull
@@ -37,16 +43,9 @@ public class LineCrossingEntity extends AbstractEntity<Long> {
     @Column(name = "direction")
     private Direction direction;
 
-    @Column(name = "crossingtime")
-    @JsonSerialize(using = ZonedDateTimeSerializer.class)
-    @JsonDeserialize(using = ZonedDateTimeDeserializer.class)
-    private ZonedDateTime crossingTime;
-
     // entity relations
-    @JsonFilter("filterId")
-    @ManyToOne
-    @JoinColumn(name = "objectclass_id")
-    private ObjectClassEntity objectClass;
+    @Column(name = "objectclassid")
+    private Integer objectClassId;
 
     // entity fields getters and setters
     public Long getParkingAreaId() {
@@ -81,13 +80,12 @@ public class LineCrossingEntity extends AbstractEntity<Long> {
         this.crossingTime = crossingTime;
     }
 
-    // entity relations getters and setters
-    public ObjectClassEntity getObjectClass() {
-        return objectClass;
+    public Integer getObjectClassId() {
+        return objectClassId;
     }
 
-    public void setObjectClass(ObjectClassEntity objectClass) {
-        this.objectClass = objectClass;
+    public void setObjectClassId(Integer objectClassId) {
+        this.objectClassId = objectClassId;
     }
 
 }

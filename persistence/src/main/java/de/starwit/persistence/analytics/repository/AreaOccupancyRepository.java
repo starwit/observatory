@@ -1,26 +1,49 @@
 package de.starwit.persistence.analytics.repository;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import de.starwit.persistence.analytics.entity.AreaOccupancyEntity;
-import java.util.List;
+import de.starwit.persistence.sae.entity.SaeCountEntity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 /**
  * AreaOccupancy Repository class
  */
 @Repository
-public interface AreaOccupancyRepository extends JpaRepository<AreaOccupancyEntity, Long> {
+@Transactional(readOnly = true)
+public class AreaOccupancyRepository {
 
-    @Query(value = "SELECT COUNT(a.objectId) FROM areaoccupancy a WHERE a.occupancytime = :startTime", nativeQuery = true)
-    long countDetectionId(@Param("startTime") ZonedDateTime startTime);
+    @PersistenceContext(unitName = "analytics")
+    EntityManager em;
 
-    @Query(value = "SELECT a FROM areaoccupancy a WHERE a.occupancytime = :startTime and a.objectclass_id = :objectClassId", nativeQuery = true)
-    List<AreaOccupancyEntity> findByOccupancyTimeAndObjectClass(@Param("startTime") ZonedDateTime occupancyTime,
-            @Param("objectClassId") Integer objectClassId);
+    // @Query(value = "SELECT COUNT(a.objectId) FROM areaoccupancy a WHERE
+    // a.occupancytime = :startTime", nativeQuery = true)
+
+    // @Query(value = "SELECT * FROM areaoccupancy a WHERE a.occupancytime =
+    // :startTime and a.objectclass_id = :objectClassId", nativeQuery = true)
+
+    @Transactional("analyticsTransactionManager")
+    public void insert(SaeCountEntity entity) {
+
+        String insertString = "insert into areaoccupancy(occupancytime, parkingareaid, count, objectclassid) values(:occupancytime,:parkingareaid, :count, :classId)";
+
+        em.createNativeQuery(insertString)
+                .setParameter("occupancytime", ZonedDateTime.ofInstant(entity.getCaptureTs(), ZoneId.systemDefault()))
+                .setParameter("parkingareaid", 1)
+                .setParameter("count", entity.getCount())
+                .setParameter("classId", entity.getObjectClassId())
+                .executeUpdate();
+    }
+
+    public List<AreaOccupancyEntity> findFirst100() {
+        String queryString = "select * from areaoccupancy order by occupancytime desc limit 100";
+        return em.createNativeQuery(queryString).getResultList();
+    }
 
 }

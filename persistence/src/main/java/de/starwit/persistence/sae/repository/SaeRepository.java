@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
-import de.starwit.persistence.sae.entity.SaeDetectionEntity;
+import de.starwit.persistence.sae.entity.SaeCountEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -20,15 +20,18 @@ public class SaeRepository {
     @Value("${sae.detection.tablename}")
     private String hyperTableName;
 
-    public List<SaeDetectionEntity> getDetectionData(Instant lastRetrievedTime, String cameraId,
+    public List<SaeCountEntity> getDetectionData(Instant lastRetrievedTime, String cameraId,
             Integer detectionClassId) {
 
-        String getDetectionData = "select * from " 
-                    + hyperTableName 
-                    + " where capture_ts > :capturets and camera_id = :cameraid"
-                    + " and class_id = :classid order by capture_ts ASC";                
+        String getDetectionData = ""
+                + "select capture_ts, class_id, count(object_id)"
+                + " from " + hyperTableName
+                + " where capture_ts > :capturets"
+                + " and camera_id = :cameraid"
+                + " and class_id = :classid"
+                + " group by capture_ts, class_id";
 
-        Query q = em.createNativeQuery(getDetectionData, SaeDetectionEntity.class);
+        Query q = em.createNativeQuery(getDetectionData, SaeCountEntity.class);
         q.setParameter("capturets", lastRetrievedTime);
         q.setParameter("cameraid", cameraId);
         q.setParameter("classid", detectionClassId);
