@@ -40,7 +40,6 @@ public class AnalyticsJobCreator {
 
     @Scheduled(initialDelay = 1000, fixedRateString = "${analytics.jobRunInterval:10000}")
     private void runJobs() {
-        log.info("in runJobs");
         if (jobsToRun != null && !jobsToRun.isEmpty()) {
             for (JobData job : jobsToRun) {
                 try {

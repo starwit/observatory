@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 import de.starwit.persistence.common.entity.AbstractCaptureEntity;
+import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 
 public abstract class AbstractJob<E extends AbstractCaptureEntity> {
 
@@ -30,8 +31,8 @@ public abstract class AbstractJob<E extends AbstractCaptureEntity> {
         if (newData != null && !newData.isEmpty()) {
             jobData.setLastRetrievedTime(newData.get(newData.size() - 1).getCaptureTs());
 
-            for (int i = newData.size() - 1; i >= 0; i--) {
-                success = jobData.getInputData().offer(newData.get(i));
+            for (E dataPoint : newData) {
+                success = jobData.getInputData().offer(dataPoint);
                 if (!success) {
                     discardCount++;
                 }

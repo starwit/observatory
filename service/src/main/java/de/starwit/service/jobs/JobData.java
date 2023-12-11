@@ -15,7 +15,7 @@ public class JobData<E extends AbstractCaptureEntity> {
     private Instant lastRetrievedTime;
 
     JobData(AnalyticsJobEntity config) {
-        this.inputData = new ArrayBlockingQueue<>(200);
+        this.inputData = new ArrayBlockingQueue<>(500);
         this.config = config;
         this.lastRetrievedTime = Instant.now();
     }
