@@ -1,8 +1,13 @@
 package de.starwit.service.jobs;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 
@@ -52,5 +57,20 @@ public class TrajectoryStore {
         if (trajectory != null) {
             trajectory.clear();
         }
+    }
+
+    public void purge(Duration maxAge) {
+        List<String> keysToDelete = new ArrayList<>();
+        Instant cutOff = Instant.now().minus(maxAge);
+        for (Entry<String, LinkedList<SaeDetectionEntity>> entry: trajectoryByObjId.entrySet()) {
+            if (entry.getValue().isEmpty() || entry.getValue().getLast().getCaptureTs().isBefore(cutOff)) {
+                keysToDelete.add(entry.getKey());
+            }
+        }
+        keysToDelete.forEach(key -> trajectoryByObjId.remove(key));
+    }
+
+    public int size() {
+        return trajectoryByObjId.size();
     }
 }

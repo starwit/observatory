@@ -39,8 +39,9 @@ public class LineCrossingJob extends AbstractJob<SaeDetectionEntity> {
 
     @Override
     void process(JobData<SaeDetectionEntity> jobData) {
-        activeCountingLine = new Line2D.Double(1180, 1163, 2414, 1614);
+        activeCountingLine = lineFrom(jobData.getConfig());
         activeStore = getStore(jobData.getConfig());
+        log.debug("store size: {}", activeStore.size());
 
         SaeDetectionEntity det;
         while ((det = jobData.getInputData().poll()) != null) {
@@ -55,6 +56,7 @@ public class LineCrossingJob extends AbstractJob<SaeDetectionEntity> {
                 }
             }
         }
+        activeStore.purge(Duration.ofSeconds(5));
     }
     
     private TrajectoryStore getStore(AnalyticsJobEntity jobConfig) {
