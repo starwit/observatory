@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.starwit.persistence.analytics.entity.LineCrossingEntity;
-import de.starwit.persistence.sae.entity.SaeCountEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
@@ -18,14 +17,15 @@ public class LineCrossingRepository {
     EntityManager em;
 
     @Transactional("analyticsTransactionManager")
-    public void insert(SaeCountEntity entity) {
+    public void insert(LineCrossingEntity entity) {
         // TODO
-        String insertString = "insert into linecrossing(crossingtime, parkingareaid, objectid, objectclassid) values(:crossingtime, :parkingareaid, :objectid, :classId)";
+        String insertString = "insert into linecrossing(crossingtime, parkingareaid, objectid, direction, objectclassid) values(:crossingtime, :parkingareaid, :objectid, :direction, :classId)";
 
         em.createNativeQuery(insertString)
-                .setParameter("crossingtime", entity.getCaptureTs())
-                .setParameter("parkingareaid", 1)
-                .setParameter("objectid", "unknown")
+                .setParameter("crossingtime", entity.getCrossingTime())
+                .setParameter("parkingareaid", entity.getParkingAreaId())
+                .setParameter("objectid", entity.getObjectId())
+                .setParameter("direction", entity.getDirection())
                 .setParameter("classId", entity.getObjectClassId())
                 .executeUpdate();
     }
