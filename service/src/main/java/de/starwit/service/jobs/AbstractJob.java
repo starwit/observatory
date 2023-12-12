@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 import de.starwit.persistence.common.entity.AbstractCaptureEntity;
-import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 
 public abstract class AbstractJob<E extends AbstractCaptureEntity> {
 

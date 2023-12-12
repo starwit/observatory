@@ -1,23 +1,23 @@
 package de.starwit.service.jobs;
 
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import de.starwit.persistence.sae.entity.SaeDetectionEntity;
-import de.starwit.persistence.sae.repository.SaeRepository;
+import de.starwit.persistence.sae.repository.SaeDao;
 
 @Component
 public class LineCrossingJob extends AbstractJob<SaeDetectionEntity> {
 
     @Autowired
-    private SaeRepository saeRepository;
+    private SaeDao saeDao;
 
     private static int MAX_WINDOW_SIZE = 3;
 
@@ -26,7 +26,7 @@ public class LineCrossingJob extends AbstractJob<SaeDetectionEntity> {
 
     @Override
     List<SaeDetectionEntity> getData(JobData<SaeDetectionEntity> jobData) {
-        return saeRepository.getDetectionData(jobData.getLastRetrievedTime(), 
+        return saeDao.getDetectionData(jobData.getLastRetrievedTime(), 
                 jobData.getConfig().getCameraId(),
                 jobData.getConfig().getDetectionClassId());
     }
@@ -64,7 +64,6 @@ public class LineCrossingJob extends AbstractJob<SaeDetectionEntity> {
         Point2D firstPoint = analyzingWindowByObjId.get(det.getObjectId()).getFirst();
         Point2D lastPoint = analyzingWindowByObjId.get(det.getObjectId()).getLast();
         Line2D trajectory = new Line2D.Double(firstPoint, lastPoint);
-        // log.info("Check crossing for {} from {} to {}", det.getObjectId(), firstPoint, lastPoint);
         return trajectory.intersectsLine(COUNTING_LINE);
     }
 
@@ -74,7 +73,7 @@ public class LineCrossingJob extends AbstractJob<SaeDetectionEntity> {
     }
 
     private Point2D centerFrom(SaeDetectionEntity det) {
-        return new Point2D.Double(det.getMaxX() - det.getMinX(), det.getMaxY() - det.getMinY());
+        return new Point2D.Double(det.getMinX() + (det.getMaxX() - det.getMinX()), det.getMinY() + (det.getMaxY() - det.getMinY()));
     }
 
 }
