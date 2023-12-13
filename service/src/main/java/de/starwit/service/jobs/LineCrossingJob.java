@@ -115,7 +115,7 @@ public class LineCrossingJob extends AbstractJob<SaeDetectionEntity> {
     }
 
     private Point2D centerFrom(SaeDetectionEntity det) {
-        return new Point2D.Double(det.getMinX() + (det.getMaxX() - det.getMinX()), det.getMinY() + (det.getMaxY() - det.getMinY()));
+        return new Point2D.Double(det.getMinX() + ((det.getMaxX() - det.getMinX()) / 2), det.getMinY() + ((det.getMaxY() - det.getMinY()) / 2));
     }
 
     private Line2D lineFrom(AnalyticsJobEntity jobConfig) {
