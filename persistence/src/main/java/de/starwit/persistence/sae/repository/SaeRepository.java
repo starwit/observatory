@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import de.starwit.persistence.sae.entity.SaeCountEntity;
+import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -36,6 +37,24 @@ public class SaeRepository {
         q.setParameter("cameraid", cameraId);
         q.setParameter("classid", detectionClassId);
         return q.getResultList();
+    }
+
+    public List<SaeDetectionEntity> getLineCrossingDetectionData(Instant lastRetrievedTime, String cameraId,
+            Integer detectionClassId) {
+
+        String getDetectionData = ""
+                + "select * "
+                + " from " + hyperTableName
+                + " where capture_ts > :capturets"
+                + " and camera_id = :cameraid"
+                + " and class_id = :classid";
+
+        Query q = em.createNativeQuery(getDetectionData, SaeDetectionEntity.class);
+        q.setParameter("capturets", lastRetrievedTime);
+        q.setParameter("cameraid", cameraId);
+        q.setParameter("classid", detectionClassId);
+        List<SaeDetectionEntity> result = q.getResultList();
+        return result;
     }
 
 }

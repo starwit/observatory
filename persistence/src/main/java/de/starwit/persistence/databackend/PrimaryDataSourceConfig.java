@@ -4,6 +4,9 @@ import java.util.Objects;
 
 import javax.sql.DataSource;
 
+import org.flywaydb.core.Flyway;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
@@ -30,6 +33,9 @@ public class PrimaryDataSourceConfig {
         return new DataSourceProperties();
     }
 
+    @Value("${spring.flyway.locations}")
+    private String[] flywayLocations;
+
     @Bean
     @Primary
     public DataSource primaryDataSource() {
@@ -42,16 +48,21 @@ public class PrimaryDataSourceConfig {
     @Primary
     public LocalContainerEntityManagerFactoryBean primaryEntityManagerFactory(
             EntityManagerFactoryBuilder builder, Environment env) {
+        Flyway.configure()
+                .dataSource(primaryDataSource())
+                .locations(flywayLocations)
+                .load()
+                .migrate();
         return builder
                 .dataSource(primaryDataSource())
-                .packages("de.starwit.persistence.databackend.entity")
+                .packages("de.starwit.persistence.databackend")
                 .build();
     }
 
     @Bean
     @Primary
     public PlatformTransactionManager primaryTransactionManager(
-            LocalContainerEntityManagerFactoryBean factoryBean) {
+            @Qualifier("primaryEntityManagerFactory") LocalContainerEntityManagerFactoryBean factoryBean) {
         return new JpaTransactionManager(Objects.requireNonNull(factoryBean.getObject()));
     }
 

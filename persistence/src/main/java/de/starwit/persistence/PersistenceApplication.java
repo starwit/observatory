@@ -5,12 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 
-import de.starwit.persistence.sae.repository.SaeRepository;
-
-@SpringBootApplication(scanBasePackages = {
-        "de.starwit.persistence.*"
-})
-@ComponentScan(excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = SaeRepository.class))
+@SpringBootApplication
+@ComponentScan(basePackages = { "de.starwit.persistence",
+        "de.starwit.application.config" }, excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = "de.starwit.persistence.sae.repository.*"))
 public class PersistenceApplication {
 
     public static void main(String[] args) {

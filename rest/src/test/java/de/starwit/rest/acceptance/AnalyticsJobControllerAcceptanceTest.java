@@ -1,6 +1,6 @@
 package de.starwit.rest.acceptance;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
+import java.math.BigDecimal;
 
 @SpringBootTest
 @EnableAutoConfiguration
@@ -81,8 +82,8 @@ public class AnalyticsJobControllerAcceptanceTest extends AbstractControllerAcce
         AnalyticsJobEntity retrievedEntity = mapper.readValue(response.getContentAsString(), AnalyticsJobEntity.class);
         assertThat(retrievedEntity.getId()).isEqualTo(responseEntity.getId());
         assertThat(retrievedEntity.getName()).isEqualTo(entity.getName());
-        assertThat(retrievedEntity.getGeometryPoints().get(0).getX()).isEqualTo(0.1);
-        assertThat(retrievedEntity.getGeometryPoints().get(1).getX()).isEqualTo(0.9);
+        assertThat(retrievedEntity.getGeometryPoints().get(0).getX().doubleValue()).isEqualTo(0.1);
+        assertThat(retrievedEntity.getGeometryPoints().get(1).getX().doubleValue()).isEqualTo(0.9);
     }
 
     @Test

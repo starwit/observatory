@@ -1,25 +1,30 @@
-create table analytics_job (
-    id bigserial not null,
-    "enabled" boolean,
-    type varchar(255) check (type in ('line_crossing', 'area_occupancy')),
-    name varchar(255),
-    parkingareaid varchar(255),
-    detectionclassid integer,
-    cameraid varchar(255),
-    primary key (id)
+CREATE SEQUENCE IF NOT EXISTS "analytics_job_id_seq";
+
+CREATE TABLE "analytics_job"
+(
+    "name" VARCHAR(255),
+    "parkingareaid" BIGINT NOT NULL,
+    "detectionclassid" integer,
+    "cameraid" varchar(255),
+    "enabled" BOOLEAN,
+    "type" VARCHAR(255),
+    "id" BIGINT NOT NULL DEFAULT nextval('analytics_job_id_seq'),
+    CONSTRAINT "analyticsjob_pkey" PRIMARY KEY ("id")
 );
 
-create table point (
-    id bigserial not null,
-    x float(53),
-    y float(53),
-    order_idx integer,
-    analytics_job_id bigint,
-    primary key (id)
+CREATE SEQUENCE IF NOT EXISTS "point_id_seq";
+
+CREATE TABLE "point"
+(
+    "x" decimal(22,19),
+    "y" decimal(22,19),
+    "order_idx" integer,
+    "analytics_job_id" BIGINT,
+    "id" BIGINT NOT NULL DEFAULT nextval('point_id_seq'),
+    CONSTRAINT "point_pkey" PRIMARY KEY ("id")
 );
 
-alter table if exists point
-    add constraint "fk_point_analytics_job"
-    foreign key (analytics_job_id)
-    references analytics_job;
-
+ALTER TABLE "point"
+    ADD CONSTRAINT "fk_point_analyticsjob"
+    FOREIGN KEY ("analytics_job_id")
+    REFERENCES "analytics_job" ("id");

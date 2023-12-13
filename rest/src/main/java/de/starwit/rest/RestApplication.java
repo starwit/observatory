@@ -2,14 +2,19 @@ package de.starwit.rest;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 
 /**
  * Base RestApplication
  *
- * Disable default HATEOAS with exclude <code>org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration</code>
+ * Disable default HATEOAS with exclude
+ * <code>org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration</code>
  *
  */
-@SpringBootApplication(scanBasePackages = { "de.starwit.rest", "de.starwit.service", "de.starwit.persistence", "de.starwit.application.config"})
+@SpringBootApplication
+@ComponentScan(basePackages = { "de.starwit.rest", "de.starwit.service", "de.starwit.persistence",
+        "de.starwit.application.config" }, excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = "de.starwit.persistence.sae.repository.*"))
 public class RestApplication {
 
     public static void main(String[] args) {
