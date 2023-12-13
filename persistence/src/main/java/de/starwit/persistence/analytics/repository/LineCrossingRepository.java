@@ -18,14 +18,13 @@ public class LineCrossingRepository {
 
     @Transactional("analyticsTransactionManager")
     public void insert(LineCrossingEntity entity) {
-        // TODO
         String insertString = "insert into linecrossing(crossingtime, parkingareaid, objectid, direction, objectclassid) values(:crossingtime, :parkingareaid, :objectid, :direction, :classId)";
 
         em.createNativeQuery(insertString)
                 .setParameter("crossingtime", entity.getCrossingTime())
                 .setParameter("parkingareaid", entity.getParkingAreaId())
                 .setParameter("objectid", entity.getObjectId())
-                .setParameter("direction", entity.getDirection())
+                .setParameter("direction", entity.getDirection().toString())
                 .setParameter("classId", entity.getObjectClassId())
                 .executeUpdate();
     }
