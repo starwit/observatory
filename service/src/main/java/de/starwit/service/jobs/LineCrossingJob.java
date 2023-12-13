@@ -5,7 +5,6 @@ import java.awt.geom.Point2D;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import de.starwit.persistence.analytics.entity.Direction;
-import de.starwit.persistence.analytics.repository.LineCrossingRepository;
 import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
 import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 import de.starwit.persistence.sae.repository.SaeDao;
@@ -22,19 +20,21 @@ import de.starwit.service.analytics.LineCrossingService;
 @Component
 public class LineCrossingJob extends AbstractJob<SaeDetectionEntity> {
 
-    @Autowired
     private SaeDao saeDao;
 
-    @Autowired
     private LineCrossingService lineCrossingService;
 
     private static int TARGET_WINDOW_SIZE_SEC = 1;
 
-    // private Line2D COUNTING_LINE = new Line2D.Double(1180, 1163, 2414, 1614);
-    
     private Map<Long, TrajectoryStore> trajectoryStores = new HashMap<>();
     private TrajectoryStore activeStore;
     private Line2D activeCountingLine;
+
+    @Autowired
+    public LineCrossingJob(SaeDao saeDao, LineCrossingService lineCrossingService) {
+        this.saeDao = saeDao;
+        this.lineCrossingService = lineCrossingService;
+    }
 
     @Override
     List<SaeDetectionEntity> getData(JobData<SaeDetectionEntity> jobData) {
@@ -82,7 +82,7 @@ public class LineCrossingJob extends AbstractJob<SaeDetectionEntity> {
         while (trimming) {
             Instant trajectoryStart = activeStore.getFirst(det).getCaptureTs();
             if (Duration.between(trajectoryStart, trajectoryEnd).toSeconds() > TARGET_WINDOW_SIZE_SEC) {
-                activeStore.removeFirst(det);;
+                activeStore.removeFirst(det);
             } else {
                 trimming = false;
             }
