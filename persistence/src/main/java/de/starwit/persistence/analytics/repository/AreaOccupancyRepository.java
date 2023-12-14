@@ -4,7 +4,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,12 +21,6 @@ public class AreaOccupancyRepository {
 
     @PersistenceContext(unitName = "analytics")
     EntityManager entityManager;
-
-    // @Query(value = "SELECT COUNT(a.objectId) FROM areaoccupancy a WHERE
-    // a.occupancytime = :startTime", nativeQuery = true)
-
-    // @Query(value = "SELECT * FROM areaoccupancy a WHERE a.occupancytime =
-    // :startTime and a.objectclass_id = :objectClassId", nativeQuery = true)
 
     EntityManager getEntityManager() {
         return entityManager;
