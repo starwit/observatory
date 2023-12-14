@@ -11,30 +11,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 
 import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 import de.starwit.persistence.sae.entity.SaeDetectionRowMapper;
 
+@Component
 public class SaeDao {
 
-    @Value("${sae.detection.tablename}")
-    private static String hyperTableName;
-
-    private static String getDetectionDataSql = "select * from " 
-            + hyperTableName 
-            + " where \"capture_ts\" > ? "
-            + "and \"camera_id\" = ? "
-            + "and \"class_id\" = ?"
-            + "order by \"capture_ts\" ASC";
+    private String getDetectionDataSql;
 
     @Autowired
     @Qualifier("saeJdbcTemplate")
     private JdbcTemplate saeJdbcTemplate;
 
-    @Value("${sae.detectionsTableName}")
-    private String detectionTableName;
-
     Logger log = LoggerFactory.getLogger(this.getClass());
+
+    public SaeDao(@Value("${sae.detection.tablename}") String hyperTableName) {
+        this.getDetectionDataSql = "select * from " 
+            + hyperTableName 
+            + " where \"capture_ts\" > ? "
+            + "and \"camera_id\" = ? "
+            + "and \"class_id\" = ? "
+            + "order by \"capture_ts\" ASC";
+    }
 
     public List<SaeDetectionEntity> getDetectionData(Instant lastRetrievedTime, String cameraId,
             Integer detectionClassId) {
@@ -42,7 +42,6 @@ public class SaeDao {
             LocalDateTime ldt = LocalDateTime.ofInstant(lastRetrievedTime, java.time.ZoneId.systemDefault());
             List<SaeDetectionEntity> result = saeJdbcTemplate.query(getDetectionDataSql,
                     new SaeDetectionRowMapper(), ldt, cameraId, detectionClassId);
-            log.info("count in getDetectingData{}", result.size());
             return result;
         } catch (Exception e) {
             log.error("Error in getDetectionData", e);

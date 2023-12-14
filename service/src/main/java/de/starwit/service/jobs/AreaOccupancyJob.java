@@ -1,7 +1,7 @@
 package de.starwit.service.jobs;
 
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.Queue;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ public class AreaOccupancyJob extends AbstractJob<SaeCountEntity> {
 
     @Override
     List<SaeCountEntity> getData(JobData<SaeCountEntity> jobData) {
-        return saeRepository.getDetectionData(jobData.getLastRetrievedTime(),
+        return saeRepository.getCountData(jobData.getLastRetrievedTime(),
                 jobData.getConfig().getCameraId(),
                 jobData.getConfig().getDetectionClassId());
     }
@@ -29,9 +29,9 @@ public class AreaOccupancyJob extends AbstractJob<SaeCountEntity> {
     @Override
     void process(JobData<SaeCountEntity> jobData) throws InterruptedException {
         if (jobData != null) {
-            ArrayBlockingQueue<SaeCountEntity> queue = jobData.getInputData();
+            Queue<SaeCountEntity> queue = jobData.getInputData();
             while (queue != null && !queue.isEmpty()) {
-                areaOccupancyService.addEntry(queue.take());
+                areaOccupancyService.addEntry(queue.poll());
             }
         }
     }

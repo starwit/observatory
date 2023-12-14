@@ -1,6 +1,7 @@
 package de.starwit.persistence.sae.repository;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -21,10 +22,10 @@ public class SaeRepository {
     @Value("${sae.detection.tablename}")
     private String hyperTableName;
 
-    public List<SaeCountEntity> getDetectionData(Instant lastRetrievedTime, String cameraId,
+    public List<SaeCountEntity> getCountData(Instant lastRetrievedTime, String cameraId,
             Integer detectionClassId) {
 
-        String getDetectionData = ""
+        String queryString = ""
                 + "select capture_ts, class_id, count(object_id)"
                 + " from " + hyperTableName
                 + " where capture_ts > :capturets"
@@ -32,7 +33,25 @@ public class SaeRepository {
                 + " and class_id = :classid"
                 + " group by capture_ts, class_id";
 
-        Query q = em.createNativeQuery(getDetectionData, SaeCountEntity.class);
+        Query q = em.createNativeQuery(queryString, SaeCountEntity.class);
+        q.setParameter("capturets", lastRetrievedTime);
+        q.setParameter("cameraid", cameraId);
+        q.setParameter("classid", detectionClassId);
+        return q.getResultList();
+    }
+
+    public List<SaeDetectionEntity> getDetectionData(Instant lastRetrievedTime, String cameraId,
+            Integer detectionClassId) {
+
+        String queryString = ""
+                + "select *"
+                + " from " + hyperTableName
+                + " where capture_ts > :capturets"
+                + " and camera_id = :cameraid"
+                + " and class_id = :classid"
+                + " order by capture_ts asc";
+
+        Query q = em.createNativeQuery(queryString, SaeDetectionEntity.class);
         q.setParameter("capturets", lastRetrievedTime);
         q.setParameter("cameraid", cameraId);
         q.setParameter("classid", detectionClassId);
