@@ -20,20 +20,18 @@ import jakarta.persistence.PersistenceContext;
 public class AreaOccupancyRepository {
 
     @PersistenceContext(unitName = "analytics")
-    EntityManager em;
+    EntityManager entityManager;
 
-    // @Query(value = "SELECT COUNT(a.objectId) FROM areaoccupancy a WHERE
-    // a.occupancytime = :startTime", nativeQuery = true)
-
-    // @Query(value = "SELECT * FROM areaoccupancy a WHERE a.occupancytime =
-    // :startTime and a.objectclass_id = :objectClassId", nativeQuery = true)
+    EntityManager getEntityManager() {
+        return entityManager;
+    }
 
     @Transactional("analyticsTransactionManager")
     public void insert(SaeCountEntity entity) {
 
         String insertString = "insert into areaoccupancy(occupancytime, parkingareaid, count, objectclassid) values(:occupancytime,:parkingareaid, :count, :classId)";
 
-        em.createNativeQuery(insertString)
+        getEntityManager().createNativeQuery(insertString)
                 .setParameter("occupancytime", ZonedDateTime.ofInstant(entity.getCaptureTs(), ZoneId.systemDefault()))
                 .setParameter("parkingareaid", 1)
                 .setParameter("count", entity.getCount())
@@ -43,7 +41,7 @@ public class AreaOccupancyRepository {
 
     public List<AreaOccupancyEntity> findFirst100() {
         String queryString = "select * from areaoccupancy order by occupancytime desc limit 100";
-        return em.createNativeQuery(queryString).getResultList();
+        return getEntityManager().createNativeQuery(queryString).getResultList();
     }
 
 }

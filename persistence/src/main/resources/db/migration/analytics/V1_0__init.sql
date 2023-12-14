@@ -22,5 +22,3 @@ CREATE TABLE "areaoccupancy"
     "objectclassid" BIGINT
 );
 
-
-

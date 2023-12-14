@@ -8,16 +8,17 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "point")
 public class PointEntity extends AbstractEntity<Long> {
 
     @Column(name = "x")
-    private Double x;
+    private BigDecimal x;
 
     @Column(name = "y")
-    private Double y;
+    private BigDecimal y;
 
     @Column(name = "order_idx")
     private int orderIdx;
@@ -27,19 +28,19 @@ public class PointEntity extends AbstractEntity<Long> {
     @JoinColumn(name = "analytics_job_id")
     private AnalyticsJobEntity analyticsJob;
 
-    public Double getX() {
+    public BigDecimal getX() {
         return x;
     }
 
-    public void setX(Double x) {
+    public void setX(BigDecimal x) {
         this.x = x;
     }
 
-    public Double getY() {
+    public BigDecimal getY() {
         return y;
     }
 
-    public void setY(Double y) {
+    public void setY(BigDecimal y) {
         this.y = y;
     }
 

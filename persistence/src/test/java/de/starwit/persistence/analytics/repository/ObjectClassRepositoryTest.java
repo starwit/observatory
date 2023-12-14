@@ -6,14 +6,16 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import de.starwit.persistence.analytics.entity.ObjectClassEntity;
 
 /**
  * Tests for ObjectClassRepository
  */
-@DataJpaTest
+@EnableAutoConfiguration
+@SpringBootTest
 class ObjectClassRepositoryTest {
 
     @Autowired
@@ -21,7 +23,7 @@ class ObjectClassRepositoryTest {
 
     @Test
     void testFindAll() {
-        List<ObjectClassEntity> objectclasss = repository.findAll();
-        assertTrue(objectclasss.isEmpty());
+        List<ObjectClassEntity> objectclasses = repository.findAll();
+        assertEquals(1, objectclasses.size());
     }
 }

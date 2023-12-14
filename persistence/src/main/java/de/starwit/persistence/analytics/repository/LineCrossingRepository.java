@@ -14,7 +14,11 @@ import jakarta.persistence.PersistenceContext;
 public class LineCrossingRepository {
 
     @PersistenceContext(unitName = "analytics")
-    EntityManager em;
+    EntityManager entityManager;
+
+    EntityManager getEntityManager() {
+        return entityManager;
+    }
 
     @Transactional("analyticsTransactionManager")
     public void insert(LineCrossingEntity entity) {
@@ -27,12 +31,12 @@ public class LineCrossingRepository {
                 .setParameter("direction", entity.getDirection().toString())
                 .setParameter("classId", entity.getObjectClassId())
                 .executeUpdate();
-    }
+   }
 
     // TODO
     public List<LineCrossingEntity> findFirst100() {
         String queryString = "select * from linecrossing order by crossingtime desc limit 100";
-        return em.createNativeQuery(queryString).getResultList();
+        return getEntityManager().createNativeQuery(queryString).getResultList();
     }
 
 }

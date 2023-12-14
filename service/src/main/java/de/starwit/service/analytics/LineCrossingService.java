@@ -31,7 +31,6 @@ public class LineCrossingService {
         entity.setObjectClassId(det.getClassId());
         entity.setObjectId(det.getObjectId());
         entity.setParkingAreaId(parkingAreaId);
-        
         linecrossingRepository.insert(entity);
     }
 }

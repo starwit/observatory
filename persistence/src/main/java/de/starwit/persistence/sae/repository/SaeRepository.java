@@ -58,4 +58,22 @@ public class SaeRepository {
         return q.getResultList();
     }
 
+    public List<SaeDetectionEntity> getLineCrossingDetectionData(Instant lastRetrievedTime, String cameraId,
+            Integer detectionClassId) {
+
+        String getDetectionData = ""
+                + "select * "
+                + " from " + hyperTableName
+                + " where capture_ts > :capturets"
+                + " and camera_id = :cameraid"
+                + " and class_id = :classid";
+
+        Query q = em.createNativeQuery(getDetectionData, SaeDetectionEntity.class);
+        q.setParameter("capturets", lastRetrievedTime);
+        q.setParameter("cameraid", cameraId);
+        q.setParameter("classid", detectionClassId);
+        List<SaeDetectionEntity> result = q.getResultList();
+        return result;
+    }
+
 }

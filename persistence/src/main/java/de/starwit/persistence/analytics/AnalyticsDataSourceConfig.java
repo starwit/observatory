@@ -6,6 +6,7 @@ import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
@@ -30,6 +31,9 @@ public class AnalyticsDataSourceConfig {
         return new DataSourceProperties();
     }
 
+    @Value("${analytics.datasource.flyway.locations}")
+    private String[] flywayLocations;
+
     @Bean
     public DataSource analyticsDataSource() {
         return analyticsDataSourceProperties()
@@ -47,7 +51,7 @@ public class AnalyticsDataSourceConfig {
             Environment env) {
         Flyway.configure()
                 .dataSource(analyticsDataSource())
-                .locations("db/migration/analytics")
+                .locations(flywayLocations)
                 .load()
                 .migrate();
         return builder
