@@ -7,43 +7,36 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
-import org.springframework.stereotype.Repository;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import de.starwit.persistence.analytics.entity.AreaOccupancyEntity;
 import de.starwit.persistence.sae.entity.SaeCountEntity;
-import de.starwit.persistence.sae.repository.SaeRepository;
 
 /**
  * Tests for AreaOccupancyRepository
  */
-
-// @DataJpaTest(includeFilters = @ComponentScan.Filter(type =
-// FilterType.ANNOTATION, classes = Repository.class), excludeFilters =
-// @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value =
-// SaeRepository.class))
+@EnableAutoConfiguration
+@SpringBootTest
 class AreaOccupancyRepositoryTest {
 
-    // @Autowired
-    private AreaOccupancyRepository areaOccupancyRepository;
+    @Autowired
+    private AreaOccupancyRepository repository;
 
-    // @Test
     void testFindFirst100() {
-        List<AreaOccupancyEntity> areaoccupancys = areaOccupancyRepository.findFirst100();
+        List<AreaOccupancyEntity> areaoccupancys = repository.findFirst100();
         assertTrue(areaoccupancys.isEmpty());
     }
 
-    // @Test
+    @Test
     void testSave() {
         SaeCountEntity entity = new SaeCountEntity();
         entity.setCaptureTs(Instant.now());
         entity.setCount(4);
         entity.setObjectClassId(2);
-        areaOccupancyRepository.insert(entity);
+        repository.insert(entity);
 
-        List<AreaOccupancyEntity> areaoccupancys = areaOccupancyRepository.findFirst100();
+        List<AreaOccupancyEntity> areaoccupancys = repository.findFirst100();
         assertTrue(areaoccupancys.size() > 0);
     }
 }

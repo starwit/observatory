@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import de.starwit.persistence.analytics.entity.LineCrossingEntity;
 import de.starwit.persistence.sae.entity.SaeCountEntity;
+import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
@@ -15,25 +16,31 @@ import jakarta.persistence.PersistenceContext;
 public class LineCrossingRepository {
 
     @PersistenceContext(unitName = "analytics")
-    EntityManager em;
+    EntityManager entityManager;
+
+    EntityManager getEntityManager() {
+        return entityManager;
+    }
 
     @Transactional("analyticsTransactionManager")
-    public void insert(SaeCountEntity entity) {
+    public void insert(SaeDetectionEntity entity) {
         // TODO
         String insertString = "insert into linecrossing(crossingtime, parkingareaid, objectid, objectclassid) values(:crossingtime, :parkingareaid, :objectid, :classId)";
 
-        em.createNativeQuery(insertString)
-                .setParameter("crossingtime", entity.getCaptureTs())
-                .setParameter("parkingareaid", 1)
-                .setParameter("objectid", "unknown")
-                .setParameter("classId", entity.getObjectClassId())
-                .executeUpdate();
+        /*
+         * getEntityManager().createNativeQuery(insertString)
+         * .setParameter("crossingtime", entity.getCaptureTs())
+         * .setParameter("parkingareaid", 1)
+         * .setParameter("objectid", "unknown")
+         * .setParameter("classId", entity.getObjectClassId())
+         * .executeUpdate();
+         */
     }
 
     // TODO
     public List<LineCrossingEntity> findFirst100() {
         String queryString = "select * from linecrossing order by crossingtime desc limit 100";
-        return em.createNativeQuery(queryString).getResultList();
+        return getEntityManager().createNativeQuery(queryString).getResultList();
     }
 
 }

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.starwit.persistence.analytics.repository.LineCrossingRepository;
-import de.starwit.persistence.sae.entity.SaeCountEntity;
+import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 
 /**
  * 
@@ -19,7 +19,7 @@ public class LineCrossingService {
     private LineCrossingRepository linecrossingRepository;
 
     @Transactional
-    public void addEntry(SaeCountEntity entity) {
+    public void addEntry(SaeDetectionEntity entity) {
         linecrossingRepository.insert(entity);
     }
 }
