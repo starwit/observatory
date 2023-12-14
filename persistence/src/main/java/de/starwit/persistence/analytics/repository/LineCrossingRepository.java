@@ -24,7 +24,7 @@ public class LineCrossingRepository {
     public void insert(LineCrossingEntity entity) {
         String insertString = "insert into linecrossing(crossingtime, parkingareaid, objectid, direction, objectclassid) values(:crossingtime, :parkingareaid, :objectid, :direction, :classId)";
 
-        em.createNativeQuery(insertString)
+        entityManager.createNativeQuery(insertString)
                 .setParameter("crossingtime", entity.getCrossingTime())
                 .setParameter("parkingareaid", entity.getParkingAreaId())
                 .setParameter("objectid", entity.getObjectId())

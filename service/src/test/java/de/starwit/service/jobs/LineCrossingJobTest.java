@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.awt.geom.Point2D;
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -60,11 +61,11 @@ public class LineCrossingJobTest {
 
     static AnalyticsJobEntity prepareJobEntity() {
         PointEntity pointEntity1 = new PointEntity();
-        pointEntity1.setX(0.0);
-        pointEntity1.setY(100.0);
+        pointEntity1.setX(new BigDecimal(0.0));
+        pointEntity1.setY(new BigDecimal(100.0));
         PointEntity pointEntity2 = new PointEntity();
-        pointEntity2.setX(100.0);
-        pointEntity2.setY(100.0);
+        pointEntity2.setX(new BigDecimal(100.0));
+        pointEntity2.setY(new BigDecimal(100.0));
 
         AnalyticsJobEntity entity = new AnalyticsJobEntity();
         entity.setCameraId("camId");

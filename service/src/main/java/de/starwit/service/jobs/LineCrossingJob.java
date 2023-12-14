@@ -119,8 +119,8 @@ public class LineCrossingJob extends AbstractJob<SaeDetectionEntity> {
     }
 
     private Line2D lineFrom(AnalyticsJobEntity jobConfig) {
-        Point2D pt1 = new Point2D.Double(jobConfig.getGeometryPoints().get(0).getX(), jobConfig.getGeometryPoints().get(0).getY());
-        Point2D pt2 = new Point2D.Double(jobConfig.getGeometryPoints().get(1).getX(), jobConfig.getGeometryPoints().get(1).getY());
+        Point2D pt1 = new Point2D.Double(jobConfig.getGeometryPoints().get(0).getX().doubleValue(), jobConfig.getGeometryPoints().get(0).getY().doubleValue());
+        Point2D pt2 = new Point2D.Double(jobConfig.getGeometryPoints().get(1).getX().doubleValue(), jobConfig.getGeometryPoints().get(1).getY().doubleValue());
         return new Line2D.Double(pt1, pt2);
     }
 
