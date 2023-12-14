@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import de.starwit.persistence.analytics.entity.Direction;
@@ -112,7 +111,4 @@ public class LineCrossingJobTest {
         return det;
     }
 
-    static Point2D centerFrom(SaeDetectionEntity det) {
-        return new Point2D.Double(det.getMinX() + ((det.getMaxX() - det.getMinX()) / 2), det.getMinY() + ((det.getMaxY() - det.getMinY()) / 2));
-    }
 }
