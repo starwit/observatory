@@ -30,7 +30,7 @@ public class AnalyticsJobCreator {
 
     @Scheduled(initialDelay = 0, fixedRate = 10000)
     private void refreshJobs() {
-        log.info("in refreshJobs");
+        log.debug("Refreshing jobs");
         jobsToRun = new ArrayList<>();
         List<AnalyticsJobEntity> enabledJobs = analyticsJobService.findByEnabledTrue();
         for (AnalyticsJobEntity jobConfig : enabledJobs) {

@@ -20,7 +20,7 @@ public class AnalyticsJobEntity extends AbstractEntity<Long> {
     private String name;
 
     @Column(name = "parkingareaid")
-    private String parkingAreaId;
+    private Long parkingAreaId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
@@ -46,11 +46,11 @@ public class AnalyticsJobEntity extends AbstractEntity<Long> {
         this.name = name;
     }
 
-    public String getParkingAreaId() {
+    public Long getParkingAreaId() {
         return parkingAreaId;
     }
 
-    public void setParkingAreaId(String parkingAreaId) {
+    public void setParkingAreaId(Long parkingAreaId) {
         this.parkingAreaId = parkingAreaId;
     }
 

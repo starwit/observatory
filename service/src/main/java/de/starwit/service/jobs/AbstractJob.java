@@ -37,6 +37,7 @@ public abstract class AbstractJob<E extends AbstractCaptureEntity> {
                 }
             }
         }
+        
         if (discardCount > 0) {
             log.warn("Discarded {} elements", discardCount);
         }

@@ -16,8 +16,8 @@ CREATE SEQUENCE IF NOT EXISTS "point_id_seq";
 
 CREATE TABLE "point"
 (
-    "x" decimal(22,19),
-    "y" decimal(22,19),
+    "x" decimal(24,19),
+    "y" decimal(24,19),
     "order_idx" integer,
     "analytics_job_id" BIGINT,
     "id" BIGINT NOT NULL DEFAULT nextval('point_id_seq'),
