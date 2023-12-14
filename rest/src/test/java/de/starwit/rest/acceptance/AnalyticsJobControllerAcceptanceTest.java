@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
-import java.math.BigDecimal;
 
 @SpringBootTest
 @EnableAutoConfiguration

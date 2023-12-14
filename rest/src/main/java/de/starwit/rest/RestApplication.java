@@ -14,7 +14,7 @@ import org.springframework.context.annotation.FilterType;
  */
 @SpringBootApplication
 @ComponentScan(basePackages = { "de.starwit.rest", "de.starwit.service", "de.starwit.persistence",
-        "de.starwit.application.config" }, excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = "de.starwit.persistence.sae.repository.*"))
+        "de.starwit.application.config" }, excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = "de.starwit.persistence.sae.*"))
 public class RestApplication {
 
     public static void main(String[] args) {
