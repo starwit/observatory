@@ -72,4 +72,8 @@ public class AnalyticsJobService {
     public void deleteById(Long id) {
         analyticsJobRepository.deleteById(id);
     }
+
+    public void deleteAll() {
+        analyticsJobRepository.deleteAll();
+    }
 }

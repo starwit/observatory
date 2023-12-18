@@ -125,5 +125,23 @@ public class AnalyticsJobControllerAcceptanceTest extends AbstractControllerAcce
         MockHttpServletResponse checkResponse = retrieveById(responseEntity.getId());
         assertThat(checkResponse.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
+    
+    @Test
+    public void canDeleteAll() throws Exception {
+        // given
+        AnalyticsJobEntity entity = readFromFile(data + "job1.json");
+        MockHttpServletResponse response1 = create(entity);
+        MockHttpServletResponse response2 = create(entity);
+    
+        // when
+        MockHttpServletResponse deleteResponse = deleteAll();
+    
+        assertThat(deleteResponse.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    
+        MockHttpServletResponse checkResponse = retrieveAll();
+        assertThat(checkResponse.getStatus()).isEqualTo(HttpStatus.OK.value());
+        AnalyticsJobEntity[] entities = mapper.readValue(checkResponse.getContentAsString(), AnalyticsJobEntity[].class);
+        assertThat(entities.length).isEqualTo(0);
+    }
 
 }
