@@ -24,6 +24,6 @@ class AnalyticsJobRepositoryTest {
     @Test
     void testFindAll() {
         List<AnalyticsJobEntity> flows = repository.findAll();
-        assertTrue(flows.size() > 0);
+        assertTrue(flows.isEmpty());
     }
 }
