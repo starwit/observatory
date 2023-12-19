@@ -35,26 +35,47 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:mysql://{{ .Release.Name }}-mariadb:3306/{{ .Values.mariadb.auth.database }}?useLegacyDatetimeCode=false&serverTimezone=CET
+              value: jdbc:postgresql://{{ .Values.databases.internal.url }}/{{ .Values.databases.internal.database }}
             - name: SPRING_DATASOURCE_USERNAME
-              value: {{ .Values.mariadb.auth.username }}
+              value: {{ .Values.databases.internal.username }}
             - name: SPRING_DATASOURCE_PASSWORD
-              value: {{ .Values.mariadb.auth.password }}
+              value: {{ .Values.databases.internal.password }}
+
+            - name: SAE_DATASOURCE_URL
+              value: jdbc:postgresql://{{ .Values.databases.sae.url }}/{{ .Values.databases.sae.database }}
+            - name: SAE_DATASOURCE_USERNAME
+              value: {{ .Values.databases.sae.username }}
+            - name: SAE_DATASOURCE_PASSWORD
+              value: {{ .Values.databases.sae.password }}
+            - name: SAE_TABLENAME
+              value: {{ .Values.databases.sae.table_name }}
+
+            - name: ANALYTICS_DATASOURCE_URL
+              value: jdbc:postgresql://{{ .Values.databases.analytics.url }}/{{ .Values.databases.analytics.database }}
+            - name: ANALYTICS_DATASOURCE_USERNAME
+              value: {{ .Values.databases.analytics.username }}
+            - name: ANALYTICS_DATASOURCE_PASSWORD
+              value: {{ .Values.databases.analytics.password }}              
+
             - name: SERVER_SERVLET_CONTEXT_PATH
-              value: /{{ include "databackend.fullname" . }}
-            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GITHUB_CLIENTID
+              value: {{ .Values.app.context_path | quote }}
+            {{- if .Values.auth.enabled }}  
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER-URI
+              value: {{ .Values.auth.keycloak_url }}
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT-ID
               valueFrom:
                 secretKeyRef:
-                  key:  clientid
-                  name: {{ .Release.Name }}-oauth
-            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GITHUB_CLIENTSECRET
+                  key:  client_id
+                  name: {{ .Release.Name }}-keycloak
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT-SECRET
               valueFrom:
                 secretKeyRef:
-                  key:  clientsecret
-                  name: {{ .Release.Name }}-oauth
+                  key:  client_secret
+                  name: {{ .Release.Name }}-keycloak
+            {{- end }}
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: 8081
               protocol: TCP
           livenessProbe:
             httpGet:
