@@ -1,30 +1,49 @@
 Example customValues.yaml
 
 ```yaml
+pullSecret:
+  user: "docker"
+  password: "password"
+  registryurl: "docker.internal.starwit-infra.de"
+
+app:
+  context_path: "/databackend"
+
+auth:
+  enabled: false
+  keycloak_url: https://hostname/realms/databackend
+  client_id: databackend
+  client_secret: databackend 
+
+databases:
+  internal: 
+    url: local.starwit.de:31222
+    database: databackend
+    username: databackend
+    password: databackend
+  sae:
+    url: local.starwit.de:31222
+    database: sae
+    username: sae
+    password: sae
+    table_name: detection
+  analytics:
+    url: local.starwit.de:31222
+    database: analytics
+    username: analytics
+    password: analytics 
+
 ingress:
   enabled: true
+  annotations: 
+    cert-manager.io/issuer: letsencrypt-prod
   hosts:
-    - host: <HOSTNAME>
-      paths: 
-        - /databackend
+    - host: local.starwit.de
+      paths:
+        - path: /databackend
+          pathType: ImplementationSpecific
   tls: 
-   - secretName: <TLS-SECRET>
-     hosts:
-       - <HOSTNAME>
-
-mariadb:
-  image:
-    registry: <CUSTOM-REGISTRY-IF-NEEDED>
-    pullSecrets: 
-      - <PULL-SECRETS-FOR-THE-CUSTOM-REGISTRY>
-  auth:
-    rootPassword: root #change
-    database: databackend #change
-    username: databackend #change
-    password: databackend #change
-
-github:
-  registry:
-    username: <GITHUB-USERNAME>
-    pat: <GENERATED-IN-GITHUB> #you only need to be able to read packages 
+    - secretName: local.starwit.de
+      hosts:
+        - local.starwit.de
 ```

@@ -1,6 +1,6 @@
 pullSecret:
   user: "docker"
-  password: "v3nA86H2YCv6ujBXYWcR"
+  password: "password"
   registryurl: "docker.internal.starwit-infra.de"
 
 app:
@@ -14,18 +14,18 @@ auth:
 
 databases:
   internal: 
-    url: markus-laptop:31222
+    url: local.starwit.de:31222
     database: databackend
     username: databackend
     password: databackend
   sae:
-    url: markus-laptop:31222
+    url: local.starwit.de:31222
     database: sae
     username: sae
     password: sae
     table_name: detection
   analytics:
-    url: markus-laptop:31222
+    url: local.starwit.de:31222
     database: analytics
     username: analytics
     password: analytics 
