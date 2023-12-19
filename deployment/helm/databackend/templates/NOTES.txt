@@ -13,3 +13,4 @@ Installed DataBackend {{ .Chart.AppVersion }} to your cluster.
   http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ $path.path }}/
   {{- end }}
 {{- end }}
+{{- end }}
