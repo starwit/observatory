@@ -1,0 +1,12 @@
+apiVersion: v2
+name: databackend
+description: A Helm chart to deploy DataBackend to Kubernetes
+
+type: application
+
+# This is the chart version.
+version: 0.1.0
+
+# Docker image version number
+appVersion: 0.0.1
+
