@@ -14,7 +14,8 @@ env:
 jobs:
   build:
     name: "Building project with Java 21"
-    runs-on: [self-hosted, linux, X64]
+    #runs-on: [self-hosted, linux, X64]
+    runs-on: ubuntu-latest
 
     steps:
       - name: checkout
