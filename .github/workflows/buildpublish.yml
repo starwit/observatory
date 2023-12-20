@@ -14,8 +14,8 @@ env:
 jobs:
   build:
     name: "Building project with Java 21"
-    #runs-on: [self-hosted, linux, X64]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, X64]
+    #runs-on: ubuntu-latest
 
     steps:
       - name: checkout
@@ -34,7 +34,7 @@ jobs:
           echo "HELM_VERSION=$(grep version: Chart.yaml | awk '{print $2}')" >> $GITHUB_ENV
       - name: run helm push
         working-directory: deployment/helm
-        run: helm push databackend-${{ env.HELM_VERSION }}.tar.gz oci://registry-1.docker.io/starwitorg
+        run: helm push databackend-${{ env.HELM_VERSION }}.tgz oci://registry-1.docker.io/starwitorg
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
