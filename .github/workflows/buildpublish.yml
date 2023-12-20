@@ -16,7 +16,17 @@ jobs:
     runs-on: [self-hosted, linux, X64]
 
     steps:
-      - uses: actions/checkout@v4
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: Push Helm chart Docker
+        uses: bsord/helm-push@4.1.0
+        with:
+          useOCIRegistry: true
+          registry-url:  oci://registry-1.docker.io/starwitorg
+          username: starwit
+          access-token: ${{ secrets.DOCKERHUB_TOKEN }}
+          force: true
+          chart-folder: deployment/helm/databackend
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
