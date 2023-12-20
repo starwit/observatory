@@ -1,7 +1,8 @@
 version: "3.9"
+name: databackend
+
 services:
   postgres:
-    container_name: databackend-db
     image: postgres:latest
     environment:
       POSTGRES_DB: databackend
@@ -14,15 +15,12 @@ services:
       timeout: 60s
       retries: 30
     volumes:
-      - databackend-db:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/data
     ports:
       - "5433:5432"
-    networks:
-      - backend
     restart: unless-stopped
   
   analytics:
-    container_name: analytics-db
     image: postgres:latest
     environment:
       POSTGRES_DB: analytics
@@ -38,13 +36,10 @@ services:
       - analytics-db:/var/lib/postgresql/data
     ports:
       - "5434:5432"
-    networks:
-      - backend
     restart: unless-stopped
 
   sae:
-    container_name: sae-db
-    image:   timescale/timescaledb-ha:pg14-latest
+    image: timescale/timescaledb-ha:pg14-latest
     environment:
       POSTGRES_DB: sae
       POSTGRES_USER: sae
@@ -59,26 +54,21 @@ services:
       - sae-db:/home/postgres/pgdata/data
     ports:
       - "5435:5432"
-    networks:
-      - backend
     restart: unless-stopped
 
   pgadmin:
-    container_name: pgadmin_container
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
       PGADMIN_DEFAULT_PASSWORD: admin
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     volumes:
-       - databackend-pgadmin:/var/lib/pgadmin
+       - pgadmin:/var/lib/pgadmin
     ports:
       - "5050:80"
-    networks:
-      - backend
     restart: unless-stopped
 
-  databackend-db-keycloak:
+  db-keycloak:
     image: postgres:latest
     restart: on-failure
     environment:
@@ -92,11 +82,9 @@ services:
       timeout: 60s
       retries: 30
     volumes:
-      - databackend-keycloak-db:/var/lib/postgresql/data
-    networks:
-      - backend
+      - keycloak-db:/var/lib/postgresql/data
 
-  databackend-keycloak:
+  keycloak:
     image: quay.io/keycloak/keycloak
     volumes:
       - ./keycloak/imports:/opt/keycloak/data/import
@@ -105,7 +93,7 @@ services:
         condition: service_healthy
     restart: on-failure
     environment:
-      KC_DB_URL: jdbc:postgresql://databackend-db-keycloak:5432/keycloak
+      KC_DB_URL: jdbc:postgresql://db-keycloak:5432/keycloak
       KC_DB: postgres
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: keycloak
@@ -115,17 +103,11 @@ services:
     command: start-dev --import-realm
     ports:
       - '8080:8080'
-    networks:
-      - backend
-
-
-networks:
-  backend:
 
 volumes:
-  databackend-db:
-  databackend-pgadmin:
-  databackend-keycloak-db:
+  db:
+  pgadmin:
+  keycloak-db:
   analytics-db:
   sae-db:
 
