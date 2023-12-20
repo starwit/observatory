@@ -11,7 +11,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: smartparkingconfig
+  IMAGE_NAME: databackend
   release-type: ${{ github.event.inputs.release-type }}
 
 jobs:
