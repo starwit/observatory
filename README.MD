@@ -1,4 +1,4 @@
-# Starwit Data Backend
+# Data Backend
 This repository contains a software module written in Java, that can run analytical jobs, to condense raw tracking data from Starwit's Awareness Engine into usable knowledge. Software is targeted to be run in a Kubernetes cluster. Thus this repo produces a [Docker image](https://hub.docker.com/repository/docker/starwitorg/databackend/general).
 
 ## License & Usage
