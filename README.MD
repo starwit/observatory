@@ -11,7 +11,7 @@ For mor information how complete software stack can be used and what it can do f
 More details on political and organizational background can be found here: https://www.wolfsburg.de/en-us/leben/smart-city
 
 ### Contribution
-TODO
+We are grateful for any contribution. Please refer to our [contribution guideline](CONTRIBUTING.md) and instructions document for any information.
 
 ## Analytical Jobs
 Main task of DataBackend is to run a multitude of analytical jobs that turn raw tracking data into usable knowledge. This section thus lists all available jobs and a brief description of their intended function.
