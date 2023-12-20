@@ -151,9 +151,30 @@ public abstract class AbstractControllerAcceptanceTest<ENTITY extends AbstractEn
         return response;
     }
 
+    protected MockHttpServletResponse retrieveAll() throws Exception {
+        MockHttpServletResponse response = mvc.perform(
+                get(getRestPath() + "/all")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        LOG.info(response.getContentAsString());
+        return response;
+    }
+
     protected MockHttpServletResponse delete(Long id) throws Exception {
         MockHttpServletResponse response = mvc.perform(
                 MockMvcRequestBuilders.delete(getRestPath() + "/" + id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn().getResponse();
+
+        LOG.info(response.getContentAsString());
+        return response;
+    }
+
+    protected MockHttpServletResponse deleteAll() throws Exception {
+        MockHttpServletResponse response = mvc.perform(
+                MockMvcRequestBuilders.delete(getRestPath() + "/all")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse();

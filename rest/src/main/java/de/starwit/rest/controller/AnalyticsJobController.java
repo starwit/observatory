@@ -66,4 +66,10 @@ public class AnalyticsJobController {
         analyticsJobService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @DeleteMapping("/all")
+    public ResponseEntity<String> clearJobs() {
+        analyticsJobService.deleteAll();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
