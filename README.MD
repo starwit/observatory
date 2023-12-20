@@ -21,9 +21,9 @@ TODO
 ## How to Deploy/Install
 TL;DR
 
-    ```bash
-    helm -n yournamespace install databackend oci://registry-1.docker.io/starwitorg/databackend -f yourvalues.yaml
-    ```
+```bash
+helm -n yournamespace install databackend oci://registry-1.docker.io/starwitorg/databackend -f yourvalues.yaml
+```
 
 Helm is the preferred tool to install DataBackend. TODO Link to proper value description.
 
@@ -42,20 +42,23 @@ __Prerequisites__
 
 This software is written in Java and dependency/build is managed by Maven. And so building the software is straight forward, just run the following command in repo's root folder:
 
-    ```bash
-    mvn clean install
-    ```
+```bash
+mvn clean install
+```
+
 After running Maven you can find a jar-file in folder _application/target_ and that can be run like so:
 
-    ```bash
-    java -jar application/target/application-0.0.1-SNAPSHOT.jar
-    ```
+```bash
+java -jar application/target/application-0.0.1-SNAPSHOT.jar
+```
+
 Note that application will need certain databases to run properly. You can either setup all databases manually or you can use Docker compose. To do that go to folder _deployment_ and start the environment (databases and keycloak) via docker-compose:
 
-    ```bash
-    cd deployment
-    docker-compose -f localenv-docker-compose.yml up
-    ```
+```bash
+cd deployment
+docker-compose -f localenv-docker-compose.yml up
+```
+
 When using Docker compose application can be reached via those coordinates:
 
 * main context http://localhost:8081/databackend/
