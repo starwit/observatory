@@ -1,5 +1,7 @@
 # Data Backend
-This repository contains a software module written in Java, that can run analytical jobs, to condense raw tracking data from Starwit's Awareness Engine into usable knowledge. Software is targeted to be run in a Kubernetes cluster. Thus this repo produces a [Docker image](https://hub.docker.com/repository/docker/starwitorg/databackend/general).
+This repository contains a software module written in Java, that can run analytical jobs, to condense raw tracking data from Starwit's Awareness Engine (SAE) into usable knowledge. Software is targeted to be run in a Kubernetes cluster. Thus this repo produces a [Docker image](https://hub.docker.com/repository/docker/starwitorg/databackend/general) and DataBackend can be deployed using Helm.
+
+Its current application focus is to extract usable knowledge about traffic from raw data produced by SAE.
 
 ## License & Usage
 Project is licensed under AGPL 3 and the license can be found [here](LICENSE). This component is part of a publicly funded project by the city of Wolfsburg and thus usage in your community is very much encouraged. It is part of a group of software modules that shall help communities to manage traffic and to gain statistical insights. 
@@ -12,20 +14,24 @@ More details on political and organizational background can be found here: https
 TODO
 
 ## Analytical Jobs
+Main task of DataBackend is to run a multitude of analytical jobs that turn raw tracking data into usable knowledge. This section thus lists all available jobs and a brief description of their intended function.
 
 ### Counting Traffic
-TODO
-### Counting Parking Vehicles
-TODO
+This job counts traffic passing a line including direction of movement.
+
+### Counting Parked Vehicles
+In a defined area this job counts how many vehicles are not moving and so considered as parked vehicles.
 
 ## How to Deploy/Install
-TL;DR
+Helm is the preferred tool to install DataBackend. Installation can be done with the following command:
 
 ```bash
 helm -n yournamespace install databackend oci://registry-1.docker.io/starwitorg/databackend -f yourvalues.yaml
 ```
 
-Helm is the preferred tool to install DataBackend. TODO Link to proper value description.
+Please note, that namespace is optional and you can define your own release name. For how to use Helm refer to their [docs](https://helm.sh/docs/intro/using_helm/).
+
+More details on the values you need to provide in order run Helm chart on your environment can be found [here](deployment/helm/databackend/Readme.md).
 
 Once you have installed DataBackend you can reach it's API documentation at http://domain/databackend/swagger-ui/index.html.
 
