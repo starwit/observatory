@@ -14,9 +14,27 @@ jobs:
   build:
     name: "Building project with Java 21"
     runs-on: [self-hosted, linux, X64]
+    #runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: get helm
+        uses: azure/setup-helm@v3
+
+      - name: login to Helm registry
+        run: helm registry login registry-1.docker.io -u starwit -p ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: run helm package
+        working-directory: deployment/helm
+        run: helm package databackend
+      - name: get version number
+        working-directory: deployment/helm/databackend
+        run: |
+          echo "HELM_VERSION=$(grep version: Chart.yaml | awk '{print $2}')" >> $GITHUB_ENV
+      - name: run helm push
+        working-directory: deployment/helm
+        run: helm push databackend-${{ env.HELM_VERSION }}.tgz oci://registry-1.docker.io/starwitorg
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
