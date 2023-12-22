@@ -1,11 +1,6 @@
 Example customValues.yaml
 
 ```yaml
-pullSecret:
-  user: "docker"
-  password: "password"
-  registryurl: "docker.internal.starwit-infra.de"
-
 app:
   context_path: "/databackend"
 
