@@ -38,6 +38,17 @@ public class AreaOccupancyEntity {
     @Column(name = "objectclassid")
     private Integer objectClassId;
 
+    @Column(name = "metadataid")
+    private Long metadataId;
+
+    public Long getMetadataId() {
+        return metadataId;
+    }
+
+    public void setMetadataId(Long metadataId) {
+        this.metadataId = metadataId;
+    }
+
     // entity fields getters and setters
     public ZonedDateTime getOccupancyTime() {
         return occupancyTime;

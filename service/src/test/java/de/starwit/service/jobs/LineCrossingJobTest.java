@@ -54,7 +54,7 @@ public class LineCrossingJobTest {
         testee.run(jobData);
         
         ArgumentCaptor<Direction> directionCaptor = ArgumentCaptor.forClass(Direction.class);
-        verify(serviceMock, times(1)).addEntry(any(), any(), directionCaptor.capture());
+        verify(serviceMock, times(1)).addEntry(any(), any(), directionCaptor.capture(), any());
 
         assertThat(directionCaptor.getValue()).isEqualTo(Direction.in);
     }
