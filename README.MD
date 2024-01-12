@@ -46,8 +46,16 @@ __Prerequisites__
 * PostgreSQL (available for development via docker-compose scripts)
 * Keycloak for authentication (optional)
 
-This software is written in Java and dependency/build is managed by Maven. And so building the software is straight forward, just run the following command in repo's root folder:
+This software is written in Java and dependency/build is managed by Maven. And so building the software is straight forward.
 
+Note that application will need certain databases to run properly. You can either setup all databases manually or you can use Docker compose. To do that go to folder _deployment_ and start the environment (databases and keycloak) via docker-compose:
+
+```bash
+cd deployment
+docker compose -f localenv-docker-compose.yml up
+```
+
+Run following Command in Root folder:
 ```bash
 mvn clean install
 ```
@@ -58,12 +66,7 @@ After running Maven you can find a jar-file in folder _application/target_ and t
 java -jar application/target/application-0.0.1-SNAPSHOT.jar
 ```
 
-Note that application will need certain databases to run properly. You can either setup all databases manually or you can use Docker compose. To do that go to folder _deployment_ and start the environment (databases and keycloak) via docker-compose:
 
-```bash
-cd deployment
-docker-compose -f localenv-docker-compose.yml up
-```
 
 When using Docker compose application can be reached via those coordinates:
 
@@ -71,7 +74,7 @@ When using Docker compose application can be reached via those coordinates:
 * API docs / Swagger UI: http://localhost:8081/databackend/swagger-ui/index.html
 * If you are using keycloak:
     * default user/password is admin/admin
-    * keycloak can be reached under http://localost:8080/auth
+    * keycloak can be reached under http://localhost:8080/auth
 
 ### Debugging
 
