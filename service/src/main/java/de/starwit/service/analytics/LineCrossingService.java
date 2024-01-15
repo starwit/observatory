@@ -9,7 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import de.starwit.persistence.analytics.entity.Direction;
 import de.starwit.persistence.analytics.entity.LineCrossingEntity;
+import de.starwit.persistence.analytics.entity.MetadataEntity;
 import de.starwit.persistence.analytics.repository.LineCrossingRepository;
+import de.starwit.persistence.analytics.repository.MetadataRepository;
+import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
 import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 
 /**
@@ -23,14 +26,26 @@ public class LineCrossingService {
     @Autowired
     private LineCrossingRepository linecrossingRepository;
 
+    @Autowired
+    private MetadataRepository metadataRepository;
+
     @Transactional
-    public void addEntry(SaeDetectionEntity det, Long parkingAreaId, Direction direction) {
+    public void addEntry(SaeDetectionEntity det, Long parkingAreaId, Direction direction, AnalyticsJobEntity jobEntity) {
+        MetadataEntity metadata = metadataRepository.findFirstByName(jobEntity.getName());
+
+        if (metadata == null) {
+            metadata = new MetadataEntity();
+            metadata.setName(jobEntity.getName());
+            metadata = metadataRepository.save(metadata);
+        }
+        
         LineCrossingEntity entity = new LineCrossingEntity();
         entity.setCrossingTime(ZonedDateTime.ofInstant(det.getCaptureTs(), ZoneId.systemDefault()));
         entity.setDirection(direction);
         entity.setObjectClassId(det.getClassId());
         entity.setObjectId(det.getObjectId());
         entity.setParkingAreaId(parkingAreaId);
+        entity.setMetadataId(metadata.getId());
         linecrossingRepository.insert(entity);
     }
 }

@@ -2,7 +2,6 @@ package de.starwit.persistence.analytics.entity;
 
 import java.time.ZonedDateTime;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -13,8 +12,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
@@ -46,6 +43,17 @@ public class LineCrossingEntity {
     // entity relations
     @Column(name = "objectclassid")
     private Integer objectClassId;
+
+    @Column(name = "metadataid")
+    private Long metadataId;
+
+    public Long getMetadataId() {
+        return metadataId;
+    }
+
+    public void setMetadataId(Long metadata) {
+        this.metadataId = metadata;
+    }
 
     // entity fields getters and setters
     public Long getParkingAreaId() {
