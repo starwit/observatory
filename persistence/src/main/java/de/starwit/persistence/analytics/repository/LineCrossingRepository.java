@@ -22,7 +22,7 @@ public class LineCrossingRepository {
 
     @Transactional("analyticsTransactionManager")
     public void insert(LineCrossingEntity entity) {
-        String insertString = "insert into linecrossing(crossingtime, parkingareaid, objectid, direction, objectclassid) values(:crossingtime, :parkingareaid, :objectid, :direction, :classId)";
+        String insertString = "insert into linecrossing(crossingtime, parkingareaid, objectid, direction, objectclassid, metadataid) values(:crossingtime, :parkingareaid, :objectid, :direction, :classId, :metadataId)";
 
         entityManager.createNativeQuery(insertString)
                 .setParameter("crossingtime", entity.getCrossingTime())
@@ -30,6 +30,7 @@ public class LineCrossingRepository {
                 .setParameter("objectid", entity.getObjectId())
                 .setParameter("direction", entity.getDirection().toString())
                 .setParameter("classId", entity.getObjectClassId())
+                .setParameter("metadataId", entity.getMetadataId())
                 .executeUpdate();
    }
 
