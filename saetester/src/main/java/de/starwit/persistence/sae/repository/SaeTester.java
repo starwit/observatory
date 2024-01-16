@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.PostConstruct;
+
 @Component
 public class SaeTester {
 
@@ -30,7 +32,12 @@ public class SaeTester {
 
     static int currentuuidListSize = 20;
 
-    @Scheduled(initialDelay = 10, fixedRate = 10)
+    @PostConstruct
+    private void init() {
+        log.info("************************* Alive ************************");
+    }
+
+    @Scheduled(initialDelay = 10, fixedRate = 500)
     public void test() {
         Timestamp captureTimestamp = new Timestamp(System.currentTimeMillis());
 

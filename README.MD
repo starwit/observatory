@@ -111,3 +111,26 @@ Start the database without keycloak:
 cd deployment
 docker-compose -f postgreslocal-docker-compose.yml up
 ```
+
+### SAETester
+
+SAETester is a tool for testing the Databases for the DataBackend.
+To start SAETester:
+
+1. go to the deployment folder and start the enviroment via docker compose:
+
+```bash
+cd deployment
+docker compose -f localenv-docker-compose.yml up
+```
+
+2. go to databackend/saetester/ and build the project:
+
+```bash
+mvn clean package
+```
+
+3. start project
+```bash
+java -jar saetester/target/seatester-0.0.1-SNAPSHOT.jar
+```
