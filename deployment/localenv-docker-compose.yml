@@ -89,7 +89,7 @@ services:
     volumes:
       - ./keycloak/imports:/opt/keycloak/data/import
     depends_on:
-      databackend-db-keycloak:
+      db-keycloak:
         condition: service_healthy
     restart: on-failure
     environment:
