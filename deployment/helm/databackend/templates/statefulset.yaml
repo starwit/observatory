@@ -96,13 +96,13 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /{{ include "databackend.fullname" . }}/monitoring/health
+              path: {{ .Values.app.context_path }}/monitoring/health
               port: http
             initialDelaySeconds: 30
             periodSeconds: 5
           readinessProbe:
             httpGet:
-              path: /{{ include "databackend.fullname" . }}/monitoring/health
+              path: {{ .Values.app.context_path }}/monitoring/health
               port: http
             initialDelaySeconds: 30
             periodSeconds: 5
