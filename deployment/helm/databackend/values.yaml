@@ -18,19 +18,22 @@ app:
 databases:
   databackend:
     internal: true
-    # Only relevant if `internal` is `false`
-    url: localhost:5432
+    # Host and Port are only relevant if `internal` is `false`
+    host: localhost
+    port: 5432
     database: databackend
     username: databackend
     password: databackend
   sae:
-    url: localhost:5432
+    host: localhost
+    port: 5432
     database: sae
     username: sae
     password: sae
     table_name: detection
   analytics:
-    url: localhost:5432
+    host: localhost
+    port: 5432
     database: analytics
     username: analytics
     password: analytics
