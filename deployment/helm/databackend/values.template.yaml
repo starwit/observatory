@@ -1,14 +1,9 @@
 app:
   context_path: "/databackend"
 
-auth:
-  enabled: false
-  keycloak_url: https://hostname/realms/databackend
-  client_id: databackend
-  client_secret: databackend 
-
 databases:
-  internal: 
+  databackend: 
+    internal: true
     url: local.starwit.de:31222
     database: databackend
     username: databackend
@@ -26,7 +21,7 @@ databases:
     password: analytics 
 
 ingress:
-  enabled: true
+  enabled: false
   annotations: 
     cert-manager.io/issuer: letsencrypt-prod
   hosts:

@@ -2,8 +2,6 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 1
-
 image:
   repository: docker.io/starwitorg/databackend
   pullPolicy: IfNotPresent
@@ -17,14 +15,10 @@ fullnameOverride: ""
 app:
   context_path: "/databackend"
 
-auth:
-  enabled: false
-  keycloak_url: https://hostname/realms/databackend
-  client_id: databackend
-  client_secret: databackend 
-
 databases:
-  internal: 
+  databackend:
+    internal: true
+    # Only relevant if `internal` is `false`
     url: localhost:5432
     database: databackend
     username: databackend
@@ -42,7 +36,7 @@ databases:
     password: analytics
 
 ingress:
-  enabled: true
+  enabled: false
   annotations: 
     cert-manager.io/issuer: letsencrypt-prod
   hosts:
@@ -54,6 +48,12 @@ ingress:
     - secretName: test.starwit.de
       hosts:
         - test.starwit.de
+
+postgresql:
+  auth:
+    database: databackend
+    username: databackend
+    password: databackend
 
 serviceAccount:
   # Specifies whether a service account should be created

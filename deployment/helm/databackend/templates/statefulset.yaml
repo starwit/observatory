@@ -5,9 +5,7 @@ metadata:
   labels:
     {{- include "databackend.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
-  {{- end }}
+  replicas: 1
   selector:
     matchLabels:
       {{- include "databackend.selectorLabels" . | nindent 6 }}
@@ -34,12 +32,17 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+          {{- if .Values.databases.databackend.internal }}
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://{{ .Values.databases.internal.url }}/{{ .Values.databases.internal.database }}
+              value: jdbc:postgresql://{{ include "postgresql.servicename" . }}/{{ .Values.databases.databackend.database }}
+          {{- else }}
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://{{ .Values.databases.databackend.url }}/{{ .Values.databases.databackend.database }}
+          {{- end }}
             - name: SPRING_DATASOURCE_USERNAME
-              value: {{ .Values.databases.internal.username }}
+              value: {{ .Values.databases.databackend.username }}
             - name: SPRING_DATASOURCE_PASSWORD
-              value: {{ .Values.databases.internal.password }}
+              value: {{ .Values.databases.databackend.password }}
 
             - name: SAE_DATASOURCE_URL
               value: jdbc:postgresql://{{ .Values.databases.sae.url }}/{{ .Values.databases.sae.database }}
@@ -59,20 +62,6 @@ spec:
 
             - name: SERVER_SERVLET_CONTEXT_PATH
               value: {{ .Values.app.context_path | quote }}
-            {{- if .Values.auth.enabled }}  
-            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER-URI
-              value: {{ .Values.auth.keycloak_url }}
-            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT-ID
-              valueFrom:
-                secretKeyRef:
-                  key:  client_id
-                  name: {{ .Release.Name }}-keycloak
-            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT-SECRET
-              valueFrom:
-                secretKeyRef:
-                  key:  client_secret
-                  name: {{ .Release.Name }}-keycloak
-            {{- end }}
           ports:
             - name: http
               containerPort: 8081
