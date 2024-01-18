@@ -108,9 +108,9 @@ public class LineCrossingJob extends AbstractJob<SaeDetectionEntity> {
         Point2D trajectoryEnd = centerFrom(activeStore.getLast(det));
         int ccw = activeCountingLine.relativeCCW(trajectoryEnd);
         if (ccw == -1) {
-            return Direction.in;
-        } else {
             return Direction.out;
+        } else {
+            return Direction.in;
         }
     }
 
