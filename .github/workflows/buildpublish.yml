@@ -32,7 +32,7 @@ jobs:
       - name: get version number
         working-directory: deployment/helm/databackend
         run: |
-          echo "HELM_VERSION=$(grep version: Chart.yaml | awk '{print $2}')" >> $GITHUB_ENV
+          echo "HELM_VERSION=$(grep version: Chart.yaml | head -1 | awk '{print $2}')" >> $GITHUB_ENV
       - name: run helm push
         working-directory: deployment/helm
         run: helm push databackend-${{ env.HELM_VERSION }}.tgz oci://registry-1.docker.io/starwitorg
