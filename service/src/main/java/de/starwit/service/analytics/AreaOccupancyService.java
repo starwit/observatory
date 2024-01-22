@@ -1,11 +1,16 @@
 package de.starwit.service.analytics;
 
+import java.time.ZonedDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import de.starwit.persistence.analytics.entity.AreaOccupancyEntity;
+import de.starwit.persistence.analytics.entity.MetadataEntity;
 import de.starwit.persistence.analytics.repository.AreaOccupancyRepository;
-import de.starwit.persistence.sae.entity.SaeCountEntity;
+import de.starwit.persistence.analytics.repository.MetadataRepository;
+import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
 
 /**
  * 
@@ -18,13 +23,30 @@ public class AreaOccupancyService {
     @Autowired
     private AreaOccupancyRepository areaoccupancyRepository;
 
+    @Autowired
+    private MetadataRepository metadataRepository;
+
     /**
      * Save Area occupancies for a minute.
      * 
      * @param saeEntry
      */
     @Transactional
-    public void addEntry(SaeCountEntity entity) {
+    public void addEntry(AnalyticsJobEntity jobEntity, ZonedDateTime occupancyTime, Long count) {
+        MetadataEntity metadata = metadataRepository.findFirstByName(jobEntity.getName());
+
+        if (metadata == null) {
+            metadata = new MetadataEntity();
+            metadata.setName(jobEntity.getName());
+            metadata = metadataRepository.save(metadata);
+        }
+        
+        AreaOccupancyEntity entity = new AreaOccupancyEntity();
+        entity.setCount(Math.toIntExact(count));
+        entity.setOccupancyTime(occupancyTime);
+        entity.setParkingAreaId(jobEntity.getParkingAreaId());
+        entity.setObjectClassId(jobEntity.getDetectionClassId());
+        entity.setMetadataId(metadata.getId());
         areaoccupancyRepository.insert(entity);
     }
 

@@ -30,7 +30,7 @@ public class LineCrossingService {
     private MetadataRepository metadataRepository;
 
     @Transactional
-    public void addEntry(SaeDetectionEntity det, Long parkingAreaId, Direction direction, AnalyticsJobEntity jobEntity) {
+    public void addEntry(SaeDetectionEntity det, Direction direction, AnalyticsJobEntity jobEntity) {
         MetadataEntity metadata = metadataRepository.findFirstByName(jobEntity.getName());
 
         if (metadata == null) {
@@ -44,7 +44,7 @@ public class LineCrossingService {
         entity.setDirection(direction);
         entity.setObjectClassId(det.getClassId());
         entity.setObjectId(det.getObjectId());
-        entity.setParkingAreaId(parkingAreaId);
+        entity.setParkingAreaId(jobEntity.getParkingAreaId());
         entity.setMetadataId(metadata.getId());
         linecrossingRepository.insert(entity);
     }
