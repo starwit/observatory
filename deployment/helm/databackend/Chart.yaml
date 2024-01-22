@@ -5,8 +5,13 @@ description: A Helm chart to deploy DataBackend to Kubernetes
 type: application
 
 # This is the chart version.
-version: 0.1.0
+version: 0.3.0
 
 # Docker image version number
 appVersion: 0.0.1-SNAPSHOT
 
+dependencies:
+  - name: postgresql
+    version: "13.2.30"
+    repository: "oci://registry-1.docker.io/bitnamicharts"
+    condition: databases.databackend.internal

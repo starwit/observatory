@@ -2,53 +2,44 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 1
-
 image:
-  repository: docker.internal.starwit-infra.de/databackend
-  pullPolicy: Always
+  repository: docker.io/starwitorg/databackend
+  pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
 imagePullSecrets:
-  - name: docker-registry-secret
 nameOverride: ""
 fullnameOverride: ""
-
-pullSecret:
-  user: "user"
-  password: "password"
-  registryurl: "docker.internal.starwit-infra.de"
 
 app:
   context_path: "/databackend"
 
-auth:
-  enabled: false
-  keycloak_url: https://hostname/realms/databackend
-  client_id: databackend
-  client_secret: databackend 
-
 databases:
-  internal: 
-    url: localhost:5432
+  databackend:
+    internal: true
+    # Host and Port are only relevant if `internal` is `false`
+    host: localhost
+    port: 5432
     database: databackend
     username: databackend
     password: databackend
   sae:
-    url: localhost:5432
+    host: localhost
+    port: 5432
     database: sae
     username: sae
     password: sae
     table_name: detection
   analytics:
-    url: localhost:5432
+    host: localhost
+    port: 5432
     database: analytics
     username: analytics
     password: analytics
 
 ingress:
-  enabled: true
+  enabled: false
   annotations: 
     cert-manager.io/issuer: letsencrypt-prod
   hosts:
@@ -60,6 +51,12 @@ ingress:
     - secretName: test.starwit.de
       hosts:
         - test.starwit.de
+
+postgresql:
+  auth:
+    database: databackend
+    username: databackend
+    password: databackend
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -98,13 +95,6 @@ resources: {}
   # requests:
   #   cpu: 100m
   #   memory: 128Mi
-
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
 
 nodeSelector: {}
 
