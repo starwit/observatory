@@ -14,7 +14,6 @@ jobs:
   build:
     name: "Building project with Java 21"
     runs-on: [self-hosted, linux, X64]
-    #runs-on: ubuntu-latest
 
     steps:
       - name: checkout
@@ -24,6 +23,9 @@ jobs:
 
       - name: login to Helm registry
         run: helm registry login registry-1.docker.io -u starwit -p ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: run helm update
+        working-directory: deployment/helm
+        run: helm dep update
       - name: run helm package
         working-directory: deployment/helm
         run: helm package databackend
