@@ -24,7 +24,7 @@ jobs:
       - name: login to Helm registry
         run: helm registry login registry-1.docker.io -u starwit -p ${{ secrets.DOCKERHUB_TOKEN }}
       - name: run helm update
-        working-directory: deployment/helm
+        working-directory: deployment/helm/databackend
         run: helm dep update
       - name: run helm package
         working-directory: deployment/helm
