@@ -3,6 +3,8 @@ package de.starwit.service.analytics;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,8 @@ import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 @Service
 public class LineCrossingService {
 
+    final Logger log = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     private LineCrossingRepository linecrossingRepository;
 
@@ -31,6 +35,8 @@ public class LineCrossingService {
 
     @Transactional
     public void addEntry(SaeDetectionEntity det, Direction direction, AnalyticsJobEntity jobEntity) {
+        log.info("{} has crossed line (name={}) in direction {}", det.getObjectId(), jobEntity.getName(), direction);
+        
         MetadataEntity metadata = metadataRepository.findFirstByName(jobEntity.getName());
 
         if (metadata == null) {
