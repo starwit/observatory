@@ -13,6 +13,7 @@ import java.util.Random;
 @EnableScheduling
 @SpringBootApplication(scanBasePackages = "de.starwit")
 public class Application {
+
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
