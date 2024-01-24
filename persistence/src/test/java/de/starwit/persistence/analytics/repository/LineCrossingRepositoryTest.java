@@ -1,7 +1,6 @@
 package de.starwit.persistence.analytics.repository;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 

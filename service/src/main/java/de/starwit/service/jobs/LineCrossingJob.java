@@ -55,8 +55,7 @@ public class LineCrossingJob extends AbstractJob<SaeDetectionEntity> {
             trimTrajectory(det);
             if (isTrajectoryValid(det)) {
                 if (objectHasCrossed(det)) {
-                    log.info("{} has crossed line in direction {}", det.getObjectId(), getCrossingDirection(det));
-                    lineCrossingService.addEntry(det, 1L, getCrossingDirection(det), jobData.getConfig());
+                    lineCrossingService.addEntry(det, getCrossingDirection(det), jobData.getConfig());
                     activeStore.clear(det);
                 } else {
                     activeStore.removeFirst(det);

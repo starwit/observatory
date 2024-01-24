@@ -27,15 +27,16 @@ public class AreaOccupancyRepository {
     }
 
     @Transactional("analyticsTransactionManager")
-    public void insert(SaeCountEntity entity) {
+    public void insert(AreaOccupancyEntity entity) {
 
-        String insertString = "insert into areaoccupancy(occupancytime, parkingareaid, count, objectclassid) values(:occupancytime,:parkingareaid, :count, :classId)";
+        String insertString = "insert into areaoccupancy(occupancytime, parkingareaid, count, objectclassid, metadataid) values(:occupancytime,:parkingareaid, :count, :classId, :metadataId)";
 
         getEntityManager().createNativeQuery(insertString)
-                .setParameter("occupancytime", ZonedDateTime.ofInstant(entity.getCaptureTs(), ZoneId.systemDefault()))
+                .setParameter("occupancytime", entity.getOccupancyTime())
                 .setParameter("parkingareaid", 1)
                 .setParameter("count", entity.getCount())
                 .setParameter("classId", entity.getObjectClassId())
+                .setParameter("metadataId", entity.getMetadataId())
                 .executeUpdate();
     }
 
