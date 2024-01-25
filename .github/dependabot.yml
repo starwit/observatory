@@ -7,16 +7,16 @@ version: 2
 updates:
   - package-ecosystem: "maven" # See documentation for possible values
     directory: "/" # Location of package manifests
-    target-branch: versionupgrade
+    target-branch: main
     schedule:
-      interval: "weekly"
+      interval: "daily"
     groups:
       maven-deps:
         patterns:
           - "*"
   - package-ecosystem: "docker"
     directory: "/"
-    target-branch: versionupgrade
+    target-branch: main
     schedule:
       interval: "weekly"
     groups:
