@@ -39,7 +39,7 @@ public class AreaOccupancyService {
     public void addEntry(AnalyticsJobEntity jobEntity, ZonedDateTime occupancyTime, Long count) {
         log.info("Detected {} objects of class {} in area (name={})", count, jobEntity.getDetectionClassId(), jobEntity.getName());
         
-        MetadataEntity metadata = metadataRepository.findFirstByName(jobEntity.getName());
+        MetadataEntity metadata = metadataRepository.findFirstByNameAndClassification(jobEntity.getName(), jobEntity.getClassification());
 
         if (metadata == null) {
             metadata = new MetadataEntity();
