@@ -17,8 +17,7 @@ services:
     volumes:
       - db:/var/lib/postgresql/data
     ports:
-      - "5433:5432"
-    restart: unless-stopped
+      - "5434:5432"
   
   analytics:
     image: postgres:latest
@@ -35,8 +34,7 @@ services:
     volumes:
       - analytics-db:/var/lib/postgresql/data
     ports:
-      - "5434:5432"
-    restart: unless-stopped
+      - "5435:5432"
 
   sae:
     image: timescale/timescaledb-ha:pg14-latest
@@ -53,8 +51,7 @@ services:
       - ./data/init.sql:/docker-entrypoint-initdb.d/init.sql
       - sae-db:/home/postgres/pgdata/data
     ports:
-      - "5435:5432"
-    restart: unless-stopped
+      - "5436:5432"
 
   pgadmin:
     image: dpage/pgadmin4
@@ -66,11 +63,9 @@ services:
        - pgadmin:/var/lib/pgadmin
     ports:
       - "5050:80"
-    restart: unless-stopped
 
   db-keycloak:
     image: postgres:latest
-    restart: on-failure
     environment:
       POSTGRES_DB: 'keycloak'
       POSTGRES_USER: 'keycloak'
@@ -91,7 +86,6 @@ services:
     depends_on:
       db-keycloak:
         condition: service_healthy
-    restart: on-failure
     environment:
       KC_DB_URL: jdbc:postgresql://db-keycloak:5432/keycloak
       KC_DB: postgres

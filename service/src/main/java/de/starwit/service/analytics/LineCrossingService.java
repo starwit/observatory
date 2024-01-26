@@ -37,11 +37,12 @@ public class LineCrossingService {
     public void addEntry(SaeDetectionEntity det, Direction direction, AnalyticsJobEntity jobEntity) {
         log.info("{} has crossed line (name={}) in direction {}", det.getObjectId(), jobEntity.getName(), direction);
         
-        MetadataEntity metadata = metadataRepository.findFirstByName(jobEntity.getName());
+        MetadataEntity metadata = metadataRepository.findFirstByNameAndClassification(jobEntity.getName(), jobEntity.getClassification());
 
         if (metadata == null) {
             metadata = new MetadataEntity();
             metadata.setName(jobEntity.getName());
+            metadata.setClassification(jobEntity.getClassification());
             metadata = metadataRepository.save(metadata);
         }
         

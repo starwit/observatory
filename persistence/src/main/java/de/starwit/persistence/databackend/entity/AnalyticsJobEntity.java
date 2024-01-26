@@ -35,6 +35,9 @@ public class AnalyticsJobEntity extends AbstractEntity<Long> {
     @Column(name = "enabled")
     private Boolean enabled;
 
+    @Column(name = "classification")
+    private String classification;
+
     @OneToMany(mappedBy = "analyticsJob", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<PointEntity> geometryPoints;
 
@@ -92,6 +95,14 @@ public class AnalyticsJobEntity extends AbstractEntity<Long> {
 
     public void setGeometryPoints(List<PointEntity> geometryPoints) {
         this.geometryPoints = geometryPoints;
+    }
+
+    public String getClassification() {
+        return classification;
+    }
+
+    public void setClassification(String classification) {
+        this.classification = classification;
     }
 
 }
