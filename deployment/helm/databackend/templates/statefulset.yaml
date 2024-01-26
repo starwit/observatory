@@ -78,8 +78,8 @@ spec:
               value: {{ .Values.databases.sae.username }}
             - name: SAE_DATASOURCE_PASSWORD
               value: {{ .Values.databases.sae.password }}
-            - name: SAE_TABLENAME
-              value: {{ .Values.databases.sae.table_name }}
+            - name: SAE_DETECTION_TABLENAME
+              value: {{ .Values.databases.sae.detectionTableName }}
 
             - name: ANALYTICS_DATASOURCE_URL
               value: jdbc:postgresql://{{ $analyticsDbUrl }}

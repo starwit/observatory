@@ -30,7 +30,7 @@ databases:
     database: sae
     username: sae
     password: sae
-    table_name: detection
+    detectionTableName: detection
   analytics:
     host: localhost
     port: 5432

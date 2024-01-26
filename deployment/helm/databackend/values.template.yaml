@@ -13,7 +13,7 @@ databases:
     database: sae
     username: sae
     password: sae
-    table_name: detection
+    detectionTableName: detection
   analytics:
     url: local.starwit.de:31222
     database: analytics
