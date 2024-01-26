@@ -17,8 +17,7 @@ services:
     volumes:
       - db:/var/lib/postgresql/data
     ports:
-      - "5433:5432"
-    restart: unless-stopped
+      - "5434:5432"
 
   analytics:
     image: postgres:latest
@@ -35,8 +34,7 @@ services:
     volumes:
       - analytics-db:/var/lib/postgresql/data
     ports:
-      - "5434:5432"
-    restart: unless-stopped
+      - "5435:5432"
   
   pgadmin:
     image: dpage/pgadmin4
@@ -49,7 +47,6 @@ services:
        - ./pgadmin/postgreslocal-servers-config.json:/pgadmin4/servers.json
     ports:
       - "5050:80"
-    restart: unless-stopped
 
 volumes:
   db:

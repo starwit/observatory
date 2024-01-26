@@ -42,6 +42,7 @@ public class LineCrossingService {
         if (metadata == null) {
             metadata = new MetadataEntity();
             metadata.setName(jobEntity.getName());
+            metadata.setClassification(jobEntity.getClassification());
             metadata = metadataRepository.save(metadata);
         }
         
