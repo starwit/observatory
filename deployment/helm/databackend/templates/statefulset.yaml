@@ -78,8 +78,8 @@ spec:
               value: {{ .Values.databases.sae.username }}
             - name: SAE_DATASOURCE_PASSWORD
               value: {{ .Values.databases.sae.password }}
-            - name: SAE_TABLENAME
-              value: {{ .Values.databases.sae.table_name }}
+            - name: SAE_DETECTION_TABLENAME
+              value: {{ .Values.databases.sae.detectionTableName }}
 
             - name: ANALYTICS_DATASOURCE_URL
               value: jdbc:postgresql://{{ $analyticsDbUrl }}
@@ -90,6 +90,9 @@ spec:
 
             - name: SERVER_SERVLET_CONTEXT_PATH
               value: {{ .Values.app.context_path | quote }}
+            {{- with .Values.extraEnv }}
+            {{- tpl . $ | nindent 12 }}
+            {{- end }}
           ports:
             - name: http
               containerPort: 8081
