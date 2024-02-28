@@ -23,6 +23,12 @@ public class PointEntity extends AbstractEntity<Long> {
     @Column(name = "order_idx")
     private int orderIdx;
 
+    @Column(name = "latitude")
+    private BigDecimal latitude;
+
+    @Column(name = "longitude")
+    private BigDecimal longitude;
+
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "analytics_job_id")
@@ -50,6 +56,22 @@ public class PointEntity extends AbstractEntity<Long> {
 
     public void setOrderIdx(int orderIdx) {
         this.orderIdx = orderIdx;
+    }
+
+    public BigDecimal getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
+    }
+
+    public BigDecimal getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
     }
 
     public AnalyticsJobEntity getAnalyticsJob() {
