@@ -9,12 +9,16 @@
 		{
 			"x": 0.1,
 			"y": 0.1,
-			"orderIdx": 0
+			"orderIdx": 0,
+			"latitude": 52.1,
+			"longitude": 10.2
 		},
 		{
 			"x": 0.9,
 			"y": 0.9,
-			"orderIdx": 1
+			"orderIdx": 1,
+			"latitude": 52.2,
+			"longitude": 10.1
 		}
 	]
 }
