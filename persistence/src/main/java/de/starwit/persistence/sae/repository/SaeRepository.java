@@ -1,7 +1,6 @@
 package de.starwit.persistence.sae.repository;
 
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;

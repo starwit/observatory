@@ -3,10 +3,7 @@ package de.starwit.service.jobs;
 import java.awt.geom.Point2D;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.Arrays;
 
-import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
-import de.starwit.persistence.databackend.entity.JobType;
 import de.starwit.persistence.databackend.entity.PointEntity;
 import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 
