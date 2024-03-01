@@ -78,6 +78,7 @@ public class AreaOccupancyJobTest {
             Helper.createPoint(0, 100)
         ));
         entity.setType(JobType.AREA_OCCUPANCY);
+        entity.setGeoReferenced(false);
 
         return entity;
     }
