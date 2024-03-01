@@ -38,6 +38,9 @@ public class AnalyticsJobEntity extends AbstractEntity<Long> {
     @Column(name = "classification")
     private String classification;
 
+    @Column(name = "geo_referenced")
+    private Boolean geoReferenced;
+
     @OneToMany(mappedBy = "analyticsJob", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<PointEntity> geometryPoints;
 
@@ -105,4 +108,11 @@ public class AnalyticsJobEntity extends AbstractEntity<Long> {
         this.classification = classification;
     }
 
+    public Boolean getGeoReferenced() {
+        return geoReferenced;
+    }
+
+    public void setGeoReferenced(Boolean geoReferenced) {
+        this.geoReferenced = geoReferenced;
+    }
 }

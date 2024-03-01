@@ -5,6 +5,8 @@
 	"detectionClassId": 2,
 	"type": "LINE_CROSSING",
 	"enabled": false,
+	"geoReferenced": true,
+	"classification": "Lichtschranke",
 	"geometryPoints": [
 		{
 			"x": 0.1,
