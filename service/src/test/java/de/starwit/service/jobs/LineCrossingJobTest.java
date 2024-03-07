@@ -66,6 +66,7 @@ public class LineCrossingJobTest {
             Helper.createPoint(100, 100)
         ));
         entity.setType(JobType.LINE_CROSSING);
+        entity.setGeoReferenced(false);
 
         return entity;
     }

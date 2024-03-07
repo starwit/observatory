@@ -29,6 +29,7 @@ public class LineCrossingJob extends AbstractJob<SaeDetectionEntity> {
     private Map<Long, TrajectoryStore> trajectoryStores = new HashMap<>();
     private TrajectoryStore activeStore;
     private Line2D activeCountingLine;
+    private Boolean isGeoReferenced;
 
     @Autowired
     public LineCrossingJob(SaeDao saeDao, LineCrossingService lineCrossingService) {
@@ -45,8 +46,9 @@ public class LineCrossingJob extends AbstractJob<SaeDetectionEntity> {
 
     @Override
     void process(JobData<SaeDetectionEntity> jobData) {
-        activeCountingLine = lineFrom(jobData.getConfig());
+        activeCountingLine = GeometryConverter.lineFrom(jobData.getConfig());
         activeStore = getStore(jobData.getConfig());
+        isGeoReferenced = jobData.getConfig().getGeoReferenced();
         log.debug("store size: {}", activeStore.size());
 
         SaeDetectionEntity det;
@@ -96,31 +98,21 @@ public class LineCrossingJob extends AbstractJob<SaeDetectionEntity> {
     }
 
     private boolean objectHasCrossed(SaeDetectionEntity det) {
-        Point2D firstPoint = centerFrom(activeStore.getFirst(det));
-        Point2D lastPoint = centerFrom(activeStore.getLast(det));
+        Point2D firstPoint = GeometryConverter.toCenterPoint(activeStore.getFirst(det), isGeoReferenced);
+        Point2D lastPoint = GeometryConverter.toCenterPoint(activeStore.getLast(det), isGeoReferenced);
         Line2D trajectory = new Line2D.Double(firstPoint, lastPoint);
         return trajectory.intersectsLine(activeCountingLine);
     }
 
 
     private Direction getCrossingDirection(SaeDetectionEntity det) {
-        Point2D trajectoryEnd = centerFrom(activeStore.getLast(det));
+        Point2D trajectoryEnd = GeometryConverter.toCenterPoint(activeStore.getLast(det), isGeoReferenced);
         int ccw = activeCountingLine.relativeCCW(trajectoryEnd);
         if (ccw == -1) {
             return Direction.out;
         } else {
             return Direction.in;
         }
-    }
-
-    private Point2D centerFrom(SaeDetectionEntity det) {
-        return new Point2D.Double(det.getMinX() + ((det.getMaxX() - det.getMinX()) / 2), det.getMinY() + ((det.getMaxY() - det.getMinY()) / 2));
-    }
-
-    private Line2D lineFrom(AnalyticsJobEntity jobConfig) {
-        Point2D pt1 = new Point2D.Double(jobConfig.getGeometryPoints().get(0).getX().doubleValue(), jobConfig.getGeometryPoints().get(0).getY().doubleValue());
-        Point2D pt2 = new Point2D.Double(jobConfig.getGeometryPoints().get(1).getX().doubleValue(), jobConfig.getGeometryPoints().get(1).getY().doubleValue());
-        return new Line2D.Double(pt1, pt2);
     }
 
 }

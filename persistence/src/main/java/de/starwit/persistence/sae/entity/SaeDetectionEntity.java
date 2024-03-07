@@ -43,6 +43,12 @@ public class SaeDetectionEntity implements AbstractCaptureEntity {
     @Column(name = "max_y")
     private Double maxY;
 
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
+    
     public Instant getCaptureTs() {
         return captureTs;
     }
@@ -123,6 +129,22 @@ public class SaeDetectionEntity implements AbstractCaptureEntity {
         this.maxY = maxY;
     }
 
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
     public static SaeDetectionEntity from(ResultSet rs) throws SQLException {
         SaeDetectionEntity dto = new SaeDetectionEntity();
         dto.setDetectionId(rs.getLong("DETECTION_ID"));
@@ -135,6 +157,8 @@ public class SaeDetectionEntity implements AbstractCaptureEntity {
         dto.setMinY(rs.getDouble("MIN_Y"));
         dto.setMaxX(rs.getDouble("MAX_X"));
         dto.setMaxY(rs.getDouble("MAX_Y"));
+        dto.setLatitude(rs.getDouble("LATITUDE"));
+        dto.setLongitude(rs.getDouble("LONGITUDE"));
         return dto;
     }
 
