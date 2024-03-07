@@ -59,6 +59,10 @@ public class AnalyticsJobService {
         existingJob.setParkingAreaId(jobUpdate.getParkingAreaId());
         existingJob.setType(jobUpdate.getType());
         existingJob.setEnabled(jobUpdate.getEnabled());
+        existingJob.setCameraId(jobUpdate.getCameraId());
+        existingJob.setClassification(jobUpdate.getClassification());
+        existingJob.setDetectionClassId(jobUpdate.getDetectionClassId());
+        existingJob.setGeoReferenced(jobUpdate.getGeoReferenced());
         existingJob.setGeometryPoints(jobUpdate.getGeometryPoints());
 
         AnalyticsJobEntity updatedJob = analyticsJobRepository.save(existingJob);

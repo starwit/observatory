@@ -81,7 +81,10 @@ public class AnalyticsJobControllerAcceptanceTest extends AbstractControllerAcce
         AnalyticsJobEntity retrievedEntity = mapper.readValue(response.getContentAsString(), AnalyticsJobEntity.class);
         assertThat(retrievedEntity.getId()).isEqualTo(responseEntity.getId());
         assertThat(retrievedEntity.getName()).isEqualTo(entity.getName());
+        assertThat(retrievedEntity.getGeoReferenced()).isTrue();
         assertThat(retrievedEntity.getGeometryPoints().get(0).getX().doubleValue()).isEqualTo(0.1);
+        assertThat(retrievedEntity.getGeometryPoints().get(0).getLatitude().doubleValue()).isEqualTo(52.1);
+        assertThat(retrievedEntity.getGeometryPoints().get(0).getLongitude().doubleValue()).isEqualTo(10.2);
         assertThat(retrievedEntity.getGeometryPoints().get(1).getX().doubleValue()).isEqualTo(0.9);
     }
 
