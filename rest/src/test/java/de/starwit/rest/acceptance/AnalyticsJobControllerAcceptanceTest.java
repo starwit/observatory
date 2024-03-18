@@ -147,4 +147,25 @@ public class AnalyticsJobControllerAcceptanceTest extends AbstractControllerAcce
         assertThat(entities.length).isEqualTo(0);
     }
 
+    @Test
+    public void canDeleteByParkingAreaId() throws Exception {
+        // given
+        AnalyticsJobEntity entity = readFromFile(data + "job1.json");
+        entity.setParkingAreaId(1L);
+        MockHttpServletResponse response1 = create(entity);
+        entity.setParkingAreaId(2L);
+        MockHttpServletResponse response2 = create(entity);
+    
+        // when
+        MockHttpServletResponse deleteResponse = deleteByParkingAreaId(1L);
+    
+        assertThat(deleteResponse.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    
+        MockHttpServletResponse checkResponse = retrieveAll();
+        assertThat(checkResponse.getStatus()).isEqualTo(HttpStatus.OK.value());
+        AnalyticsJobEntity[] entities = mapper.readValue(checkResponse.getContentAsString(), AnalyticsJobEntity[].class);
+        assertThat(entities.length).isEqualTo(1);
+        assertThat(entities[0].getParkingAreaId()).isEqualTo(2);
+    }
+
 }

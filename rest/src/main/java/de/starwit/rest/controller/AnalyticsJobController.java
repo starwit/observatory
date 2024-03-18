@@ -72,4 +72,10 @@ public class AnalyticsJobController {
         analyticsJobService.deleteAll();
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @DeleteMapping("/by-parking-area/{parkingAreaId}")
+    public ResponseEntity<String> clearJobsByParkingAreaId(@PathVariable Long parkingAreaId) {
+        analyticsJobService.deleteByParkingAreaId(parkingAreaId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
