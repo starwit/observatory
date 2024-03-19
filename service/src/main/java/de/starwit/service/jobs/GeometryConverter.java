@@ -57,7 +57,9 @@ public class GeometryConverter {
         double centerX, centerY;
         if (isGeo) {
             centerX = detection.getLongitude();
-            centerY = detection.getLatitude();
+            // Geo coordinate system has y-axis flipped upside down (compared to image coordinate system)
+            // therefore we need to reverse the latitude sign to make everything consistent.
+            centerY = -detection.getLatitude();
         } else {
             centerX = (detection.getMaxX() + detection.getMinX()) / 2;
             centerY = (detection.getMaxY() + detection.getMinY()) / 2;
@@ -67,7 +69,8 @@ public class GeometryConverter {
 
     public static Point2D fromPoint(PointEntity entity, boolean isGeo) {
         if (isGeo) {
-            return new Point2D.Double(entity.getLongitude().doubleValue(), entity.getLatitude().doubleValue());
+            // See comment in toCenterPoint()
+            return new Point2D.Double(entity.getLongitude().doubleValue(), -entity.getLatitude().doubleValue());
         } else {
             return new Point2D.Double(entity.getX().doubleValue(), entity.getY().doubleValue());
         }
