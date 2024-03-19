@@ -12,8 +12,10 @@ import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
 import de.starwit.persistence.databackend.entity.PointEntity;
 import de.starwit.persistence.databackend.repository.AnalyticsJobRepository;
 import de.starwit.persistence.databackend.repository.PointRepository;
+import jakarta.transaction.Transactional;
 
 @Service
+@Transactional
 public class AnalyticsJobService {
 
     Logger log = LoggerFactory.getLogger(this.getClass());
@@ -75,6 +77,10 @@ public class AnalyticsJobService {
 
     public void deleteById(Long id) {
         analyticsJobRepository.deleteById(id);
+    }
+
+    public void deleteByParkingAreaId(Long parkingAreaId) {
+        analyticsJobRepository.deleteByParkingAreaId(parkingAreaId);
     }
 
     public void deleteAll() {

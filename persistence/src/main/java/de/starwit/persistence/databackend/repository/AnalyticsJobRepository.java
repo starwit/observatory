@@ -14,5 +14,7 @@ import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
 public interface AnalyticsJobRepository extends JpaRepository<AnalyticsJobEntity, Long> {
 
     List<AnalyticsJobEntity> findByEnabledTrue();
+    
+    void deleteByParkingAreaId(long parkingAreaId);
 
 }
