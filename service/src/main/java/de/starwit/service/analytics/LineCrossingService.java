@@ -13,15 +13,9 @@ import de.starwit.persistence.analytics.entity.Direction;
 import de.starwit.persistence.analytics.entity.LineCrossingEntity;
 import de.starwit.persistence.analytics.entity.MetadataEntity;
 import de.starwit.persistence.analytics.repository.LineCrossingRepository;
-import de.starwit.persistence.analytics.repository.MetadataRepository;
 import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
 import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 
-/**
- * 
- * LineCrossing Service class
- *
- */
 @Service
 public class LineCrossingService {
 
@@ -31,27 +25,20 @@ public class LineCrossingService {
     private LineCrossingRepository linecrossingRepository;
 
     @Autowired
-    private MetadataRepository metadataRepository;
+    private MetadataService metadataService;
 
     @Transactional
     public void addEntry(SaeDetectionEntity det, Direction direction, AnalyticsJobEntity jobEntity) {
         log.info("{} has crossed line (name={}) in direction {}", det.getObjectId(), jobEntity.getName(), direction);
         
-        MetadataEntity metadata = metadataRepository.findFirstByNameAndClassification(jobEntity.getName(), jobEntity.getClassification());
-
-        if (metadata == null) {
-            metadata = new MetadataEntity();
-            metadata.setName(jobEntity.getName());
-            metadata.setClassification(jobEntity.getClassification());
-            metadata = metadataRepository.save(metadata);
-        }
+        MetadataEntity metadata = metadataService.getMetadataForJob(jobEntity);
         
         LineCrossingEntity entity = new LineCrossingEntity();
         entity.setCrossingTime(ZonedDateTime.ofInstant(det.getCaptureTs(), ZoneId.systemDefault()));
         entity.setDirection(direction);
-        entity.setObjectClassId(det.getClassId());
+        entity.setObjectClassId(det.getClassId().longValue());
         entity.setObjectId(det.getObjectId());
-        entity.setParkingAreaId(jobEntity.getParkingAreaId());
+        entity.setObservationAreaId(jobEntity.getParkingAreaId());
         entity.setMetadataId(metadata.getId());
         linecrossingRepository.insert(entity);
     }

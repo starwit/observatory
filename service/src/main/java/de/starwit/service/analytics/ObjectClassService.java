@@ -7,11 +7,6 @@ import de.starwit.persistence.analytics.entity.ObjectClassEntity;
 import de.starwit.persistence.analytics.repository.ObjectClassRepository;
 import de.starwit.service.impl.ServiceInterface;
 
-/**
- * 
- * ObjectClass Service class
- *
- */
 @Service
 public class ObjectClassService implements ServiceInterface<ObjectClassEntity, ObjectClassRepository> {
 

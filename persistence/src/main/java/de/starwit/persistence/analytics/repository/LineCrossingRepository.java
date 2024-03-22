@@ -22,12 +22,12 @@ public class LineCrossingRepository {
 
     @Transactional("analyticsTransactionManager")
     public void insert(LineCrossingEntity entity) {
-        String insertString = "insert into linecrossing(crossingtime, parkingareaid, objectid, direction, objectclassid, metadataid) values(:crossingtime, :parkingareaid, :objectid, :direction, :classId, :metadataId)";
+        String insertString = "insert into linecrossing(crossing_time, parking_area_id, object_id, direction, object_class_id, metadata_id) values(:crossingTime, :parkingAreaId, :objectId, :direction, :classId, :metadataId)";
 
         entityManager.createNativeQuery(insertString)
-                .setParameter("crossingtime", entity.getCrossingTime())
-                .setParameter("parkingareaid", entity.getParkingAreaId())
-                .setParameter("objectid", entity.getObjectId())
+                .setParameter("crossingTime", entity.getCrossingTime())
+                .setParameter("parkingAreaId", entity.getObservationAreaId())
+                .setParameter("objectId", entity.getObjectId())
                 .setParameter("direction", entity.getDirection().toString())
                 .setParameter("classId", entity.getObjectClassId())
                 .setParameter("metadataId", entity.getMetadataId())
@@ -36,7 +36,7 @@ public class LineCrossingRepository {
 
     // TODO
     public List<LineCrossingEntity> findFirst100() {
-        String queryString = "select * from linecrossing order by crossingtime desc limit 100";
+        String queryString = "select * from linecrossing order by crossing_time desc limit 100";
         return getEntityManager().createNativeQuery(queryString).getResultList();
     }
 
