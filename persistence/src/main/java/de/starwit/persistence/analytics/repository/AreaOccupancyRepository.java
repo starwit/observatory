@@ -26,11 +26,11 @@ public class AreaOccupancyRepository {
     @Transactional("analyticsTransactionManager")
     public void insert(AreaOccupancyEntity entity) {
 
-        String insertString = "insert into areaoccupancy(occupancy_time, parking_area_id, count, object_class_id, metadata_id) values(:occupancyTime,:parkingAreaId, :count, :classId, :metadataId)";
+        String insertString = "insert into areaoccupancy(occupancy_time, observation_area_id, count, object_class_id, metadata_id) values(:occupancyTime,:observationAreaId, :count, :classId, :metadataId)";
 
         getEntityManager().createNativeQuery(insertString)
                 .setParameter("occupancyTime", entity.getOccupancyTime())
-                .setParameter("parkingAreaId", 1)
+                .setParameter("observationAreaId", 1)
                 .setParameter("count", entity.getCount())
                 .setParameter("classId", entity.getObjectClassId())
                 .setParameter("metadataId", entity.getMetadataId())

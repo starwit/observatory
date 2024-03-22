@@ -15,6 +15,6 @@ public interface AnalyticsJobRepository extends JpaRepository<AnalyticsJobEntity
 
     List<AnalyticsJobEntity> findByEnabledTrue();
     
-    void deleteByParkingAreaId(long parkingAreaId);
+    void deleteByObservationAreaId(long observationAreaId);
 
 }

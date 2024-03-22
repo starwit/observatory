@@ -38,7 +38,7 @@ public class LineCrossingService {
         entity.setDirection(direction);
         entity.setObjectClassId(det.getClassId().longValue());
         entity.setObjectId(det.getObjectId());
-        entity.setObservationAreaId(jobEntity.getParkingAreaId());
+        entity.setObservationAreaId(jobEntity.getObservationAreaId());
         entity.setMetadataId(metadata.getId());
         linecrossingRepository.insert(entity);
     }

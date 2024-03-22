@@ -1,6 +1,6 @@
 {
 	"name": "job1_update",
-	"parkingAreaId": 1,
+	"observationAreaId": 1,
 	"cameraId": "RangelineSMedicalDr",
 	"detectionClassId": 2,
 	"type": "LINE_CROSSING",

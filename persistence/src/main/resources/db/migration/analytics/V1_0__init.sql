@@ -1,6 +1,6 @@
 CREATE TABLE "linecrossing"
 (
-    "parking_area_id" BIGINT NOT NULL ,
+    "observation_area_id" BIGINT NOT NULL ,
     "object_id" VARCHAR(255),
     "direction" VARCHAR(255),
     "crossing_time" TIMESTAMP WITH TIME ZONE,
@@ -10,7 +10,7 @@ CREATE TABLE "linecrossing"
 
 CREATE TABLE "areaoccupancy"
 (
-    "parking_area_id" BIGINT NOT NULL ,
+    "observation_area_id" BIGINT NOT NULL ,
     "occupancy_time" TIMESTAMP WITH TIME ZONE NOT NULL ,
     "count" INTEGER NOT NULL ,
     "object_class_id" BIGINT,

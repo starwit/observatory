@@ -3,7 +3,7 @@ CREATE SEQUENCE IF NOT EXISTS "analytics_job_id_seq";
 CREATE TABLE "analytics_job"
 (
     "name" VARCHAR(255),
-    "parkingareaid" BIGINT NOT NULL,
+    "observation_areaid" BIGINT NOT NULL,
     "detectionclassid" integer,
     "cameraid" varchar(255),
     "enabled" BOOLEAN,

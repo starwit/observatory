@@ -2,7 +2,7 @@ INSERT INTO "analytics_job" (
     "enabled",
     "type",
     "name",
-    "parkingareaid",
+    "observation_areaid",
     "detectionclassid",
     "cameraid"
   )
@@ -19,7 +19,7 @@ INSERT INTO "analytics_job" (
     "enabled",
     "type",
     "name",
-    "parkingareaid",
+    "observation_areaid",
     "detectionclassid",
     "cameraid"
   )

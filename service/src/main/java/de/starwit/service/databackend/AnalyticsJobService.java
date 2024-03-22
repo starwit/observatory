@@ -58,7 +58,7 @@ public class AnalyticsJobService {
         List<PointEntity> oldPoints = existingJob.getGeometryPoints();
 
         existingJob.setName(jobUpdate.getName());
-        existingJob.setParkingAreaId(jobUpdate.getParkingAreaId());
+        existingJob.setObservationAreaId(jobUpdate.getObservationAreaId());
         existingJob.setType(jobUpdate.getType());
         existingJob.setEnabled(jobUpdate.getEnabled());
         existingJob.setCameraId(jobUpdate.getCameraId());
@@ -79,8 +79,8 @@ public class AnalyticsJobService {
         analyticsJobRepository.deleteById(id);
     }
 
-    public void deleteByParkingAreaId(Long parkingAreaId) {
-        analyticsJobRepository.deleteByParkingAreaId(parkingAreaId);
+    public void deleteByObservationAreaId(Long observationAreaId) {
+        analyticsJobRepository.deleteByObservationAreaId(observationAreaId);
     }
 
     public void deleteAll() {
