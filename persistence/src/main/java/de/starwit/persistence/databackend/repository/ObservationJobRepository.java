@@ -5,15 +5,15 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
+import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 
 /**
  * ObjectClass Repository class
  */
 @Repository
-public interface AnalyticsJobRepository extends JpaRepository<AnalyticsJobEntity, Long> {
+public interface ObservationJobRepository extends JpaRepository<ObservationJobEntity, Long> {
 
-    List<AnalyticsJobEntity> findByEnabledTrue();
+    List<ObservationJobEntity> findByEnabledTrue();
     
     void deleteByObservationAreaId(long observationAreaId);
 

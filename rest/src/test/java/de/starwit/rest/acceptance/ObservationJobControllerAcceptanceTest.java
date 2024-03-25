@@ -12,22 +12,22 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
+import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 
 @SpringBootTest
 @EnableAutoConfiguration
 @AutoConfigureMockMvc(addFilters = false)
-public class AnalyticsJobControllerAcceptanceTest extends AbstractControllerAcceptanceTest<AnalyticsJobEntity> {
+public class ObservationJobControllerAcceptanceTest extends AbstractControllerAcceptanceTest<ObservationJobEntity> {
 
-    final static Logger LOG = LoggerFactory.getLogger(AnalyticsJobControllerAcceptanceTest.class);
-    private static final String data = "testdata/analytics-job/";
-    private static final String restpath = "/api/analytics-job";
+    final static Logger LOG = LoggerFactory.getLogger(ObservationJobControllerAcceptanceTest.class);
+    private static final String data = "testdata/observation-job/";
+    private static final String restpath = "/api/observation-job";
 
-    private JacksonTester<AnalyticsJobEntity> jsonTester;
+    private JacksonTester<ObservationJobEntity> jsonTester;
 
     @Override
-    public Class<AnalyticsJobEntity> getEntityClass() {
-        return AnalyticsJobEntity.class;
+    public Class<ObservationJobEntity> getEntityClass() {
+        return ObservationJobEntity.class;
     }
 
     @Override
@@ -36,28 +36,28 @@ public class AnalyticsJobControllerAcceptanceTest extends AbstractControllerAcce
     }
 
     @Override
-    public JacksonTester<AnalyticsJobEntity> getJsonTester() {
+    public JacksonTester<ObservationJobEntity> getJsonTester() {
         return jsonTester;
     }
 
     @Test
     public void canCreate() throws Exception {
         // given
-        AnalyticsJobEntity entity = readFromFile(data + "job1.json");
+        ObservationJobEntity entity = readFromFile(data + "job1.json");
 
         // when
         MockHttpServletResponse response = create(entity);
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
-        AnalyticsJobEntity entityresult = mapper.readValue(response.getContentAsString(), AnalyticsJobEntity.class);
+        ObservationJobEntity entityresult = mapper.readValue(response.getContentAsString(), ObservationJobEntity.class);
         assertThat(entityresult.getId()).isNotNull();
     }
 
     @Test
     public void createIsValidated() throws Exception {
         // given
-        AnalyticsJobEntity entity = readFromFile(data + "job1_with_id.json");
+        ObservationJobEntity entity = readFromFile(data + "job1_with_id.json");
 
         // when
         MockHttpServletResponse response = create(entity);
@@ -69,16 +69,16 @@ public class AnalyticsJobControllerAcceptanceTest extends AbstractControllerAcce
     @Test
     public void canRetrieveById() throws Exception {
         // given
-        AnalyticsJobEntity entity = readFromFile(data + "job1.json");
+        ObservationJobEntity entity = readFromFile(data + "job1.json");
         MockHttpServletResponse response = create(entity);
-        AnalyticsJobEntity responseEntity = mapper.readValue(response.getContentAsString(), AnalyticsJobEntity.class);
+        ObservationJobEntity responseEntity = mapper.readValue(response.getContentAsString(), ObservationJobEntity.class);
 
         // when
         response = retrieveById(responseEntity.getId());
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        AnalyticsJobEntity retrievedEntity = mapper.readValue(response.getContentAsString(), AnalyticsJobEntity.class);
+        ObservationJobEntity retrievedEntity = mapper.readValue(response.getContentAsString(), ObservationJobEntity.class);
         assertThat(retrievedEntity.getId()).isEqualTo(responseEntity.getId());
         assertThat(retrievedEntity.getName()).isEqualTo(entity.getName());
         assertThat(retrievedEntity.getGeoReferenced()).isTrue();
@@ -91,9 +91,9 @@ public class AnalyticsJobControllerAcceptanceTest extends AbstractControllerAcce
     @Test
     public void canUpdate() throws Exception {
         // given
-        AnalyticsJobEntity entity = readFromFile(data + "job1.json");
+        ObservationJobEntity entity = readFromFile(data + "job1.json");
         MockHttpServletResponse response = create(entity);
-        AnalyticsJobEntity responseEntity = mapper.readValue(response.getContentAsString(), AnalyticsJobEntity.class);
+        ObservationJobEntity responseEntity = mapper.readValue(response.getContentAsString(), ObservationJobEntity.class);
 
         // when
         response = update(responseEntity);
@@ -102,11 +102,11 @@ public class AnalyticsJobControllerAcceptanceTest extends AbstractControllerAcce
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        AnalyticsJobEntity retrievedEntity = mapper.readValue(response.getContentAsString(), AnalyticsJobEntity.class);
+        ObservationJobEntity retrievedEntity = mapper.readValue(response.getContentAsString(), ObservationJobEntity.class);
         assertThat(retrievedEntity.getId()).isEqualTo(responseEntity.getId());
         assertThat(retrievedEntity.getName()).isEqualTo(entity.getName());
 
-        AnalyticsJobEntity checkEntity = mapper.readValue(checkResponse.getContentAsString(), AnalyticsJobEntity.class);
+        ObservationJobEntity checkEntity = mapper.readValue(checkResponse.getContentAsString(), ObservationJobEntity.class);
         assertThat(checkEntity.getName()).isEqualTo(entity.getName());
         assertThat(checkEntity.getEnabled()).isEqualTo(entity.getEnabled());
         assertThat(checkEntity.getGeometryPoints().size()).isEqualTo(entity.getGeometryPoints().size());
@@ -116,9 +116,9 @@ public class AnalyticsJobControllerAcceptanceTest extends AbstractControllerAcce
     @Test
     public void canDelete() throws Exception {
         // given
-        AnalyticsJobEntity entity = readFromFile(data + "job1.json");
+        ObservationJobEntity entity = readFromFile(data + "job1.json");
         MockHttpServletResponse response = create(entity);
-        AnalyticsJobEntity responseEntity = mapper.readValue(response.getContentAsString(), AnalyticsJobEntity.class);
+        ObservationJobEntity responseEntity = mapper.readValue(response.getContentAsString(), ObservationJobEntity.class);
 
         // when
         response = delete(responseEntity.getId());
@@ -132,7 +132,7 @@ public class AnalyticsJobControllerAcceptanceTest extends AbstractControllerAcce
     @Test
     public void canDeleteAll() throws Exception {
         // given
-        AnalyticsJobEntity entity = readFromFile(data + "job1.json");
+        ObservationJobEntity entity = readFromFile(data + "job1.json");
         MockHttpServletResponse response1 = create(entity);
         MockHttpServletResponse response2 = create(entity);
     
@@ -143,14 +143,14 @@ public class AnalyticsJobControllerAcceptanceTest extends AbstractControllerAcce
     
         MockHttpServletResponse checkResponse = retrieveAll();
         assertThat(checkResponse.getStatus()).isEqualTo(HttpStatus.OK.value());
-        AnalyticsJobEntity[] entities = mapper.readValue(checkResponse.getContentAsString(), AnalyticsJobEntity[].class);
+        ObservationJobEntity[] entities = mapper.readValue(checkResponse.getContentAsString(), ObservationJobEntity[].class);
         assertThat(entities.length).isEqualTo(0);
     }
 
     @Test
     public void canDeleteByObservationAreaId() throws Exception {
         // given
-        AnalyticsJobEntity entity = readFromFile(data + "job1.json");
+        ObservationJobEntity entity = readFromFile(data + "job1.json");
         entity.setObservationAreaId(1L);
         MockHttpServletResponse response1 = create(entity);
         entity.setObservationAreaId(2L);
@@ -163,7 +163,7 @@ public class AnalyticsJobControllerAcceptanceTest extends AbstractControllerAcce
     
         MockHttpServletResponse checkResponse = retrieveAll();
         assertThat(checkResponse.getStatus()).isEqualTo(HttpStatus.OK.value());
-        AnalyticsJobEntity[] entities = mapper.readValue(checkResponse.getContentAsString(), AnalyticsJobEntity[].class);
+        ObservationJobEntity[] entities = mapper.readValue(checkResponse.getContentAsString(), ObservationJobEntity[].class);
         assertThat(entities.length).isEqualTo(1);
         assertThat(entities[0].getObservationAreaId()).isEqualTo(2);
     }

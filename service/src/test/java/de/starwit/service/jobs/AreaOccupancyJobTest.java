@@ -18,7 +18,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
+import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 import de.starwit.persistence.databackend.entity.JobType;
 import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 import de.starwit.persistence.sae.repository.SaeDao;
@@ -35,7 +35,7 @@ public class AreaOccupancyJobTest {
     
     @Test
     public void testAreaOccupancy() throws InterruptedException {
-        AnalyticsJobEntity jobEntity = prepareJobEntity();
+        ObservationJobEntity jobEntity = prepareJobEntity();
         JobData<SaeDetectionEntity> jobData = new JobData<>(jobEntity);
 
         List<SaeDetectionEntity> detections = Arrays.asList(
@@ -65,8 +65,8 @@ public class AreaOccupancyJobTest {
         assertThat(countCaptor.getValue()).isEqualTo(3);
     }
 
-    static AnalyticsJobEntity prepareJobEntity() {
-        AnalyticsJobEntity entity = new AnalyticsJobEntity();
+    static ObservationJobEntity prepareJobEntity() {
+        ObservationJobEntity entity = new ObservationJobEntity();
         entity.setCameraId("camId");
         entity.setDetectionClassId(1);
         

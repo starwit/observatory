@@ -6,15 +6,15 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import de.starwit.persistence.common.entity.AbstractCaptureEntity;
-import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
+import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 
 public class JobData<E extends AbstractCaptureEntity> {
 
     private Queue<E> inputData;
-    private final AnalyticsJobEntity config;
+    private final ObservationJobEntity config;
     private Instant lastRetrievedTime;
 
-    JobData(AnalyticsJobEntity config) {
+    JobData(ObservationJobEntity config) {
         this.inputData = new ArrayBlockingQueue<>(500);
         this.config = config;
         this.lastRetrievedTime = Instant.now();
@@ -24,7 +24,7 @@ public class JobData<E extends AbstractCaptureEntity> {
         return inputData;
     }
 
-    public AnalyticsJobEntity getConfig() {
+    public ObservationJobEntity getConfig() {
         return config;
     }
 

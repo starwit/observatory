@@ -13,23 +13,23 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "analytics_job")
-public class AnalyticsJobEntity extends AbstractEntity<Long> {
+@Table(name = "observation_job")
+public class ObservationJobEntity extends AbstractEntity<Long> {
 
     @Column(name = "name")
     private String name;
 
-    @Column(name = "observation_areaid")
+    @Column(name = "observation_area_id")
     private Long observationAreaId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
     private JobType type;
 
-    @Column(name = "cameraid")
+    @Column(name = "camera_id")
     private String cameraId;
 
-    @Column(name = "detectionclassid")
+    @Column(name = "detection_class_id")
     private Integer detectionClassId;
 
     @Column(name = "enabled")
@@ -41,7 +41,7 @@ public class AnalyticsJobEntity extends AbstractEntity<Long> {
     @Column(name = "geo_referenced")
     private Boolean geoReferenced;
 
-    @OneToMany(mappedBy = "analyticsJob", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "observationJob", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<PointEntity> geometryPoints;
 
     public String getName() {

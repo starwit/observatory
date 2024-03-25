@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import de.starwit.persistence.analytics.entity.CoordinateEntity;
 import de.starwit.persistence.analytics.repository.CoordinateRepository;
-import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
+import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 import de.starwit.persistence.databackend.entity.PointEntity;
 import de.starwit.service.impl.ServiceInterface;
 
@@ -23,7 +23,7 @@ public class CoordinateService implements ServiceInterface<CoordinateEntity, Coo
         return this.coordinateRepository;
     }
 
-    public List<CoordinateEntity> getCoordinatesForJob(AnalyticsJobEntity jobEntity) {
+    public List<CoordinateEntity> getCoordinatesForJob(ObservationJobEntity jobEntity) {
         List<CoordinateEntity> savedEntities = new ArrayList<>();
 
         for (PointEntity point : jobEntity.getGeometryPoints()) {

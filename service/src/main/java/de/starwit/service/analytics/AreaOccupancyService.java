@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import de.starwit.persistence.analytics.entity.AreaOccupancyEntity;
 import de.starwit.persistence.analytics.entity.MetadataEntity;
 import de.starwit.persistence.analytics.repository.AreaOccupancyRepository;
-import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
+import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 
 @Service
 public class AreaOccupancyService {
@@ -25,7 +25,7 @@ public class AreaOccupancyService {
     private MetadataService metadataService;
 
     @Transactional
-    public void addEntry(AnalyticsJobEntity jobEntity, ZonedDateTime occupancyTime, Long count) {
+    public void addEntry(ObservationJobEntity jobEntity, ZonedDateTime occupancyTime, Long count) {
         log.info("Detected {} objects of class {} in area (name={})", count, jobEntity.getDetectionClassId(), jobEntity.getName());
         
         MetadataEntity metadata = metadataService.getMetadataForJob(jobEntity);

@@ -18,7 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import de.starwit.persistence.analytics.entity.MetadataEntity;
 import de.starwit.persistence.analytics.repository.CoordinateRepository;
 import de.starwit.persistence.analytics.repository.MetadataRepository;
-import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
+import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 import de.starwit.persistence.databackend.entity.PointEntity;
 
 @EnableAutoConfiguration
@@ -42,7 +42,7 @@ public class MetadataServiceTest {
 
     @Test
     public void testGetMetadataForGeoJob() {
-        AnalyticsJobEntity jobEntity = createJobEntity(1, true);
+        ObservationJobEntity jobEntity = createJobEntity(1, true);
         MetadataEntity metadataEntity = metadataService.getMetadataForJob(jobEntity);
         assertThat(metadataEntity.getGeoReferenced()).isTrue();
         assertThat(metadataEntity.getGeometryCoordinates()).hasSize(2);
@@ -50,18 +50,18 @@ public class MetadataServiceTest {
 
     @Test
     public void testGetMetadataForNonGeoJob() {
-        AnalyticsJobEntity jobEntity = createJobEntity(1, false);
+        ObservationJobEntity jobEntity = createJobEntity(1, false);
         MetadataEntity metadataEntity = metadataService.getMetadataForJob(jobEntity);
         assertThat(metadataEntity.getGeoReferenced()).isFalse();
         assertThat(metadataEntity.getGeometryCoordinates()).hasSize(0);
     }
 
-    private static AnalyticsJobEntity createJobEntity(int numValue, boolean geo) {
+    private static ObservationJobEntity createJobEntity(int numValue, boolean geo) {
         List<PointEntity> points = Arrays.asList(
             createPoint(1),
             createPoint(2)
         );
-        AnalyticsJobEntity jobEntity = new AnalyticsJobEntity();
+        ObservationJobEntity jobEntity = new ObservationJobEntity();
         jobEntity.setName("job" + numValue);
         jobEntity.setGeoReferenced(geo);
         jobEntity.setGeometryPoints(points);

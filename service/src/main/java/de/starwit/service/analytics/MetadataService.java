@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import de.starwit.persistence.analytics.entity.CoordinateEntity;
 import de.starwit.persistence.analytics.entity.MetadataEntity;
 import de.starwit.persistence.analytics.repository.MetadataRepository;
-import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
+import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 import de.starwit.service.impl.ServiceInterface;
 
 @Service
@@ -26,7 +26,7 @@ public class MetadataService implements ServiceInterface<MetadataEntity, Metadat
         return metadataRepository;
     }
 
-    public MetadataEntity getMetadataForJob(AnalyticsJobEntity jobEntity) {
+    public MetadataEntity getMetadataForJob(ObservationJobEntity jobEntity) {
         
         MetadataEntity metadata = metadataRepository.findFirstByNameAndClassification(jobEntity.getName(), jobEntity.getClassification());
 

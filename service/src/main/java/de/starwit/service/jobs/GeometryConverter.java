@@ -5,7 +5,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 
-import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
+import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 import de.starwit.persistence.databackend.entity.PointEntity;
 import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 
@@ -22,11 +22,11 @@ import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 public class GeometryConverter {
 
     /**
-     * Derive a java.awt.geo.Area from the geometry in an AnalyticsJob.
+     * Derive a java.awt.geo.Area from the geometry in an ObservationJob.
      * Reads appropriate coordinates depending on whether geoReferenced is true.
      * @param jobConfig
      */
-    public static Area areaFrom(AnalyticsJobEntity jobConfig) {
+    public static Area areaFrom(ObservationJobEntity jobConfig) {
         Path2D.Double path = new Path2D.Double();
         Point2D firstPoint = fromPoint(jobConfig.getGeometryPoints().get(0), jobConfig.getGeoReferenced());
         path.moveTo(firstPoint.getX(), firstPoint.getY());
@@ -40,11 +40,11 @@ public class GeometryConverter {
     }
 
     /**
-     * Derive a java.awt.geom.Line2D from an AnalyticsJob.
+     * Derive a java.awt.geom.Line2D from an ObservationJob.
      * Reads appropriate coordinates depending on whether geoReferenced is true.
      * @param jobConfig
      */
-    public static Line2D lineFrom(AnalyticsJobEntity jobConfig) {
+    public static Line2D lineFrom(ObservationJobEntity jobConfig) {
         Point2D pt1, pt2;
         
         pt1 = fromPoint(jobConfig.getGeometryPoints().get(0), jobConfig.getGeoReferenced());
