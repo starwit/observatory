@@ -26,20 +26,25 @@ public class MetadataService implements ServiceInterface<MetadataEntity, Metadat
         return metadataRepository;
     }
 
-    public MetadataEntity getMetadataForJob(ObservationJobEntity jobEntity) {
+    public MetadataEntity saveMetadataForJob(ObservationJobEntity jobEntity) {
         
         MetadataEntity metadata = metadataRepository.findFirstByNameAndClassification(jobEntity.getName(), jobEntity.getClassification());
 
         if (metadata == null) {
-            List<CoordinateEntity> coordinates = new ArrayList<>();
-            if (jobEntity.getGeoReferenced()) {
-                coordinates = coordinateService.getCoordinatesForJob(jobEntity);
-            }
             metadata = new MetadataEntity();
             metadata.setName(jobEntity.getName());
             metadata.setClassification(jobEntity.getClassification());
             metadata.setGeoReferenced(jobEntity.getGeoReferenced());
+
+            List<CoordinateEntity> coordinates = new ArrayList<>();
+            if (jobEntity.getGeoReferenced()) {
+                coordinates = coordinateService.saveCoordinatesForJob(jobEntity);
+                for (CoordinateEntity c : coordinates) {
+                    c.setMetadata(metadata);
+                }
+            }
             metadata.setGeometryCoordinates(coordinates);
+            
             metadata = metadataRepository.saveAndFlush(metadata);
         }
 

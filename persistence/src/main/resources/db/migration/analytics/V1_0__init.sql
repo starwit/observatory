@@ -41,7 +41,8 @@ CREATE TABLE "coordinate"
 (
     "id" BIGINT NOT NULL DEFAULT nextval('coordinate_id_seq'),
     "latitude" DECIMAL(22,19),
-    "longitude" DECIMAL(22,19)
+    "longitude" DECIMAL(22,19),
+    "metadata_id" BIGINT
 );
 
 INSERT INTO "objectclass" ("name", "class_id") values('car', '2');

@@ -43,7 +43,7 @@ public class MetadataServiceTest {
     @Test
     public void testGetMetadataForGeoJob() {
         ObservationJobEntity jobEntity = createJobEntity(1, true);
-        MetadataEntity metadataEntity = metadataService.getMetadataForJob(jobEntity);
+        MetadataEntity metadataEntity = metadataService.saveMetadataForJob(jobEntity);
         assertThat(metadataEntity.getGeoReferenced()).isTrue();
         assertThat(metadataEntity.getGeometryCoordinates()).hasSize(2);
     }
@@ -51,7 +51,7 @@ public class MetadataServiceTest {
     @Test
     public void testGetMetadataForNonGeoJob() {
         ObservationJobEntity jobEntity = createJobEntity(1, false);
-        MetadataEntity metadataEntity = metadataService.getMetadataForJob(jobEntity);
+        MetadataEntity metadataEntity = metadataService.saveMetadataForJob(jobEntity);
         assertThat(metadataEntity.getGeoReferenced()).isFalse();
         assertThat(metadataEntity.getGeometryCoordinates()).hasSize(0);
     }

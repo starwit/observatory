@@ -24,11 +24,11 @@ public class AreaOccupancyService {
     @Autowired
     private MetadataService metadataService;
 
-    @Transactional
+    @Transactional("analyticsTransactionManager")
     public void addEntry(ObservationJobEntity jobEntity, ZonedDateTime occupancyTime, Long count) {
         log.info("Detected {} objects of class {} in area (name={})", count, jobEntity.getDetectionClassId(), jobEntity.getName());
         
-        MetadataEntity metadata = metadataService.getMetadataForJob(jobEntity);
+        MetadataEntity metadata = metadataService.saveMetadataForJob(jobEntity);
         
         AreaOccupancyEntity entity = new AreaOccupancyEntity();
         entity.setCount(Math.toIntExact(count));

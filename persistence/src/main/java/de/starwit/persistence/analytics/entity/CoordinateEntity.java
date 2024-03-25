@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import de.starwit.persistence.common.entity.AbstractEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -19,6 +20,7 @@ public class CoordinateEntity extends AbstractEntity<Long> {
     private BigDecimal longitude;
 
     @ManyToOne
+    @JoinColumn(name = "metadata_id")
     private MetadataEntity metadata;
 
     public BigDecimal getLatitude() {

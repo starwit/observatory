@@ -27,11 +27,11 @@ public class LineCrossingService {
     @Autowired
     private MetadataService metadataService;
 
-    @Transactional
+    @Transactional("analyticsTransactionManager")
     public void addEntry(SaeDetectionEntity det, Direction direction, ObservationJobEntity jobEntity) {
         log.info("{} has crossed line (name={}) in direction {}", det.getObjectId(), jobEntity.getName(), direction);
         
-        MetadataEntity metadata = metadataService.getMetadataForJob(jobEntity);
+        MetadataEntity metadata = metadataService.saveMetadataForJob(jobEntity);
         
         LineCrossingEntity entity = new LineCrossingEntity();
         entity.setCrossingTime(ZonedDateTime.ofInstant(det.getCaptureTs(), ZoneId.systemDefault()));

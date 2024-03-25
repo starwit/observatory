@@ -23,7 +23,7 @@ public class CoordinateService implements ServiceInterface<CoordinateEntity, Coo
         return this.coordinateRepository;
     }
 
-    public List<CoordinateEntity> getCoordinatesForJob(ObservationJobEntity jobEntity) {
+    public List<CoordinateEntity> saveCoordinatesForJob(ObservationJobEntity jobEntity) {
         List<CoordinateEntity> savedEntities = new ArrayList<>();
 
         for (PointEntity point : jobEntity.getGeometryPoints()) {
