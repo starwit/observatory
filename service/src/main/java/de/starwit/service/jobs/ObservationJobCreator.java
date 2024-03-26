@@ -9,18 +9,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
-import de.starwit.service.databackend.AnalyticsJobService;
+import de.starwit.persistence.databackend.entity.ObservationJobEntity;
+import de.starwit.service.databackend.ObservationJobService;
 
 @Component
-public class AnalyticsJobCreator {
+public class ObservationJobCreator {
 
     Logger log = LoggerFactory.getLogger(this.getClass());
 
     private List<JobData> jobsToRun = null;
 
     @Autowired
-    private AnalyticsJobService analyticsJobService;
+    private ObservationJobService observationJobService;
 
     @Autowired
     private AreaOccupancyJob areaOccupancyJob;
@@ -32,8 +32,8 @@ public class AnalyticsJobCreator {
     private void refreshJobs() {
         log.debug("Refreshing jobs");
         jobsToRun = new ArrayList<>();
-        List<AnalyticsJobEntity> enabledJobs = analyticsJobService.findByEnabledTrue();
-        for (AnalyticsJobEntity jobConfig : enabledJobs) {
+        List<ObservationJobEntity> enabledJobs = observationJobService.findByEnabledTrue();
+        for (ObservationJobEntity jobConfig : enabledJobs) {
             jobsToRun.add(new JobData(jobConfig));
         }
     }

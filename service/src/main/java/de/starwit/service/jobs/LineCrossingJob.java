@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import de.starwit.persistence.analytics.entity.Direction;
-import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
+import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 import de.starwit.persistence.sae.repository.SaeDao;
 import de.starwit.service.analytics.LineCrossingService;
@@ -67,7 +67,7 @@ public class LineCrossingJob extends AbstractJob<SaeDetectionEntity> {
         activeStore.purge(Duration.ofSeconds(5));
     }
     
-    private TrajectoryStore getStore(AnalyticsJobEntity jobConfig) {
+    private TrajectoryStore getStore(ObservationJobEntity jobConfig) {
         if (trajectoryStores.get(jobConfig.getId()) == null) {
             TrajectoryStore newStore = new TrajectoryStore();
             trajectoryStores.put(jobConfig.getId(), newStore);

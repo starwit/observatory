@@ -21,24 +21,24 @@ import jakarta.validation.constraints.NotNull;
 public class AreaOccupancyEntity {
 
     @Id
-    @Column(name = "occupancytime", nullable = false)
+    @Column(name = "occupancy_time", nullable = false)
     @JsonSerialize(using = ZonedDateTimeSerializer.class)
     @JsonDeserialize(using = ZonedDateTimeDeserializer.class)
     private ZonedDateTime occupancyTime;
 
     // entity fields
     @NotNull
-    @Column(name = "parkingareaid", nullable = false)
-    private Long parkingAreaId;
+    @Column(name = "observation_area_id", nullable = false)
+    private Long observationAreaId;
 
     @NotNull
     @Column(name = "count", nullable = false)
     private Integer count;
 
-    @Column(name = "objectclassid")
+    @Column(name = "object_class_id")
     private Integer objectClassId;
 
-    @Column(name = "metadataid")
+    @Column(name = "metadata_id")
     private Long metadataId;
 
     public Long getMetadataId() {
@@ -58,12 +58,12 @@ public class AreaOccupancyEntity {
         this.occupancyTime = occupancyTime;
     }
 
-    public Long getParkingAreaId() {
-        return parkingAreaId;
+    public Long getObservationAreaId() {
+        return observationAreaId;
     }
 
-    public void setParkingAreaId(Long parkingAreaId) {
-        this.parkingAreaId = parkingAreaId;
+    public void setObservationAreaId(Long observationAreaId) {
+        this.observationAreaId = observationAreaId;
     }
 
     public Integer getCount() {

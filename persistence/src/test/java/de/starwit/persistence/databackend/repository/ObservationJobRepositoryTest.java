@@ -9,21 +9,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
+import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 
 /**
  * Tests for FlowRepository
  */
 @EnableAutoConfiguration
 @SpringBootTest
-class AnalyticsJobRepositoryTest {
+class ObservationJobRepositoryTest {
 
     @Autowired
-    private AnalyticsJobRepository repository;
+    private ObservationJobRepository repository;
 
     @Test
     void testFindAll() {
-        List<AnalyticsJobEntity> flows = repository.findAll();
+        List<ObservationJobEntity> flows = repository.findAll();
         assertTrue(flows.isEmpty());
     }
 }

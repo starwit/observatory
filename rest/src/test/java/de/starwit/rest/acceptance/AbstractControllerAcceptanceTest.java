@@ -183,9 +183,9 @@ public abstract class AbstractControllerAcceptanceTest<ENTITY extends AbstractEn
         return response;
     }
 
-    protected MockHttpServletResponse deleteByParkingAreaId(Long id) throws Exception {
+    protected MockHttpServletResponse deleteByObservationAreaId(Long id) throws Exception {
         MockHttpServletResponse response = mvc.perform(
-                MockMvcRequestBuilders.delete(getRestPath() + "/by-parking-area/" + id)
+                MockMvcRequestBuilders.delete(getRestPath() + "/by-observation-area/" + id)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse();

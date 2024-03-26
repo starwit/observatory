@@ -31,8 +31,8 @@ public class PointEntity extends AbstractEntity<Long> {
 
     @ManyToOne
     @JsonIgnore
-    @JoinColumn(name = "analytics_job_id")
-    private AnalyticsJobEntity analyticsJob;
+    @JoinColumn(name = "observation_job_id")
+    private ObservationJobEntity observationJob;
 
     public BigDecimal getX() {
         return x;
@@ -74,12 +74,12 @@ public class PointEntity extends AbstractEntity<Long> {
         this.latitude = latitude;
     }
 
-    public AnalyticsJobEntity getAnalyticsJob() {
-        return analyticsJob;
+    public ObservationJobEntity getObservationJob() {
+        return observationJob;
     }
 
-    public void setAnalyticsJob(AnalyticsJobEntity analyticsJob) {
-        this.analyticsJob = analyticsJob;
+    public void setObservationJob(ObservationJobEntity observationJob) {
+        this.observationJob = observationJob;
     }
 
 }

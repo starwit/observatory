@@ -23,17 +23,17 @@ import jakarta.validation.constraints.NotNull;
 public class LineCrossingEntity {
 
     @Id
-    @Column(name = "crossingtime")
+    @Column(name = "crossing_time")
     @JsonSerialize(using = ZonedDateTimeSerializer.class)
     @JsonDeserialize(using = ZonedDateTimeDeserializer.class)
     private ZonedDateTime crossingTime;
 
     // entity fields
     @NotNull
-    @Column(name = "parkingareaid", nullable = false)
-    private Long parkingAreaId;
+    @Column(name = "observation_area_id", nullable = false)
+    private Long observationAreaId;
 
-    @Column(name = "objectid")
+    @Column(name = "object_id")
     private String objectId;
 
     @Enumerated(EnumType.STRING)
@@ -41,11 +41,19 @@ public class LineCrossingEntity {
     private Direction direction;
 
     // entity relations
-    @Column(name = "objectclassid")
-    private Integer objectClassId;
+    @Column(name = "object_class_id")
+    private Long objectClassId;
 
-    @Column(name = "metadataid")
+    @Column(name = "metadata_id")
     private Long metadataId;
+
+    public Long getObjectClassId() {
+        return objectClassId;
+    }
+
+    public void setObjectClassId(Long objectClassId) {
+        this.objectClassId = objectClassId;
+    }
 
     public Long getMetadataId() {
         return metadataId;
@@ -56,12 +64,12 @@ public class LineCrossingEntity {
     }
 
     // entity fields getters and setters
-    public Long getParkingAreaId() {
-        return parkingAreaId;
+    public Long getObservationAreaId() {
+        return observationAreaId;
     }
 
-    public void setParkingAreaId(Long parkingAreaId) {
-        this.parkingAreaId = parkingAreaId;
+    public void setObservationAreaId(Long observationAreaId) {
+        this.observationAreaId = observationAreaId;
     }
 
     public String getObjectId() {
@@ -86,14 +94,6 @@ public class LineCrossingEntity {
 
     public void setCrossingTime(ZonedDateTime crossingTime) {
         this.crossingTime = crossingTime;
-    }
-
-    public Integer getObjectClassId() {
-        return objectClassId;
-    }
-
-    public void setObjectClassId(Integer objectClassId) {
-        this.objectClassId = objectClassId;
     }
 
 }

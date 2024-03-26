@@ -20,7 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import de.starwit.persistence.analytics.entity.Direction;
-import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
+import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 import de.starwit.persistence.databackend.entity.JobType;
 import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 import de.starwit.persistence.sae.repository.SaeDao;
@@ -38,7 +38,7 @@ public class LineCrossingJobTest {
     @Test
     public void testLineCrossing() throws InterruptedException {
 
-        AnalyticsJobEntity entity = prepareJobEntity();
+        ObservationJobEntity entity = prepareJobEntity();
         JobData<SaeDetectionEntity> jobData = new JobData<>(entity);
         
         // No point on trajectory should be ON the counting line (b/c direction is then ambiguous)
@@ -57,8 +57,8 @@ public class LineCrossingJobTest {
         assertThat(directionCaptor.getValue()).isEqualTo(Direction.out);
     }
 
-    static AnalyticsJobEntity prepareJobEntity() {
-        AnalyticsJobEntity entity = new AnalyticsJobEntity();
+    static ObservationJobEntity prepareJobEntity() {
+        ObservationJobEntity entity = new ObservationJobEntity();
         entity.setCameraId("camId");
         entity.setDetectionClassId(1);
         entity.setGeometryPoints(Arrays.asList(

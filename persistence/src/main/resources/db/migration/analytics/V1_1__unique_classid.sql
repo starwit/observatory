@@ -1,1 +1,0 @@
-INSERT INTO "objectclass"("name", "classid") values('car', '2');

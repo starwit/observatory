@@ -11,14 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import de.starwit.persistence.analytics.entity.AreaOccupancyEntity;
 import de.starwit.persistence.analytics.entity.MetadataEntity;
 import de.starwit.persistence.analytics.repository.AreaOccupancyRepository;
-import de.starwit.persistence.analytics.repository.MetadataRepository;
-import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
+import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 
-/**
- * 
- * AreaOccupancy Service class
- *
- */
 @Service
 public class AreaOccupancyService {
 
@@ -28,30 +22,18 @@ public class AreaOccupancyService {
     private AreaOccupancyRepository areaoccupancyRepository;
 
     @Autowired
-    private MetadataRepository metadataRepository;
+    private MetadataService metadataService;
 
-    /**
-     * Save Area occupancies for a minute.
-     * 
-     * @param saeEntry
-     */
-    @Transactional
-    public void addEntry(AnalyticsJobEntity jobEntity, ZonedDateTime occupancyTime, Long count) {
+    @Transactional("analyticsTransactionManager")
+    public void addEntry(ObservationJobEntity jobEntity, ZonedDateTime occupancyTime, Long count) {
         log.info("Detected {} objects of class {} in area (name={})", count, jobEntity.getDetectionClassId(), jobEntity.getName());
         
-        MetadataEntity metadata = metadataRepository.findFirstByNameAndClassification(jobEntity.getName(), jobEntity.getClassification());
-
-        if (metadata == null) {
-            metadata = new MetadataEntity();
-            metadata.setName(jobEntity.getName());
-            metadata.setClassification(jobEntity.getClassification());
-            metadata = metadataRepository.save(metadata);
-        }
+        MetadataEntity metadata = metadataService.saveMetadataForJob(jobEntity);
         
         AreaOccupancyEntity entity = new AreaOccupancyEntity();
         entity.setCount(Math.toIntExact(count));
         entity.setOccupancyTime(occupancyTime);
-        entity.setParkingAreaId(jobEntity.getParkingAreaId());
+        entity.setObservationAreaId(jobEntity.getObservationAreaId());
         entity.setObjectClassId(jobEntity.getDetectionClassId());
         entity.setMetadataId(metadata.getId());
         areaoccupancyRepository.insert(entity);

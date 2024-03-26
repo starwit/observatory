@@ -17,7 +17,7 @@ public class ObjectClassEntity {
     private String name;
 
     @Id
-    @Column(name = "classid")
+    @Column(name = "class_id")
     private Long id;
 
     // entity fields getters and setters

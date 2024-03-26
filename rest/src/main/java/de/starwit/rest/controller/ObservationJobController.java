@@ -15,24 +15,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
-import de.starwit.service.databackend.AnalyticsJobService;
+import de.starwit.persistence.databackend.entity.ObservationJobEntity;
+import de.starwit.service.databackend.ObservationJobService;
 
 @RestController
-@RequestMapping("${rest.base-path}/analytics-job")
-public class AnalyticsJobController {
+@RequestMapping("${rest.base-path}/observation-job")
+public class ObservationJobController {
 
     @Autowired
-    private AnalyticsJobService analyticsJobService;
+    private ObservationJobService observationJobService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<AnalyticsJobEntity>> getAllJobs() {
-        return new ResponseEntity<>(analyticsJobService.findAll(), HttpStatus.OK);
+    public ResponseEntity<List<ObservationJobEntity>> getAllJobs() {
+        return new ResponseEntity<>(observationJobService.findAll(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AnalyticsJobEntity> getJob(@PathVariable long id) {
-        AnalyticsJobEntity jobEntity = analyticsJobService.findById(id);
+    public ResponseEntity<ObservationJobEntity> getJob(@PathVariable long id) {
+        ObservationJobEntity jobEntity = observationJobService.findById(id);
         if (jobEntity == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -40,42 +40,42 @@ public class AnalyticsJobController {
     }
 
     @PostMapping
-    public ResponseEntity<AnalyticsJobEntity> postJob(@RequestBody AnalyticsJobEntity job) {
+    public ResponseEntity<ObservationJobEntity> postJob(@RequestBody ObservationJobEntity job) {
         if (job.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Field 'id' must not be set.");
         }
-        AnalyticsJobEntity newEntity = analyticsJobService.saveNew(job);
+        ObservationJobEntity newEntity = observationJobService.saveNew(job);
         return new ResponseEntity<>(newEntity, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AnalyticsJobEntity> updateJob(@PathVariable Long id, @RequestBody AnalyticsJobEntity job) {
-        if (analyticsJobService.findById(id) == null) {
+    public ResponseEntity<ObservationJobEntity> updateJob(@PathVariable Long id, @RequestBody ObservationJobEntity job) {
+        if (observationJobService.findById(id) == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        AnalyticsJobEntity updatedEntity = analyticsJobService.update(id, job);
+        ObservationJobEntity updatedEntity = observationJobService.update(id, job);
         return new ResponseEntity<>(updatedEntity, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteJob(@PathVariable Long id) {
-        if (analyticsJobService.findById(id) == null) {
+        if (observationJobService.findById(id) == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        analyticsJobService.deleteById(id);
+        observationJobService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/all")
     public ResponseEntity<String> clearJobs() {
-        analyticsJobService.deleteAll();
+        observationJobService.deleteAll();
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping("/by-parking-area/{parkingAreaId}")
-    public ResponseEntity<String> clearJobsByParkingAreaId(@PathVariable Long parkingAreaId) {
-        analyticsJobService.deleteByParkingAreaId(parkingAreaId);
+    @DeleteMapping("/by-observation-area/{observationAreaId}")
+    public ResponseEntity<String> clearJobsByObservationAreaId(@PathVariable Long observationAreaId) {
+        observationJobService.deleteByObservationAreaId(observationAreaId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

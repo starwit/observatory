@@ -8,15 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import de.starwit.persistence.databackend.entity.AnalyticsJobEntity;
+import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 import de.starwit.persistence.databackend.entity.PointEntity;
-import de.starwit.persistence.databackend.repository.AnalyticsJobRepository;
+import de.starwit.persistence.databackend.repository.ObservationJobRepository;
 import de.starwit.persistence.databackend.repository.PointRepository;
 import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class AnalyticsJobService {
+public class ObservationJobService {
 
     Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -24,32 +24,32 @@ public class AnalyticsJobService {
     private int dataRetrievalRate;
 
     @Autowired
-    private AnalyticsJobRepository analyticsJobRepository;
+    private ObservationJobRepository observationJobRepository;
 
     @Autowired
     private PointRepository pointRepository;
 
-    public List<AnalyticsJobEntity> findAll() {
-        return analyticsJobRepository.findAll();
+    public List<ObservationJobEntity> findAll() {
+        return observationJobRepository.findAll();
     }
 
-    public AnalyticsJobEntity findById(Long id) {
-        return analyticsJobRepository.findById(id).orElse(null);
+    public ObservationJobEntity findById(Long id) {
+        return observationJobRepository.findById(id).orElse(null);
     }
 
-    public List<AnalyticsJobEntity> findByEnabledTrue() {
-        return analyticsJobRepository.findByEnabledTrue();
+    public List<ObservationJobEntity> findByEnabledTrue() {
+        return observationJobRepository.findByEnabledTrue();
     }
 
-    public AnalyticsJobEntity saveNew(AnalyticsJobEntity newJob) {
-        newJob.getGeometryPoints().forEach(p -> p.setAnalyticsJob(newJob));
+    public ObservationJobEntity saveNew(ObservationJobEntity newJob) {
+        newJob.getGeometryPoints().forEach(p -> p.setObservationJob(newJob));
 
-        AnalyticsJobEntity savedEntity = analyticsJobRepository.save(newJob);
+        ObservationJobEntity savedEntity = observationJobRepository.save(newJob);
         return savedEntity;
     }
 
-    public AnalyticsJobEntity update(Long id, AnalyticsJobEntity jobUpdate) {
-        AnalyticsJobEntity existingJob = this.findById(id);
+    public ObservationJobEntity update(Long id, ObservationJobEntity jobUpdate) {
+        ObservationJobEntity existingJob = this.findById(id);
 
         if (existingJob == null) {
             return null;
@@ -58,7 +58,7 @@ public class AnalyticsJobService {
         List<PointEntity> oldPoints = existingJob.getGeometryPoints();
 
         existingJob.setName(jobUpdate.getName());
-        existingJob.setParkingAreaId(jobUpdate.getParkingAreaId());
+        existingJob.setObservationAreaId(jobUpdate.getObservationAreaId());
         existingJob.setType(jobUpdate.getType());
         existingJob.setEnabled(jobUpdate.getEnabled());
         existingJob.setCameraId(jobUpdate.getCameraId());
@@ -67,23 +67,23 @@ public class AnalyticsJobService {
         existingJob.setGeoReferenced(jobUpdate.getGeoReferenced());
         existingJob.setGeometryPoints(jobUpdate.getGeometryPoints());
 
-        AnalyticsJobEntity updatedJob = analyticsJobRepository.save(existingJob);
+        ObservationJobEntity updatedJob = observationJobRepository.save(existingJob);
 
-        updatedJob.getGeometryPoints().forEach(p -> p.setAnalyticsJob(updatedJob));
+        updatedJob.getGeometryPoints().forEach(p -> p.setObservationJob(updatedJob));
 
         pointRepository.deleteAll(oldPoints);
         return updatedJob;
     }
 
     public void deleteById(Long id) {
-        analyticsJobRepository.deleteById(id);
+        observationJobRepository.deleteById(id);
     }
 
-    public void deleteByParkingAreaId(Long parkingAreaId) {
-        analyticsJobRepository.deleteByParkingAreaId(parkingAreaId);
+    public void deleteByObservationAreaId(Long observationAreaId) {
+        observationJobRepository.deleteByObservationAreaId(observationAreaId);
     }
 
     public void deleteAll() {
-        analyticsJobRepository.deleteAll();
+        observationJobRepository.deleteAll();
     }
 }

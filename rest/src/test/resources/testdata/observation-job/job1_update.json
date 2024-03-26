@@ -1,20 +1,19 @@
 {
-	"id": 1,
-	"name": "job1",
-	"parkingAreaId": 1,
+	"name": "job1_update",
+	"observationAreaId": 1,
 	"cameraId": "RangelineSMedicalDr",
 	"detectionClassId": 2,
 	"type": "LINE_CROSSING",
-	"enabled": false,
+	"enabled": true,
 	"geometryPoints": [
 		{
-			"x": 0.1,
-			"y": 0.1,
+			"x": 0.5,
+			"y": 0.5,
 			"orderIdx": 0
 		},
 		{
-			"x": 0.9,
-			"y": 0.9,
+			"x": 0.4,
+			"y": 0.4,
 			"orderIdx": 1
 		}
 	]

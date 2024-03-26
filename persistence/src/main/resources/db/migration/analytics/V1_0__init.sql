@@ -1,24 +1,48 @@
 CREATE TABLE "linecrossing"
 (
-    "parkingareaid" BIGINT NOT NULL ,
-    "objectid" VARCHAR(255),
+    "observation_area_id" BIGINT NOT NULL ,
+    "object_id" VARCHAR(255),
     "direction" VARCHAR(255),
-    "crossingtime" TIMESTAMP WITH TIME ZONE,
-    "objectclassid" BIGINT
+    "crossing_time" TIMESTAMP WITH TIME ZONE,
+    "object_class_id" BIGINT,
+    "metadata_id" BIGINT
+);
+
+CREATE TABLE "areaoccupancy"
+(
+    "observation_area_id" BIGINT NOT NULL ,
+    "occupancy_time" TIMESTAMP WITH TIME ZONE NOT NULL ,
+    "count" INTEGER NOT NULL ,
+    "object_class_id" BIGINT,
+    "metadata_id" BIGINT
 );
 
 CREATE TABLE "objectclass"
 (
     "name" VARCHAR(255),
-    "classid" INTEGER,
-    CONSTRAINT "objectclass_pkey" PRIMARY KEY ("classid")
+    "class_id" INTEGER,
+    CONSTRAINT "objectclass_pkey" PRIMARY KEY ("class_id")
 );
 
-CREATE TABLE "areaoccupancy"
+CREATE SEQUENCE IF NOT EXISTS "metadata_id_seq";
+
+CREATE TABLE "metadata"
 (
-    "parkingareaid" BIGINT NOT NULL ,
-    "occupancytime" TIMESTAMP WITH TIME ZONE NOT NULL ,
-    "count" INTEGER NOT NULL ,
-    "objectclassid" BIGINT
+    "id" BIGINT NOT NULL DEFAULT nextval('metadata_id_seq'),
+    "name" VARCHAR(255) NOT NULL,
+    "classification" VARCHAR(255),
+    "geo_referenced" BOOLEAN,
+    CONSTRAINT "unique_name_classification" UNIQUE ("name", "classification")
 );
 
+CREATE SEQUENCE IF NOT EXISTS "coordinate_id_seq";
+
+CREATE TABLE "coordinate"
+(
+    "id" BIGINT NOT NULL DEFAULT nextval('coordinate_id_seq'),
+    "latitude" DECIMAL(22,19),
+    "longitude" DECIMAL(22,19),
+    "metadata_id" BIGINT
+);
+
+INSERT INTO "objectclass" ("name", "class_id") values('car', '2');
