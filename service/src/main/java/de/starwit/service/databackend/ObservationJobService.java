@@ -12,6 +12,7 @@ import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 import de.starwit.persistence.databackend.entity.PointEntity;
 import de.starwit.persistence.databackend.repository.ObservationJobRepository;
 import de.starwit.persistence.databackend.repository.PointRepository;
+import de.starwit.service.jobs.ObservationJobRunner;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -25,6 +26,9 @@ public class ObservationJobService {
 
     @Autowired
     private ObservationJobRepository observationJobRepository;
+
+    @Autowired
+    private ObservationJobRunner observationJobRunner;
 
     @Autowired
     private PointRepository pointRepository;
@@ -45,6 +49,9 @@ public class ObservationJobService {
         newJob.getGeometryPoints().forEach(p -> p.setObservationJob(newJob));
 
         ObservationJobEntity savedEntity = observationJobRepository.save(newJob);
+        
+        observationJobRunner.refreshJobs();
+        
         return savedEntity;
     }
 
@@ -72,18 +79,27 @@ public class ObservationJobService {
         updatedJob.getGeometryPoints().forEach(p -> p.setObservationJob(updatedJob));
 
         pointRepository.deleteAll(oldPoints);
+
+        observationJobRunner.refreshJobs();
+
         return updatedJob;
     }
 
     public void deleteById(Long id) {
         observationJobRepository.deleteById(id);
+
+        observationJobRunner.refreshJobs();
     }
 
     public void deleteByObservationAreaId(Long observationAreaId) {
         observationJobRepository.deleteByObservationAreaId(observationAreaId);
+
+        observationJobRunner.refreshJobs();
     }
 
     public void deleteAll() {
         observationJobRepository.deleteAll();
+
+        observationJobRunner.refreshJobs();
     }
 }
