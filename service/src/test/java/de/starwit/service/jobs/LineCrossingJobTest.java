@@ -22,15 +22,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import de.starwit.persistence.analytics.entity.Direction;
 import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 import de.starwit.persistence.databackend.entity.JobType;
-import de.starwit.persistence.sae.entity.SaeDetectionEntity;
-import de.starwit.persistence.sae.repository.SaeDao;
 import de.starwit.service.analytics.LineCrossingService;
 
 @ExtendWith(MockitoExtension.class)
 public class LineCrossingJobTest {
-
-    @Mock
-    SaeDao saeDaoMock;
 
     @Mock
     LineCrossingService serviceMock;
@@ -39,15 +34,16 @@ public class LineCrossingJobTest {
     public void testLineCrossing() throws InterruptedException {
 
         ObservationJobEntity entity = prepareJobEntity();
-        JobData<SaeDetectionEntity> jobData = new JobData<>(entity);
+        JobData jobData = new JobData(entity);
         
         // No point on trajectory should be ON the counting line (b/c direction is then ambiguous)
-        List<SaeDetectionEntity> detections = createLinearTrajectory(
+        List<SaeDetectionDto> detections = createLinearTrajectory(
             new Point2D.Double(50, 55), new Point2D.Double(50, 155), 
             10, Duration.ofMillis(250));
-        when(saeDaoMock.getDetectionData(any(), any(), any())).thenReturn(detections);
+
+        detections.forEach(det -> jobData.getInputData().offer(det));
         
-        LineCrossingJob testee = new LineCrossingJob(saeDaoMock, serviceMock);
+        LineCrossingJob testee = new LineCrossingJob(serviceMock);
 
         testee.run(jobData);
         
@@ -71,8 +67,8 @@ public class LineCrossingJobTest {
         return entity;
     }
 
-    static List<SaeDetectionEntity> createLinearTrajectory(Point2D start, Point2D end, int numSteps, Duration stepInterval) {
-        List<SaeDetectionEntity> trajectory = new ArrayList<>();
+    static List<SaeDetectionDto> createLinearTrajectory(Point2D start, Point2D end, int numSteps, Duration stepInterval) {
+        List<SaeDetectionDto> trajectory = new ArrayList<>();
 
         Instant startTime = Instant.now().minusSeconds(100);
 

@@ -5,22 +5,21 @@ import java.time.Instant;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import de.starwit.persistence.common.entity.AbstractCaptureEntity;
 import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 
-public class JobData<E extends AbstractCaptureEntity> {
+public class JobData {
 
-    private Queue<E> inputData;
+    private Queue<SaeDetectionDto> inputData;
     private final ObservationJobEntity config;
     private Instant lastRetrievedTime;
 
     JobData(ObservationJobEntity config) {
-        this.inputData = new ArrayBlockingQueue<>(500);
+        this.inputData = new ArrayBlockingQueue<>(2000);
         this.config = config;
         this.lastRetrievedTime = Instant.now();
     }
 
-    public Queue<E> getInputData() {
+    public Queue<SaeDetectionDto> getInputData() {
         return inputData;
     }
 

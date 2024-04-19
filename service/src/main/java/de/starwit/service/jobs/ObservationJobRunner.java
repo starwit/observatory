@@ -97,21 +97,29 @@ public class ObservationJobRunner implements Closeable {
         }
     }
 
-    @Scheduled(initialDelay = 1000, fixedRateString = "${analytics.fetchDataInterval:2000}")
+    @Scheduled(initialDelay = 1000, fixedRateString = "${sae.fetchDataInterval:2000}")
     private void fetchData() throws RedisConnectionNotAvailableException {
-        if (jobsToRun != null) {
-            List<SaeMessage> messages = saeReader.read(100, 500);
-            Map<String, List<SaeMessage>> messagesBySource = messages.stream().collect(Collectors.groupingBy(msg -> msg.getFrame().getSourceId()));
-            for (JobData jobData : jobsToRun) {
-                int discardCount = 0;
-                for (SaeMessage message : messagesBySource.get(jobData.getConfig().getCameraId())) {
-                    boolean success = jobData.getInputData().offer(message);
+        if (jobsToRun == null) {
+            return;
+        }
+
+        List<SaeMessage> messages = saeReader.read(100, 500);
+        Map<String, List<SaeMessage>> messagesBySource = messages.stream().collect(Collectors.groupingBy(msg -> msg.getFrame().getSourceId()));
+        for (JobData jobData : jobsToRun) {
+            int discardCount = 0;
+            List<SaeMessage> relevantJobMessages = messagesBySource.get(jobData.getConfig().getCameraId());
+            if (relevantJobMessages == null) {
+                continue;
+            }
+            for (SaeMessage message : relevantJobMessages) {
+                for (SaeDetectionDto det : SaeDetectionDto.from(message)) {
+                    boolean success = jobData.getInputData().offer(det);
                     if (!success) {
                         discardCount++;
                     }
                 }
-                log.warn("Discarded {} messages for job {}", discardCount, jobData.getConfig().getName());
             }
+            log.warn("Discarded {} messages for job {}", discardCount, jobData.getConfig().getName());
         }
     }
 

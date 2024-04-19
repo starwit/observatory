@@ -14,7 +14,7 @@ import de.starwit.persistence.analytics.entity.LineCrossingEntity;
 import de.starwit.persistence.analytics.entity.MetadataEntity;
 import de.starwit.persistence.analytics.repository.LineCrossingRepository;
 import de.starwit.persistence.databackend.entity.ObservationJobEntity;
-import de.starwit.persistence.sae.entity.SaeDetectionEntity;
+import de.starwit.service.jobs.SaeDetectionDto;
 
 @Service
 public class LineCrossingService {
@@ -28,7 +28,7 @@ public class LineCrossingService {
     private MetadataService metadataService;
 
     @Transactional("analyticsTransactionManager")
-    public void addEntry(SaeDetectionEntity det, Direction direction, ObservationJobEntity jobEntity) {
+    public void addEntry(SaeDetectionDto det, Direction direction, ObservationJobEntity jobEntity) {
         log.info("{} has crossed line (name={}) in direction {}", det.getObjectId(), jobEntity.getName(), direction);
         
         MetadataEntity metadata = metadataService.saveMetadataForJob(jobEntity);

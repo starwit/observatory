@@ -4,6 +4,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,14 +14,10 @@ import org.springframework.stereotype.Component;
 
 import de.starwit.persistence.analytics.entity.Direction;
 import de.starwit.persistence.databackend.entity.ObservationJobEntity;
-import de.starwit.persistence.sae.entity.SaeDetectionEntity;
-import de.starwit.persistence.sae.repository.SaeDao;
 import de.starwit.service.analytics.LineCrossingService;
 
 @Component
-public class LineCrossingJob extends AbstractJob<SaeDetectionEntity> {
-
-    private SaeDao saeDao;
+public class LineCrossingJob extends AbstractJob {
 
     private LineCrossingService lineCrossingService;
 
@@ -32,26 +29,23 @@ public class LineCrossingJob extends AbstractJob<SaeDetectionEntity> {
     private Boolean isGeoReferenced;
 
     @Autowired
-    public LineCrossingJob(SaeDao saeDao, LineCrossingService lineCrossingService) {
-        this.saeDao = saeDao;
+    public LineCrossingJob(LineCrossingService lineCrossingService) {
         this.lineCrossingService = lineCrossingService;
     }
 
     @Override
-    List<SaeDetectionEntity> getData(JobData<SaeDetectionEntity> jobData) {
-        return saeDao.getDetectionData(jobData.getLastRetrievedTime(), 
-                jobData.getConfig().getCameraId(),
-                jobData.getConfig().getDetectionClassId());
+    List<SaeDetectionDto> getData(JobData jobData) {
+        return new ArrayList<>();
     }
 
     @Override
-    void process(JobData<SaeDetectionEntity> jobData) {
+    void process(JobData jobData) {
         activeCountingLine = GeometryConverter.lineFrom(jobData.getConfig());
         activeStore = getStore(jobData.getConfig());
         isGeoReferenced = jobData.getConfig().getGeoReferenced();
         log.debug("store size: {}", activeStore.size());
 
-        SaeDetectionEntity det;
+        SaeDetectionDto det;
         while ((det = jobData.getInputData().poll()) != null) {
             activeStore.addDetection(det);
             trimTrajectory(det);
@@ -76,7 +70,7 @@ public class LineCrossingJob extends AbstractJob<SaeDetectionEntity> {
 
     }
     
-    private void trimTrajectory(SaeDetectionEntity det) {
+    private void trimTrajectory(SaeDetectionDto det) {
         Instant trajectoryEnd = activeStore.getLast(det).getCaptureTs();
 
         boolean trimming = true;
@@ -91,13 +85,13 @@ public class LineCrossingJob extends AbstractJob<SaeDetectionEntity> {
 
     }
 
-    private boolean isTrajectoryValid(SaeDetectionEntity det) {
+    private boolean isTrajectoryValid(SaeDetectionDto det) {
         Instant trajectoryStart = activeStore.getFirst(det).getCaptureTs();
         Instant trajectoryEnd = activeStore.getLast(det).getCaptureTs();
         return Duration.between(trajectoryStart, trajectoryEnd).toSeconds() >= TARGET_WINDOW_SIZE_SEC;
     }
 
-    private boolean objectHasCrossed(SaeDetectionEntity det) {
+    private boolean objectHasCrossed(SaeDetectionDto det) {
         Point2D firstPoint = GeometryConverter.toCenterPoint(activeStore.getFirst(det), isGeoReferenced);
         Point2D lastPoint = GeometryConverter.toCenterPoint(activeStore.getLast(det), isGeoReferenced);
         Line2D trajectory = new Line2D.Double(firstPoint, lastPoint);
@@ -105,7 +99,7 @@ public class LineCrossingJob extends AbstractJob<SaeDetectionEntity> {
     }
 
 
-    private Direction getCrossingDirection(SaeDetectionEntity det) {
+    private Direction getCrossingDirection(SaeDetectionDto det) {
         Point2D trajectoryEnd = GeometryConverter.toCenterPoint(activeStore.getLast(det), isGeoReferenced);
         int ccw = activeCountingLine.relativeCCW(trajectoryEnd);
         if (ccw == -1) {

@@ -18,17 +18,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 import de.starwit.persistence.databackend.entity.JobType;
-import de.starwit.persistence.sae.entity.SaeDetectionEntity;
-import de.starwit.persistence.sae.repository.SaeDao;
+import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 import de.starwit.service.analytics.AreaOccupancyService;
 
 @ExtendWith(MockitoExtension.class)
 public class AreaOccupancyJobTest {
-
-    @Mock
-    SaeDao saeDaoMock;
 
     @Mock
     AreaOccupancyService serviceMock;
@@ -36,9 +31,9 @@ public class AreaOccupancyJobTest {
     @Test
     public void testAreaOccupancy() throws InterruptedException {
         ObservationJobEntity jobEntity = prepareJobEntity();
-        JobData<SaeDetectionEntity> jobData = new JobData<>(jobEntity);
+        JobData jobData = new JobData(jobEntity);
 
-        List<SaeDetectionEntity> detections = Arrays.asList(
+        List<SaeDetectionDto> detections = Arrays.asList(
             Helper.createDetection(Instant.ofEpochSecond(0), new Point2D.Double(50, 50)),
             Helper.createDetection(Instant.ofEpochSecond(0), new Point2D.Double(50, 50)),
             Helper.createDetection(Instant.ofEpochSecond(0), new Point2D.Double(50, 200)),
@@ -51,9 +46,9 @@ public class AreaOccupancyJobTest {
             Helper.createDetection(Instant.ofEpochSecond(2), new Point2D.Double(50, 50))
         );
 
-        when(saeDaoMock.getDetectionData(any(), any(), any())).thenReturn(detections);
+        detections.forEach(det -> jobData.getInputData().offer(det));
 
-        AreaOccupancyJob testee = new AreaOccupancyJob(saeDaoMock, serviceMock);
+        AreaOccupancyJob testee = new AreaOccupancyJob(serviceMock);
 
         testee.run(jobData);
         

@@ -7,22 +7,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
-import de.starwit.persistence.common.entity.AbstractCaptureEntity;
-
-public abstract class AbstractJob<E extends AbstractCaptureEntity> {
+public abstract class AbstractJob {
 
     @Value("${analytics.maxDataInterval:10000}")
     int maxDataInterval;
     
     final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public void run(JobData<E> jobData) throws InterruptedException {
+    public void run(JobData jobData) throws InterruptedException {
 
         if (jobData.getLastRetrievedTime().isBefore(Instant.now().minusMillis(maxDataInterval))) {
             jobData.setLastRetrievedTime(Instant.now().minusMillis(maxDataInterval));
         }
 
-        List<E> newData = this.getData(jobData);
+        List<SaeDetectionDto> newData = this.getData(jobData);
 
         int discardCount = 0;
         boolean success = false;
@@ -30,7 +28,7 @@ public abstract class AbstractJob<E extends AbstractCaptureEntity> {
         if (newData != null && !newData.isEmpty()) {
             jobData.setLastRetrievedTime(newData.get(newData.size() - 1).getCaptureTs());
 
-            for (E dataPoint : newData) {
+            for (SaeDetectionDto dataPoint : newData) {
                 success = jobData.getInputData().offer(dataPoint);
                 if (!success) {
                     discardCount++;
@@ -45,7 +43,7 @@ public abstract class AbstractJob<E extends AbstractCaptureEntity> {
         this.process(jobData);
     }
 
-    abstract List<E> getData(JobData<E> jobData);
+    abstract List<SaeDetectionDto> getData(JobData jobData);
 
-    abstract void process(JobData<E> jobData) throws InterruptedException;
+    abstract void process(JobData jobData) throws InterruptedException;
 }

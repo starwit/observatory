@@ -7,7 +7,6 @@ import java.awt.geom.Point2D;
 
 import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 import de.starwit.persistence.databackend.entity.PointEntity;
-import de.starwit.persistence.sae.entity.SaeDetectionEntity;
 
 /**
  * This class is a workaround until we have a proper concept 
@@ -53,7 +52,7 @@ public class GeometryConverter {
         return new Line2D.Double(pt1, pt2);
     }
 
-    public static Point2D toCenterPoint(SaeDetectionEntity detection, boolean isGeo) {
+    public static Point2D toCenterPoint(SaeDetectionDto detection, boolean isGeo) {
         double centerX, centerY;
         if (isGeo) {
             centerX = detection.getLongitude();
