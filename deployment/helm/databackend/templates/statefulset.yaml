@@ -14,7 +14,6 @@
 {{- end }}
 
 {{- $analyticsDbUrl := print .Values.databases.analytics.host ":" .Values.databases.analytics.port "/" .Values.databases.analytics.database }}
-{{- $saeDbUrl := print .Values.databases.sae.host ":" .Values.databases.sae.port "/" .Values.databases.sae.database }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -53,11 +52,6 @@ spec:
           command: ['sh', '-c', 
             'until pg_isready -h {{ .Values.databases.analytics.host }} -p {{ .Values.databases.analytics.port }}; 
             do echo waiting for database; sleep 2; done;']
-        - name: wait-for-sae-db
-          image: postgres:16-alpine
-          command: ['sh', '-c', 
-            'until pg_isready -h {{ .Values.databases.sae.host }} -p {{ .Values.databases.sae.port }}; 
-            do echo waiting for database; sleep 2; done;']
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -72,15 +66,17 @@ spec:
             - name: SPRING_DATASOURCE_PASSWORD
               value: {{ .Values.databases.databackend.password }}
 
-            - name: SAE_DATASOURCE_URL
-              value: jdbc:postgresql://{{ $saeDbUrl }}
-            - name: SAE_DATASOURCE_USERNAME
-              value: {{ .Values.databases.sae.username }}
-            - name: SAE_DATASOURCE_PASSWORD
-              value: {{ .Values.databases.sae.password }}
-            - name: SAE_DETECTION_TABLENAME
-              value: {{ .Values.databases.sae.detectionTableName }}
-
+            - name: SAE_REDISSTREAMPREFIX
+              value: {{ .Values.sae.redisStreamPrefix }}
+            - name: SAE_REDISHOST
+              value: {{ .Values.sae.host }}
+            - name: SAE_REDISPORT
+              value: {{ .Values.sae.port }}
+            - name: SAE_FETCHDATAINTERVAL
+              value: {{ .Values.sae.fetchDataInterval }}
+            
+            - name: ANALYTICS_JOBRUNINTERVAL
+              value: {{ .Values.analyticsJobRunInterval }}
             - name: ANALYTICS_DATASOURCE_URL
               value: jdbc:postgresql://{{ $analyticsDbUrl }}
             - name: ANALYTICS_DATASOURCE_USERNAME

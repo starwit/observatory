@@ -15,6 +15,8 @@ fullnameOverride: ""
 app:
   context_path: "/databackend"
 
+analyticsJobRunInterval: 2000
+
 databases:
   databackend:
     internal: true
@@ -25,12 +27,10 @@ databases:
     username: databackend
     password: databackend
   sae:
-    host: localhost
-    port: 5432
-    database: sae
-    username: sae
-    password: sae
-    detectionTableName: detection
+    redisStreamPrefix: geomapper
+    redisHost: localhost
+    redisPort: 6379
+    fetchDataInterval: 1000
   analytics:
     host: localhost
     port: 5432
