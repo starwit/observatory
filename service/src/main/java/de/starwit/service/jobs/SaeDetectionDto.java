@@ -2,6 +2,7 @@ package de.starwit.service.jobs;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HexFormat;
 import java.util.List;
 
 import de.starwit.visionapi.Messages.Detection;
@@ -125,7 +126,7 @@ public class SaeDetectionDto {
             SaeDetectionDto dto = new SaeDetectionDto();
             dto.setCaptureTs(Instant.ofEpochMilli(msg.getFrame().getTimestampUtcMs()));
             dto.setCameraId(msg.getFrame().getSourceId());
-            dto.setObjectId(det.getObjectId().toStringUtf8());
+            dto.setObjectId(HexFormat.of().formatHex(det.getObjectId().toByteArray()));
             dto.setClassId(det.getClassId());
             dto.setConfidence((double) det.getConfidence());
             dto.setMinX((double) det.getBoundingBox().getMinX());

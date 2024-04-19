@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -38,6 +39,7 @@ public class ObservationJobRunner implements Closeable {
     private List<JobData> jobsToRun = null;
     private SaeReader saeReader = null;
 
+    @Lazy
     @Autowired
     private ObservationJobService observationJobService;
 
@@ -71,35 +73,39 @@ public class ObservationJobRunner implements Closeable {
                 .map(job -> REDIS_STREAM_PREFIX + ":" + job.getConfig().getCameraId())
                 .toList();
 
-        saeReader = new SaeReader(sourceCameraIds, redisHost, redisPort);
+        if (!sourceCameraIds.isEmpty()) {
+            saeReader = new SaeReader(sourceCameraIds, redisHost, redisPort);
+        }
     }
 
     @Scheduled(initialDelay = 1000, fixedRateString = "${analytics.jobRunInterval:10000}")
     private void runJobs() {
-        if (jobsToRun != null) {
-            for (JobData job : jobsToRun) {
-                try {
-                    log.debug("Running job: {}", job.getConfig().getName());
-                    switch (job.getConfig().getType()) {
-                        case LINE_CROSSING:
-                            lineCrossingJob.run(job);
-                            break;
-                        case AREA_OCCUPANCY:
-                            areaOccupancyJob.run(job);
-                            break;
-                        default:
-                            break;
-                    }
-                } catch (Exception e) {
-                    log.error("Exception during job run {}", job.getConfig().getName(), e);
+        if (jobsToRun == null || jobsToRun.isEmpty()) {
+            return;
+        }
+
+        for (JobData job : jobsToRun) {
+            try {
+                log.debug("Running job: {}", job.getConfig().getName());
+                switch (job.getConfig().getType()) {
+                    case LINE_CROSSING:
+                        lineCrossingJob.run(job);
+                        break;
+                    case AREA_OCCUPANCY:
+                        areaOccupancyJob.run(job);
+                        break;
+                    default:
+                        break;
                 }
+            } catch (Exception e) {
+                log.error("Exception during job run {}", job.getConfig().getName(), e);
             }
         }
     }
 
     @Scheduled(initialDelay = 1000, fixedRateString = "${sae.fetchDataInterval:2000}")
     private void fetchData() throws RedisConnectionNotAvailableException {
-        if (jobsToRun == null) {
+        if (jobsToRun == null || jobsToRun.isEmpty()) {
             return;
         }
 
@@ -119,7 +125,9 @@ public class ObservationJobRunner implements Closeable {
                     }
                 }
             }
-            log.warn("Discarded {} messages for job {}", discardCount, jobData.getConfig().getName());
+            if (discardCount > 0) {
+                log.warn("Discarded {} messages for job {}", discardCount, jobData.getConfig().getName());
+            }
         }
     }
 

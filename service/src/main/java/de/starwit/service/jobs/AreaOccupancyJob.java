@@ -3,19 +3,22 @@ package de.starwit.service.jobs;
 import java.awt.geom.Area;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import de.starwit.service.analytics.AreaOccupancyService;
 
 @Component
-public class AreaOccupancyJob extends AbstractJob {
+public class AreaOccupancyJob implements Job {
+
+    final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private AreaOccupancyService areaOccupancyService;
 
@@ -27,12 +30,7 @@ public class AreaOccupancyJob extends AbstractJob {
     }
 
     @Override
-    List<SaeDetectionDto> getData(JobData jobData) {
-        return new ArrayList<>();
-    }
-
-    @Override
-    void process(JobData jobData) throws InterruptedException {
+    public void run(JobData jobData) {
         if (jobData != null) {
             isGeoReferenced = jobData.getConfig().getGeoReferenced();
             
