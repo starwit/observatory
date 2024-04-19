@@ -64,6 +64,31 @@ jobs:
         distribution: 'temurin'
         java-version: 21
 
+    - uses: s4u/maven-settings-action@v3.0.0
+      with:
+        repositories: |
+          [{
+            "id": "visionapi",
+            "name": "vision-api",
+            "url": "https://maven.pkg.github.com/starwit/vision-api",
+            "snapshots": {"enabled": true}
+          },{
+            "id": "visionlib",
+            "name": "vision-lib",
+            "url": "https://maven.pkg.github.com/starwit/vision-lib",
+            "snapshots": {"enabled": true}
+          }]
+        servers: |
+          [{
+            "id": "visionapi",
+            "username": "flonix8", 
+            "password": "${{ secrets.VISION_MAVEN_READ_TOKEN }}"
+          },{
+            "id": "visionlib",
+            "username": "flonix8", 
+            "password": "${{ secrets.VISION_MAVEN_READ_TOKEN }}"
+          }]
+
     - name: get version from pom.xml
       run: |
         echo "VERSION=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )" >> $GITHUB_ENV   
