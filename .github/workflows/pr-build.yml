@@ -4,7 +4,7 @@ name: PR Build
 
 on:
   pull_request:
-    branches: [ master, versionupgrade ]
+    branches: [ main, versionupgrade ]
   workflow_dispatch:
 
 # just runs Maven and Docker build
