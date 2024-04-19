@@ -72,4 +72,4 @@ jobs:
         context: .
         file: ./dockerfile
         push: true
-        tags: ${{ env.DOCKERHUB_ORG }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+        tags: ${{ vars.DOCKERHUB_ORG }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
