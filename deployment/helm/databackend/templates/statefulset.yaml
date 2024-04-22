@@ -67,16 +67,16 @@ spec:
               value: {{ .Values.databases.databackend.password }}
 
             - name: SAE_REDISSTREAMPREFIX
-              value: {{ .Values.sae.redisStreamPrefix }}
+              value: {{ .Values.sae.redisStreamPrefix | quote }}
             - name: SAE_REDISHOST
-              value: {{ .Values.sae.host }}
+              value: {{ .Values.sae.redisHost | quote }}
             - name: SAE_REDISPORT
-              value: {{ .Values.sae.port }}
+              value: {{ .Values.sae.redisPort | quote }}
             - name: SAE_FETCHDATAINTERVAL
-              value: {{ .Values.sae.fetchDataInterval }}
+              value: {{ .Values.sae.fetchDataInterval | quote }}
             
             - name: ANALYTICS_JOBRUNINTERVAL
-              value: {{ .Values.analyticsJobRunInterval }}
+              value: {{ .Values.analyticsJobRunInterval | quote }}
             - name: ANALYTICS_DATASOURCE_URL
               value: jdbc:postgresql://{{ $analyticsDbUrl }}
             - name: ANALYTICS_DATASOURCE_USERNAME
@@ -91,7 +91,7 @@ spec:
             {{- end }}
           ports:
             - name: http
-              containerPort: 8081
+              containerPort: 8082
               protocol: TCP
           livenessProbe:
             httpGet:

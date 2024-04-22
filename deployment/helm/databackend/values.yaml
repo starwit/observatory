@@ -17,6 +17,12 @@ app:
 
 analyticsJobRunInterval: 2000
 
+sae:
+  redisStreamPrefix: geomapper
+  redisHost: localhost
+  redisPort: 6379
+  fetchDataInterval: 1000
+
 databases:
   databackend:
     internal: true
@@ -26,11 +32,6 @@ databases:
     database: databackend
     username: databackend
     password: databackend
-  sae:
-    redisStreamPrefix: geomapper
-    redisHost: localhost
-    redisPort: 6379
-    fetchDataInterval: 1000
   analytics:
     host: localhost
     port: 5432
