@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import de.starwit.service.sae.SaeDetectionDto;
+
 public class TrajectoryStore {
     private Map<String, LinkedList<SaeDetectionDto>> trajectoryByObjId = new HashMap<>();
 

@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 import de.starwit.persistence.databackend.entity.PointEntity;
+import de.starwit.service.sae.SaeDetectionDto;
 
 public class Helper {
     

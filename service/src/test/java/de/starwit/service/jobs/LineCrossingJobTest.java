@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.awt.geom.Point2D;
 import java.time.Duration;
@@ -20,35 +19,34 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import de.starwit.persistence.analytics.entity.Direction;
-import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 import de.starwit.persistence.databackend.entity.JobType;
-import de.starwit.service.analytics.LineCrossingService;
+import de.starwit.persistence.databackend.entity.ObservationJobEntity;
+import de.starwit.service.sae.SaeDetectionDto;
 
 @ExtendWith(MockitoExtension.class)
 public class LineCrossingJobTest {
 
     @Mock
-    LineCrossingService serviceMock;
+    LineCrossingObservationListener observationListenerMock;
     
     @Test
     public void testLineCrossing() throws InterruptedException {
 
         ObservationJobEntity entity = prepareJobEntity();
-        JobData jobData = new JobData(entity);
         
         // No point on trajectory should be ON the counting line (b/c direction is then ambiguous)
         List<SaeDetectionDto> detections = createLinearTrajectory(
             new Point2D.Double(50, 55), new Point2D.Double(50, 155), 
             10, Duration.ofMillis(250));
 
-        detections.forEach(det -> jobData.getInputData().offer(det));
-        
-        LineCrossingJob testee = new LineCrossingJob(serviceMock);
+        LineCrossingJob testee = new LineCrossingJob(entity, observationListenerMock);
 
-        testee.run(jobData);
+        for (SaeDetectionDto det : detections) {
+            testee.processNewDetection(det);
+        }
         
         ArgumentCaptor<Direction> directionCaptor = ArgumentCaptor.forClass(Direction.class);
-        verify(serviceMock, times(1)).addEntry(any(), directionCaptor.capture(), any());
+        verify(observationListenerMock, times(1)).onObservation(any(), directionCaptor.capture(), any());
 
         assertThat(directionCaptor.getValue()).isEqualTo(Direction.out);
     }
@@ -70,7 +68,7 @@ public class LineCrossingJobTest {
     static List<SaeDetectionDto> createLinearTrajectory(Point2D start, Point2D end, int numSteps, Duration stepInterval) {
         List<SaeDetectionDto> trajectory = new ArrayList<>();
 
-        Instant startTime = Instant.now().minusSeconds(100);
+        Instant startTime = Instant.now();
 
         trajectory.add(Helper.createDetection(startTime, new Point2D.Double(start.getX(), start.getY())));
         double currentX = start.getX();

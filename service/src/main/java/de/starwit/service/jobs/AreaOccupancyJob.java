@@ -1,65 +1,74 @@
 package de.starwit.service.jobs;
 
 import java.awt.geom.Area;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import de.starwit.persistence.databackend.entity.ObservationJobEntity;
+import de.starwit.service.sae.SaeDetectionDto;
 
-import de.starwit.service.analytics.AreaOccupancyService;
+public class AreaOccupancyJob extends AbstractJob {
 
-@Component
-public class AreaOccupancyJob implements Job {
+    private AreaOccupancyObservationListener observationListener;
 
-    final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static Duration SLIDING_WINDOW_TARGET_LENGTH = Duration.ofSeconds(5);
+    private LinkedList<SaeDetectionDto> slidingWindow = new LinkedList<>();
 
-    private AreaOccupancyService areaOccupancyService;
-
-    private Boolean isGeoReferenced;
-    
-    @Autowired
-    public AreaOccupancyJob(AreaOccupancyService areaOccupancyService) {
-        this.areaOccupancyService = areaOccupancyService;
+    public AreaOccupancyJob(ObservationJobEntity configEntity, AreaOccupancyObservationListener observationListener) {
+        super(configEntity);
+        this.observationListener = observationListener;
     }
 
     @Override
-    public void run(JobData jobData) {
-        if (jobData != null) {
-            isGeoReferenced = jobData.getConfig().getGeoReferenced();
-            
-            Queue<SaeDetectionDto> queue = jobData.getInputData();
-            if (queue == null) {
-                return;
-            }
-
-            Map<Long, List<SaeDetectionDto>> detByCaptureTs = queue.stream().collect(Collectors.groupingBy(det -> det.getCaptureTs().toEpochMilli()));
-
-            Area polygon = GeometryConverter.areaFrom(jobData.getConfig());
-
-            long maxCount = 0L;
-            ZonedDateTime maxTs = ZonedDateTime.now();
-            for (List<SaeDetectionDto> detList : detByCaptureTs.values()) {
-                long count = objCountInPolygon(detList, polygon);
-                if (count > maxCount) {
-                    maxCount = count;
-                    maxTs = detList.get(0).getCaptureTs().atZone(ZoneOffset.UTC);
-                }
-            }
-
-            areaOccupancyService.addEntry(jobData.getConfig(), maxTs, maxCount);
+    protected void processNewDetection(SaeDetectionDto dto) {
+        addDataToSlidingWindow(dto);
+        if (slidingWindowLength().toMillis() < SLIDING_WINDOW_TARGET_LENGTH.toMillis()) {
+            return;
         }
+
+        Map<Long, List<SaeDetectionDto>> detByCaptureTs = this.slidingWindow.stream().collect(Collectors.groupingBy(det -> det.getCaptureTs().toEpochMilli()));
+    
+        Area polygon = GeometryConverter.areaFrom(this.configEntity);
+    
+        long maxCount = 0L;
+        ZonedDateTime maxTs = ZonedDateTime.now();
+        for (List<SaeDetectionDto> detList : detByCaptureTs.values()) {
+            long count = objCountInPolygon(detList, polygon);
+            if (count > maxCount) {
+                maxCount = count;
+                maxTs = detList.get(0).getCaptureTs().atZone(ZoneOffset.UTC);
+            }
+        }
+    
+        observationListener.onObservation(this.configEntity, maxTs, maxCount);
+        slidingWindow.clear();
+    }
+
+    private void addDataToSlidingWindow(SaeDetectionDto dto) {
+        slidingWindow.addLast(dto);
+
+        // Keep sliding window within target time interval
+        Instant windowEndTime = dto.getCaptureTs();
+        Instant windowStartTime = slidingWindow.peekFirst().getCaptureTs();
+        while (Duration.between(windowStartTime, windowEndTime).minus(SLIDING_WINDOW_TARGET_LENGTH).toMillis() > 0) {
+            slidingWindow.removeFirst();
+            windowStartTime = slidingWindow.peekFirst().getCaptureTs();
+        }
+    }
+
+    private Duration slidingWindowLength() {
+        return Duration.between(slidingWindow.peekFirst().getCaptureTs(), slidingWindow.peekLast().getCaptureTs());
     }
 
     private Long objCountInPolygon(List<SaeDetectionDto> objects, Area polygon) {
         return objects.stream()
-            .filter(det -> polygon.contains(GeometryConverter.toCenterPoint(det, isGeoReferenced)))
+            .filter(det -> polygon.contains(GeometryConverter.toCenterPoint(det, configEntity.getGeoReferenced())))
             .count();
     }
 
