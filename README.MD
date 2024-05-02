@@ -13,14 +13,14 @@ More details on political and organizational background can be found here: https
 ### Contribution
 We are grateful for any contribution. Please refer to our [contribution guideline](CONTRIBUTING.md) and instructions document for any information.
 
-## Analytical Jobs
-Main task of DataBackend is to run a multitude of analytical jobs that turn raw tracking data into usable knowledge. This section thus lists all available jobs and a brief description of their intended function.
+## Observation Jobs
+Main task of DataBackend is to run a multitude of observation jobs that turn raw tracking data into usable knowledge. This section thus lists all available jobs and a brief description of their intended function.
 
 ### Counting Traffic
-This job counts traffic passing a line including direction of movement.
+This job counts traffic passing a line including direction of movement. The technical name is `LINE_CROSSING`.
 
 ### Counting Parked Vehicles
-In a defined area this job counts how many vehicles are not moving and so considered as parked vehicles.
+In a defined area this job counts how many vehicles are not moving and so considered as parked vehicles. The technical name is `AREA_OCCUPANCY`.
 
 ## How to Deploy/Install
 Helm is the preferred tool to install DataBackend. Installation can be done with the following command:
@@ -45,6 +45,7 @@ __Prerequisites__
 * Maven 3
 * PostgreSQL (available for development via docker-compose scripts)
 * Keycloak for authentication (optional)
+* `vision-api` maven repository setup (see https://github.com/starwit/vision-api?tab=readme-ov-file#java--maven for guidance)
 
 This software is written in Java and dependency/build is managed by Maven. And so building the software is straight forward.
 
