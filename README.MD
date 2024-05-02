@@ -77,61 +77,47 @@ When using Docker compose application can be reached via those coordinates:
     * default user/password is admin/admin
     * keycloak can be reached under http://localhost:8080/auth
 
-### Debugging
+## How to (manually) test
+- Start a SAE instance (see https://github.com/starwit/starwit-awareness-engine/tree/main/docker-compose)
+- Start databackend infrastructure (`./deployment/postgreslocal-docker-compose.yaml`)
+- Start databackend with default settings
+- Add an observation job that makes sense for the video your SAE is processing, e.g. via curl, Postman, etc.\
+  Sample for the usual video:
+    ```json
+    {
+        "name": "job1",
+        "observationAreaId": 1,
+        "cameraId": "stream1",
+        "detectionClassId": 2,
+        "type": "LINE_CROSSING",
+        "enabled": true,
+        "geoReferenced": false,
+        "classification": "Lichtschranke",
+        "geometryPoints": [
+            {
+                "x": 0.3096,
+                "y": 0.609,
+                "orderIdx": 0
+            },
+            {
+                "x": 0.544,
+                "y": 0.8097,
+                "orderIdx": 1
+            }
+        ]
+    }
+    ```
+
+## Debugging
 
 You can start the spring boot application in debug mode. See Spring Boot documentation for further details. The easiest way is, to use debug functionality integrated with your IDE like VS Code.
 
-### Postgres Client
+## Postgres Client
 
-The database is available under localhost:54321
+The database is available under localhost:5434. A database GUI (pgadmin) is available at localhost:5050 (if you started one of the docker compose environments in `./deployment`).
 
 ```
 Username:databackend
 Database:databackend
 Password:databackend
-```
-PGAdmin is recommended to access database for development purpose. It can be deployed via docker-compose file.
-
-### Starting without keycloak
-
-If you want to start your application without keycloak, you need to change spring boot profile to something different than auth (e.g. dev) in application\src\main\resources\application.properties. Hence, the file application-auth.properties will be ignored.
-
-```properties
-spring.profiles.active=dev
-```
-
-or define env-variable
-
-```bash
-SPRING_PROFILES_ACTIVE=dev
-```
-
-Start the database without keycloak:
-
-```bash
-cd deployment
-docker-compose -f postgreslocal-docker-compose.yml up
-```
-
-### SAETester
-
-SAETester is a tool for testing the Databases for the DataBackend.
-To start SAETester:
-
-1. go to the deployment folder and start the enviroment via docker compose:
-
-```bash
-cd deployment
-docker compose -f localenv-docker-compose.yml up
-```
-
-2. go to databackend/saetester/ and build the project:
-
-```bash
-mvn clean package
-```
-
-3. start project
-```bash
-java -jar saetester/target/seatester-0.0.1-SNAPSHOT.jar
 ```
