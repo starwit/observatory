@@ -67,15 +67,7 @@ After running Maven you can find a jar-file in folder _application/target_ and t
 java -jar application/target/application-0.0.1-SNAPSHOT.jar
 ```
 
-
-
-When using Docker compose application can be reached via those coordinates:
-
-* main context http://localhost:8081/databackend/
-* API docs / Swagger UI: http://localhost:8081/databackend/swagger-ui/index.html
-* If you are using keycloak:
-    * default user/password is admin/admin
-    * keycloak can be reached under http://localhost:8080/auth
+When using Docker compose application the API can be reached at: http://localhost:8082/databackend/api/ (e.g. .../api/obvervationJob)
 
 ## How to (manually) test
 - Start a SAE instance (see https://github.com/starwit/starwit-awareness-engine/tree/main/docker-compose)
