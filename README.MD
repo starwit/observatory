@@ -53,7 +53,7 @@ Note that application will need certain databases to run properly. You can eithe
 
 ```bash
 cd deployment
-docker compose -f localenv-docker-compose.yml up
+docker compose up
 ```
 
 Run following Command in Root folder:
