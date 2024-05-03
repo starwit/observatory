@@ -64,7 +64,12 @@ mvn clean install
 After running Maven you can find a jar-file in folder _application/target_ and that can be run like so:
 
 ```bash
-java -jar application/target/application-0.0.1-SNAPSHOT.jar
+java -jar application/target/application-*.jar
+```
+
+Alternatively, you can run the application using the Spring Boot Maven Plugin:
+```bash
+mvn spring-boot:run
 ```
 
 When using Docker compose application the API can be reached at: http://localhost:8082/databackend/api/ (e.g. .../api/obvervationJob)
