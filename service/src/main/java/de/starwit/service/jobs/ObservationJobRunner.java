@@ -35,8 +35,6 @@ public class ObservationJobRunner {
     @Value("${sae.redisStreamPrefix:output}")
     private String REDIS_STREAM_PREFIX;
 
-    private ExecutorService jobExecutor = Executors.newSingleThreadExecutor();
-
     private List<Subscription> activeSubscriptions = new ArrayList<>();
     private List<AbstractJob> activeJobs = new ArrayList<>();
 
@@ -95,15 +93,12 @@ public class ObservationJobRunner {
     }
             
     @Scheduled(fixedDelay = 500, timeUnit = TimeUnit.MILLISECONDS)
-    public void feedJobs() {
+    public void runJobs() {
         List<SaeDetectionDto> newDtos = saeMessageListener.getBufferedMessages();
         for (SaeDetectionDto dto : newDtos) {
             for (AbstractJob job : activeJobs) {
                 if (job.getConfigEntity().getCameraId().equals(dto.getCameraId())) {
-                    // TODO Could this have an message order / parallelism issue with multiple threads?
-                    jobExecutor.submit(() -> {
-                        job.processNewDetection(dto);
-                    });
+                    job.pushNewDetection(dto);
                 }
             }
         }
