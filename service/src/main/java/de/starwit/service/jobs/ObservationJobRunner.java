@@ -93,7 +93,7 @@ public class ObservationJobRunner {
     }
             
     @Scheduled(fixedDelay = 500, timeUnit = TimeUnit.MILLISECONDS)
-    public void runJobs() {
+    public void feedJobs() {
         List<SaeDetectionDto> newDtos = saeMessageListener.getBufferedMessages();
         for (SaeDetectionDto dto : newDtos) {
             for (AbstractJob job : activeJobs) {
