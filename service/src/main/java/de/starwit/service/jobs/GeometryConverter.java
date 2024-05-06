@@ -7,6 +7,7 @@ import java.awt.geom.Point2D;
 
 import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 import de.starwit.persistence.databackend.entity.PointEntity;
+import de.starwit.service.sae.SaeDetectionDto;
 
 /**
  * This class is a workaround until we have a proper concept 

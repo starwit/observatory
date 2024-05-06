@@ -1,53 +1,61 @@
 package de.starwit.service.jobs;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.connection.stream.MapRecord;
+import org.springframework.data.redis.connection.stream.ReadOffset;
+import org.springframework.data.redis.connection.stream.StreamOffset;
+import org.springframework.data.redis.stream.StreamMessageListenerContainer;
+import org.springframework.data.redis.stream.Subscription;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import de.starwit.persistence.databackend.entity.ObservationJobEntity;
-import de.starwit.pipeline.RedisConnectionNotAvailableException;
-import de.starwit.pipeline.SaeReader;
+import de.starwit.service.analytics.AreaOccupancyService;
+import de.starwit.service.analytics.LineCrossingService;
 import de.starwit.service.databackend.ObservationJobService;
-import de.starwit.visionapi.Messages.SaeMessage;
+import de.starwit.service.sae.SaeDetectionDto;
+import de.starwit.service.sae.SaeMessageListener;
 import jakarta.annotation.PostConstruct;
 
 @Component
-public class ObservationJobRunner implements Closeable {
+public class ObservationJobRunner {
 
     Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Value("${sae.redisStreamPrefix:output}")
     private String REDIS_STREAM_PREFIX;
 
-    @Value("${sae.redisHost:localhost}")
-    private String redisHost;
+    private ExecutorService jobExecutor = Executors.newSingleThreadExecutor();
 
-    @Value("${sae.redisPort:6379}")
-    private int redisPort;
+    private List<Subscription> activeSubscriptions = new ArrayList<>();
+    private List<AbstractJob> activeJobs = new ArrayList<>();
 
-    private List<JobData> jobsToRun = null;
-    private SaeReader saeReader = null;
+    private SaeMessageListener saeMessageListener = new SaeMessageListener();
+    private LineCrossingObservationListener lineCrossingObservationListener = new LineCrossingObservationListener();
+    private AreaOccupancyObservationListener areaOccupancyObservationListener = new AreaOccupancyObservationListener();
 
     @Lazy
     @Autowired
     private ObservationJobService observationJobService;
 
     @Autowired
-    private AreaOccupancyJob areaOccupancyJob;
+    private LineCrossingService lineCrossingService;
 
     @Autowired
-    private LineCrossingJob lineCrossingJob;
+    private AreaOccupancyService areaOccupancyService;
+
+    @Autowired
+    private StreamMessageListenerContainer<String, MapRecord<String, String, String>> streamListenerContainer;
 
     @PostConstruct
     private void init() {
@@ -56,83 +64,57 @@ public class ObservationJobRunner implements Closeable {
 
     public void refreshJobs() {
         log.debug("Refreshing jobs");
-        jobsToRun = new ArrayList<>();
-        List<ObservationJobEntity> enabledJobs = observationJobService.findByEnabledTrue();
-        for (ObservationJobEntity jobConfig : enabledJobs) {
-            jobsToRun.add(new JobData(jobConfig));
+
+        streamListenerContainer.stop();
+
+        for (Subscription activeSub : activeSubscriptions) {
+            streamListenerContainer.remove(activeSub);
         }
-        refreshSaeReader();
+
+        this.activeSubscriptions = new ArrayList<>();
+        this.activeJobs = new ArrayList<>();
+
+        List<ObservationJobEntity> enabledJobEntities = observationJobService.findByEnabledTrue();
+
+        for (ObservationJobEntity jobEntity : enabledJobEntities) {
+            AbstractJob job = switch (jobEntity.getType()) {
+                case AREA_OCCUPANCY -> new AreaOccupancyJob(jobEntity, areaOccupancyObservationListener);
+                case LINE_CROSSING -> new LineCrossingJob(jobEntity, lineCrossingObservationListener);
+            };
+            activeJobs.add(job);
+        }
+
+        for (String streamId : enabledJobEntities.stream().map(e -> e.getCameraId()).distinct().toList()) {
+            String streamKey = REDIS_STREAM_PREFIX + ":" + streamId;
+            StreamOffset<String> streamOffset = StreamOffset.create(streamKey, ReadOffset.lastConsumed());
+            Subscription redisSubscription = streamListenerContainer.receive(streamOffset, saeMessageListener);
+            activeSubscriptions.add(redisSubscription);
+        }
+
+        streamListenerContainer.start();        
     }
-    
-    private void refreshSaeReader() {
-        if (saeReader != null) {
-            saeReader.close();
-        }
-
-        List<String> sourceCameraIds = jobsToRun.stream()
-                .map(job -> REDIS_STREAM_PREFIX + ":" + job.getConfig().getCameraId())
-                .toList();
-
-        if (!sourceCameraIds.isEmpty()) {
-            saeReader = new SaeReader(sourceCameraIds, redisHost, redisPort);
-        }
-    }
-
-    @Scheduled(initialDelay = 1000, fixedRateString = "${analytics.jobRunInterval:10000}")
-    private void runJobs() {
-        if (jobsToRun == null || jobsToRun.isEmpty()) {
-            return;
-        }
-
-        for (JobData job : jobsToRun) {
-            try {
-                log.debug("Running job: {}", job.getConfig().getName());
-                switch (job.getConfig().getType()) {
-                    case LINE_CROSSING:
-                        lineCrossingJob.run(job);
-                        break;
-                    case AREA_OCCUPANCY:
-                        areaOccupancyJob.run(job);
-                        break;
-                    default:
-                        break;
-                }
-            } catch (Exception e) {
-                log.error("Exception during job run {}", job.getConfig().getName(), e);
-            }
-        }
-    }
-
-    @Scheduled(initialDelay = 1000, fixedRateString = "${sae.fetchDataInterval:2000}")
-    private void fetchData() throws RedisConnectionNotAvailableException {
-        if (jobsToRun == null || jobsToRun.isEmpty()) {
-            return;
-        }
-
-        List<SaeMessage> messages = saeReader.read(100, 500);
-        Map<String, List<SaeMessage>> messagesBySource = messages.stream().collect(Collectors.groupingBy(msg -> msg.getFrame().getSourceId()));
-        for (JobData jobData : jobsToRun) {
-            int discardCount = 0;
-            List<SaeMessage> relevantJobMessages = messagesBySource.get(jobData.getConfig().getCameraId());
-            if (relevantJobMessages == null) {
-                continue;
-            }
-            for (SaeMessage message : relevantJobMessages) {
-                for (SaeDetectionDto det : SaeDetectionDto.from(message)) {
-                    boolean success = jobData.getInputData().offer(det);
-                    if (!success) {
-                        discardCount++;
-                    }
+            
+    @Scheduled(fixedDelay = 500, timeUnit = TimeUnit.MILLISECONDS)
+    public void feedJobs() {
+        List<SaeDetectionDto> newDtos = saeMessageListener.getBufferedMessages();
+        for (SaeDetectionDto dto : newDtos) {
+            for (AbstractJob job : activeJobs) {
+                if (job.getConfigEntity().getCameraId().equals(dto.getCameraId())) {
+                    // TODO Could this have an message order / parallelism issue with multiple threads?
+                    jobExecutor.submit(() -> {
+                        job.processNewDetection(dto);
+                    });
                 }
             }
-            if (discardCount > 0) {
-                log.warn("Discarded {} messages for job {}", discardCount, jobData.getConfig().getName());
-            }
         }
     }
 
-    @Override
-    public void close() throws IOException {
-        saeReader.close();
+    @Scheduled(fixedDelay = 500, timeUnit = TimeUnit.MILLISECONDS)
+    public void storeObservations() {
+        List<AreaOccupancyObservation> areaOccupancyObservations = areaOccupancyObservationListener.getBufferedMessages();
+        areaOccupancyObservations.forEach(obs -> areaOccupancyService.addEntry(obs.jobEntity(), obs.occupancyTime(), obs.count()));
+        
+        List<LineCrossingObservation> lineCrossingObservations = lineCrossingObservationListener.getBufferedMessages();
+        lineCrossingObservations.forEach(obs -> lineCrossingService.addEntry(obs.det(), obs.direction(), obs.jobEntity()));
     }
 }

@@ -4,77 +4,54 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import de.starwit.persistence.analytics.entity.Direction;
 import de.starwit.persistence.databackend.entity.ObservationJobEntity;
-import de.starwit.service.analytics.LineCrossingService;
+import de.starwit.service.sae.SaeDetectionDto;
 
-@Component
-public class LineCrossingJob implements Job {
-
-    final Logger log = LoggerFactory.getLogger(this.getClass());
-
-    private LineCrossingService lineCrossingService;
+public class LineCrossingJob extends AbstractJob {
 
     private static int TARGET_WINDOW_SIZE_SEC = 1;
 
-    private Map<Long, TrajectoryStore> trajectoryStores = new HashMap<>();
-    private TrajectoryStore activeStore;
-    private Line2D activeCountingLine;
+    private TrajectoryStore trajectoryStore;
+    private Line2D countingLine;
     private Boolean isGeoReferenced;
+    private LineCrossingObservationListener observationListener;
 
-    @Autowired
-    public LineCrossingJob(LineCrossingService lineCrossingService) {
-        this.lineCrossingService = lineCrossingService;
+    public LineCrossingJob(ObservationJobEntity configEntity, LineCrossingObservationListener observationListener) {
+        super(configEntity);
+        this.observationListener = observationListener;
+        this.countingLine = GeometryConverter.lineFrom(this.configEntity);
+        this.isGeoReferenced = this.configEntity.getGeoReferenced();
+        this.trajectoryStore = new TrajectoryStore();
     }
 
     @Override
-    public void run(JobData jobData) {
-        activeCountingLine = GeometryConverter.lineFrom(jobData.getConfig());
-        activeStore = getStore(jobData.getConfig());
-        isGeoReferenced = jobData.getConfig().getGeoReferenced();
-        log.debug("store size: {}", activeStore.size());
+    protected void processNewDetection(SaeDetectionDto dto) {
+        log.debug("store size: {}", trajectoryStore.size());
 
-        SaeDetectionDto det;
-        while ((det = jobData.getInputData().poll()) != null) {
-            activeStore.addDetection(det);
-            trimTrajectory(det);
-            if (isTrajectoryValid(det)) {
-                if (objectHasCrossed(det)) {
-                    lineCrossingService.addEntry(det, getCrossingDirection(det), jobData.getConfig());
-                    activeStore.clear(det);
-                } else {
-                    activeStore.removeFirst(det);
-                }
+        trajectoryStore.addDetection(dto);
+        trimTrajectory(dto);
+        if (isTrajectoryValid(dto)) {
+            if (objectHasCrossed(dto)) {
+                observationListener.onObservation(dto, getCrossingDirection(dto), this.configEntity);
+                trajectoryStore.clear(dto);
+            } else {
+                trajectoryStore.removeFirst(dto);
             }
         }
-        activeStore.purge(Duration.ofSeconds(5));
-    }
-    
-    private TrajectoryStore getStore(ObservationJobEntity jobConfig) {
-        if (trajectoryStores.get(jobConfig.getId()) == null) {
-            TrajectoryStore newStore = new TrajectoryStore();
-            trajectoryStores.put(jobConfig.getId(), newStore);
-        }
-        return trajectoryStores.get(jobConfig.getId());
 
+        trajectoryStore.purge(Duration.ofSeconds(5));
     }
     
     private void trimTrajectory(SaeDetectionDto det) {
-        Instant trajectoryEnd = activeStore.getLast(det).getCaptureTs();
+        Instant trajectoryEnd = trajectoryStore.getLast(det).getCaptureTs();
 
         boolean trimming = true;
         while (trimming) {
-            Instant trajectoryStart = activeStore.getFirst(det).getCaptureTs();
+            Instant trajectoryStart = trajectoryStore.getFirst(det).getCaptureTs();
             if (Duration.between(trajectoryStart, trajectoryEnd).toSeconds() > TARGET_WINDOW_SIZE_SEC) {
-                activeStore.removeFirst(det);
+                trajectoryStore.removeFirst(det);
             } else {
                 trimming = false;
             }
@@ -83,22 +60,21 @@ public class LineCrossingJob implements Job {
     }
 
     private boolean isTrajectoryValid(SaeDetectionDto det) {
-        Instant trajectoryStart = activeStore.getFirst(det).getCaptureTs();
-        Instant trajectoryEnd = activeStore.getLast(det).getCaptureTs();
+        Instant trajectoryStart = trajectoryStore.getFirst(det).getCaptureTs();
+        Instant trajectoryEnd = trajectoryStore.getLast(det).getCaptureTs();
         return Duration.between(trajectoryStart, trajectoryEnd).toSeconds() >= TARGET_WINDOW_SIZE_SEC;
     }
 
     private boolean objectHasCrossed(SaeDetectionDto det) {
-        Point2D firstPoint = GeometryConverter.toCenterPoint(activeStore.getFirst(det), isGeoReferenced);
-        Point2D lastPoint = GeometryConverter.toCenterPoint(activeStore.getLast(det), isGeoReferenced);
+        Point2D firstPoint = GeometryConverter.toCenterPoint(trajectoryStore.getFirst(det), isGeoReferenced);
+        Point2D lastPoint = GeometryConverter.toCenterPoint(trajectoryStore.getLast(det), isGeoReferenced);
         Line2D trajectory = new Line2D.Double(firstPoint, lastPoint);
-        return trajectory.intersectsLine(activeCountingLine);
+        return trajectory.intersectsLine(countingLine);
     }
 
-
     private Direction getCrossingDirection(SaeDetectionDto det) {
-        Point2D trajectoryEnd = GeometryConverter.toCenterPoint(activeStore.getLast(det), isGeoReferenced);
-        int ccw = activeCountingLine.relativeCCW(trajectoryEnd);
+        Point2D trajectoryEnd = GeometryConverter.toCenterPoint(trajectoryStore.getLast(det), isGeoReferenced);
+        int ccw = countingLine.relativeCCW(trajectoryEnd);
         if (ccw == -1) {
             return Direction.out;
         } else {

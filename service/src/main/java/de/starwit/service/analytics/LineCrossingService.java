@@ -14,7 +14,7 @@ import de.starwit.persistence.analytics.entity.LineCrossingEntity;
 import de.starwit.persistence.analytics.entity.MetadataEntity;
 import de.starwit.persistence.analytics.repository.LineCrossingRepository;
 import de.starwit.persistence.databackend.entity.ObservationJobEntity;
-import de.starwit.service.jobs.SaeDetectionDto;
+import de.starwit.service.sae.SaeDetectionDto;
 
 @Service
 public class LineCrossingService {
