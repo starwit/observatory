@@ -72,9 +72,6 @@ spec:
               value: {{ .Values.sae.redisHost | quote }}
             - name: SAE_REDISPORT
               value: {{ .Values.sae.redisPort | quote }}
-            - name: SAE_FETCHDATAINTERVAL
-              value: {{ .Values.sae.fetchDataInterval | quote }}
-            
             - name: ANALYTICS_JOBRUNINTERVAL
               value: {{ .Values.analyticsJobRunInterval | quote }}
             - name: ANALYTICS_DATASOURCE_URL

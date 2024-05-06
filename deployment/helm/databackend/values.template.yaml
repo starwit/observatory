@@ -7,7 +7,6 @@ sae:
   redisStreamPrefix: geomapper
   redisHost: localhost
   redisPort: 6379
-  fetchDataInterval: 1000
 
 databases:
   databackend: 
