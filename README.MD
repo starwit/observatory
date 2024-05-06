@@ -78,7 +78,8 @@ When using Docker compose application the API can be reached at: http://localhos
 - Start a SAE instance (see https://github.com/starwit/starwit-awareness-engine/tree/main/docker-compose)
 - Start databackend infrastructure (`./deployment/postgreslocal-docker-compose.yaml`)
 - Start databackend with default settings
-- Add an observation job that makes sense for the video your SAE is processing, e.g. via curl, Postman, etc.\
+- Add an observation job that makes sense for the video your SAE is processing (use `POST /api/observation-job`).\
+  The easiest way is to use the integrated Swagger UI with the payload below (http://localhost:8082/databackend/swagger-ui/index.html).\
   Sample for the usual video:
     ```json
     {
