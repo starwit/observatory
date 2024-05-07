@@ -23,13 +23,18 @@ jobs:
     runs-on: [self-hosted, linux, X64]
 
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: '0'
-
     - uses: actions/setup-node@v4
       with:
         node-version: 20
+    
+    - name: Set up Maven
+      uses: stCarolas/setup-maven@v4.5
+      with:
+        maven-version: 3.9.2
+
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: '0'
 
     - name: generate tag and release body
       run: |
