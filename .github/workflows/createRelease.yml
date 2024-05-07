@@ -27,6 +27,10 @@ jobs:
       with:
         fetch-depth: '0'
 
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
     - name: generate tag and release body
       run: |
         RELEASE_TYPE=$(sh ${{ github.workspace }}/.github/workflows/getReleaseType.sh ${{ env.release-type }})
