@@ -1,51 +1,42 @@
 package de.starwit.service.jobs;
 
-import java.time.Instant;
-import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 
-import de.starwit.persistence.common.entity.AbstractCaptureEntity;
+import de.starwit.persistence.databackend.entity.ObservationJobEntity;
+import de.starwit.service.sae.SaeDetectionDto;
 
-public abstract class AbstractJob<E extends AbstractCaptureEntity> {
+public abstract class AbstractJob {
 
-    @Value("${analytics.maxDataInterval:10000}")
-    int maxDataInterval;
+    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+
+    private final Executor jobExecutor = Executors.newSingleThreadExecutor();
+
+    protected ObservationJobEntity configEntity;
     
-    final Logger log = LoggerFactory.getLogger(this.getClass());
-
-    public void run(JobData<E> jobData) throws InterruptedException {
-
-        if (jobData.getLastRetrievedTime().isBefore(Instant.now().minusMillis(maxDataInterval))) {
-            jobData.setLastRetrievedTime(Instant.now().minusMillis(maxDataInterval));
-        }
-
-        List<E> newData = this.getData(jobData);
-
-        int discardCount = 0;
-        boolean success = false;
-
-        if (newData != null && !newData.isEmpty()) {
-            jobData.setLastRetrievedTime(newData.get(newData.size() - 1).getCaptureTs());
-
-            for (E dataPoint : newData) {
-                success = jobData.getInputData().offer(dataPoint);
-                if (!success) {
-                    discardCount++;
-                }
-            }
-        }
-        
-        if (discardCount > 0) {
-            log.warn("Discarded {} elements", discardCount);
-        }
-
-        this.process(jobData);
+    public AbstractJob(ObservationJobEntity configEntity) {
+        this.configEntity = configEntity;
     }
 
-    abstract List<E> getData(JobData<E> jobData);
+    /**
+     * Submits a new detection to the job executor (jobs handle their processing in a separate thread)
+     * @param dto
+     */
+    public void pushNewDetection(SaeDetectionDto dto) {
+        jobExecutor.execute(() -> processNewDetection(dto));
+    }
 
-    abstract void process(JobData<E> jobData) throws InterruptedException;
+    /**
+     * Processes a new detection, i.e. does the actual analysis. Is being run in sequence on a separate thread.
+     * @param dto
+     */
+    protected abstract void processNewDetection(SaeDetectionDto dto);
+
+    public ObservationJobEntity getConfigEntity() {
+        return this.configEntity;
+    }
+
 }

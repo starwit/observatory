@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 import de.starwit.persistence.databackend.entity.PointEntity;
-import de.starwit.persistence.sae.entity.SaeDetectionEntity;
+import de.starwit.service.sae.SaeDetectionDto;
 
 public class Helper {
     
@@ -16,8 +16,8 @@ public class Helper {
         return point;
     }
 
-    static SaeDetectionEntity createDetection(Instant captureTs, Point2D center) {
-        SaeDetectionEntity det = new SaeDetectionEntity();
+    static SaeDetectionDto createDetection(Instant captureTs, Point2D center) {
+        SaeDetectionDto det = new SaeDetectionDto();
 
         det.setCaptureTs(captureTs);
         det.setMinX(center.getX() - 50);

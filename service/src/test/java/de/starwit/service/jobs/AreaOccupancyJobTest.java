@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.awt.geom.Point2D;
 import java.time.Instant;
@@ -18,50 +17,44 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 import de.starwit.persistence.databackend.entity.JobType;
-import de.starwit.persistence.sae.entity.SaeDetectionEntity;
-import de.starwit.persistence.sae.repository.SaeDao;
-import de.starwit.service.analytics.AreaOccupancyService;
+import de.starwit.persistence.databackend.entity.ObservationJobEntity;
+import de.starwit.service.sae.SaeDetectionDto;
 
 @ExtendWith(MockitoExtension.class)
 public class AreaOccupancyJobTest {
 
     @Mock
-    SaeDao saeDaoMock;
-
-    @Mock
-    AreaOccupancyService serviceMock;
+    AreaOccupancyObservationListener observationListenerMock;
     
     @Test
     public void testAreaOccupancy() throws InterruptedException {
         ObservationJobEntity jobEntity = prepareJobEntity();
-        JobData<SaeDetectionEntity> jobData = new JobData<>(jobEntity);
 
-        List<SaeDetectionEntity> detections = Arrays.asList(
+        List<SaeDetectionDto> detections = Arrays.asList(
             Helper.createDetection(Instant.ofEpochSecond(0), new Point2D.Double(50, 50)),
             Helper.createDetection(Instant.ofEpochSecond(0), new Point2D.Double(50, 50)),
             Helper.createDetection(Instant.ofEpochSecond(0), new Point2D.Double(50, 200)),
             Helper.createDetection(Instant.ofEpochSecond(0), new Point2D.Double(50, 200)),
-            Helper.createDetection(Instant.ofEpochSecond(1), new Point2D.Double(50, 50)),
-            Helper.createDetection(Instant.ofEpochSecond(1), new Point2D.Double(50, 50)),
-            Helper.createDetection(Instant.ofEpochSecond(1), new Point2D.Double(50, 50)),
-            Helper.createDetection(Instant.ofEpochSecond(1), new Point2D.Double(50, 200)),
             Helper.createDetection(Instant.ofEpochSecond(2), new Point2D.Double(50, 50)),
-            Helper.createDetection(Instant.ofEpochSecond(2), new Point2D.Double(50, 50))
+            Helper.createDetection(Instant.ofEpochSecond(2), new Point2D.Double(50, 50)),
+            Helper.createDetection(Instant.ofEpochSecond(2), new Point2D.Double(50, 50)),
+            Helper.createDetection(Instant.ofEpochSecond(2), new Point2D.Double(50, 200)),
+            Helper.createDetection(Instant.ofEpochSecond(5), new Point2D.Double(50, 50)),
+            Helper.createDetection(Instant.ofEpochSecond(5), new Point2D.Double(50, 50))
         );
 
-        when(saeDaoMock.getDetectionData(any(), any(), any())).thenReturn(detections);
+        AreaOccupancyJob testee = new AreaOccupancyJob(jobEntity, observationListenerMock);
 
-        AreaOccupancyJob testee = new AreaOccupancyJob(saeDaoMock, serviceMock);
-
-        testee.run(jobData);
+        for (SaeDetectionDto det : detections) {
+            testee.processNewDetection(det);
+        }
         
         ArgumentCaptor<ZonedDateTime> timeCaptor = ArgumentCaptor.forClass(ZonedDateTime.class);
         ArgumentCaptor<Long> countCaptor = ArgumentCaptor.forClass(Long.class);
 
-        verify(serviceMock, times(1)).addEntry(any(), timeCaptor.capture(), countCaptor.capture());
-        assertThat(timeCaptor.getValue().toEpochSecond()).isEqualTo(1);
+        verify(observationListenerMock, times(1)).onObservation(any(), timeCaptor.capture(), countCaptor.capture());
+        assertThat(timeCaptor.getValue().toEpochSecond()).isEqualTo(2);
         assertThat(countCaptor.getValue()).isEqualTo(3);
     }
 

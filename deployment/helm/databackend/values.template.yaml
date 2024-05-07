@@ -1,21 +1,25 @@
 app:
   context_path: "/databackend"
 
+analyticsJobRunInterval: 2000
+
+sae:
+  redisStreamPrefix: geomapper
+  redisHost: localhost
+  redisPort: 6379
+
 databases:
   databackend: 
     internal: true
-    url: local.starwit.de:31222
+    # `host` and `port` are only relevant if `internal` is `false`
+    host: local.starwit.de
+    port: 31222
     database: databackend
     username: databackend
     password: databackend
-  sae:
-    url: local.starwit.de:31222
-    database: sae
-    username: sae
-    password: sae
-    detectionTableName: detection
   analytics:
-    url: local.starwit.de:31222
+    host: local.starwit.de
+    port: 31222
     database: analytics
     username: analytics
     password: analytics 
