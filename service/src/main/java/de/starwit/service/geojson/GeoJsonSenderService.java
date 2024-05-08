@@ -32,7 +32,7 @@ public class GeoJsonSenderService {
     private URI GEO_JSON_URL;
 
     //TODO fix this
-    @Value("${geojson.requestTimeoutMs}")
+    @Value("${geojson.requestTimeoutMs:2000}")
     private int requestTimeoutMs;
 
     public GeoJsonSenderService() {

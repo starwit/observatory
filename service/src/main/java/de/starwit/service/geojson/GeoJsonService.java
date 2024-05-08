@@ -12,7 +12,7 @@ import de.starwit.service.jobs.LineCrossingObservation;
 @Service
 public class GeoJsonService {
     
-    @Value("${geojson.jobIncludeList}")
+    @Value("${geojson.jobIncludeList:}")
     private List<String> geoJsonJobIncludeList;
 
     @Autowired
