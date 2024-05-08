@@ -1,6 +1,5 @@
 package de.starwit.service.geojson;
 
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
 

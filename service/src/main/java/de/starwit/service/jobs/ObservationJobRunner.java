@@ -14,8 +14,6 @@ import org.springframework.data.redis.connection.stream.ReadOffset;
 import org.springframework.data.redis.connection.stream.StreamOffset;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
 import org.springframework.data.redis.stream.Subscription;
-import org.springframework.data.redis.stream.StreamMessageListenerContainer.StreamReadRequest;
-import org.springframework.data.redis.stream.StreamMessageListenerContainer.StreamReadRequestBuilder;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +22,7 @@ import de.starwit.service.analytics.AreaOccupancyService;
 import de.starwit.service.analytics.LineCrossingService;
 import de.starwit.service.databackend.ObservationJobService;
 import de.starwit.service.geojson.GeoJsonMapper;
+import de.starwit.service.geojson.GeoJsonSenderService;
 import de.starwit.service.geojson.GeoJsonService;
 import de.starwit.service.sae.SaeDetectionDto;
 import de.starwit.service.sae.SaeMessageListener;
@@ -117,12 +116,7 @@ public class ObservationJobRunner {
         List<LineCrossingObservation> lineCrossingObservations = lineCrossingObservationListener.getBufferedMessages();
         lineCrossingObservations.forEach(obs -> lineCrossingService.addEntry(obs.det(), obs.direction(), obs.jobEntity()));
 
-        if (!areaOccupancyObservations.isEmpty()) {
-            geoJsonService.sendGeoJson(GeoJsonMapper.mapAreaOccupancies(areaOccupancyObservations));
-        }
-
-        if (!lineCrossingObservations.isEmpty()) {
-            geoJsonService.sendGeoJson(GeoJsonMapper.mapLineCrossings(lineCrossingObservations));
-        }
+        geoJsonService.sendAreaOccupancies(areaOccupancyObservations);
+        geoJsonService.sendLineCrossings(lineCrossingObservations);
     }
 }
