@@ -24,10 +24,10 @@ public class GeoJsonService {
     private final RestClient restClient;
     private final ObjectMapper objectMapper;
 
-    @Value("${geojson.enabled}")
+    @Value("${geojson.enabled:false}")
     private boolean geoJsonEnabled;
 
-    @Value("${geojson.targetRestEndpointUrl}")
+    @Value("${geojson.targetRestEndpointUrl:http://localhost:12345}")
     private URI GEO_JSON_URL;
 
     @Value("${geojson.requestTimeoutMs:2000}")
