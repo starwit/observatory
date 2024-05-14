@@ -51,6 +51,7 @@ public class GeoJsonMapper {
         ));
 
         feature.setProperty("timestamp", lineCrossingObservation.det().getCaptureTs().atZone(ZoneOffset.UTC).toString());
+        feature.setProperty("object_class_id", lineCrossingObservation.det().getClassId());
         feature.setProperty("direction", lineCrossingObservation.direction().name());
         feature.setProperty("name", lineCrossingObservation.jobEntity().getName());
 
