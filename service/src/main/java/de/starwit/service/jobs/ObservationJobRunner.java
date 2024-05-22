@@ -2,8 +2,6 @@ package de.starwit.service.jobs;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -89,9 +87,9 @@ public class ObservationJobRunner {
             activeSubscriptions.add(redisSubscription);
         }
 
-        streamListenerContainer.start();        
+        streamListenerContainer.start();
     }
-            
+
     @Scheduled(fixedDelay = 500, timeUnit = TimeUnit.MILLISECONDS)
     public void feedJobs() {
         List<SaeDetectionDto> newDtos = saeMessageListener.getBufferedMessages();

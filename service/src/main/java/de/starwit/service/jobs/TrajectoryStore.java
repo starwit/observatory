@@ -59,9 +59,13 @@ public class TrajectoryStore {
         }
     }
 
-    public void purge(Duration maxAge) {
+    /**
+     * Purges all trajectories that have not been updated since the given time minus 60 seconds.
+     * @param latestTimestamp
+     */
+    public void purge(Instant latestTimestamp) {
         List<String> keysToDelete = new ArrayList<>();
-        Instant cutOff = Instant.now().minus(maxAge);
+        Instant cutOff = latestTimestamp.minus(Duration.ofSeconds(60));
         for (Entry<String, LinkedList<SaeDetectionDto>> entry: trajectoryByObjId.entrySet()) {
             if (entry.getValue().isEmpty() || entry.getValue().getLast().getCaptureTs().isBefore(cutOff)) {
                 keysToDelete.add(entry.getKey());
