@@ -26,7 +26,7 @@ public class AreaOccupancyService {
 
     @Transactional("analyticsTransactionManager")
     public void addEntry(ObservationJobEntity jobEntity, ZonedDateTime occupancyTime, Long count) {
-        log.info("Detected {} objects of class {} in area (name={})", count, jobEntity.getDetectionClassId(), jobEntity.getName());
+        log.info("Detected {} objects of class {} in area (area={}, name={})", count, jobEntity.getDetectionClassId(), jobEntity.getObservationAreaId(), jobEntity.getName());
         
         MetadataEntity metadata = metadataService.saveMetadataForJob(jobEntity);
         
