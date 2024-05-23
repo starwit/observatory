@@ -41,7 +41,7 @@ public class LineCrossingJob extends AbstractJob {
             }
         }
 
-        trajectoryStore.purge(Duration.ofSeconds(5));
+        trajectoryStore.purge(dto.getCaptureTs());
     }
     
     private void trimTrajectory(SaeDetectionDto det) {

@@ -93,9 +93,9 @@ public class ObservationJobRunner {
             activeSubscriptions.add(redisSubscription);
         }
 
-        streamListenerContainer.start();        
+        streamListenerContainer.start();
     }
-            
+
     @Scheduled(fixedDelay = 500, timeUnit = TimeUnit.MILLISECONDS)
     public void feedJobs() {
         List<SaeDetectionDto> newDtos = saeMessageListener.getBufferedMessages();
