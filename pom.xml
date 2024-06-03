@@ -11,7 +11,7 @@
 
     <groupId>de.starwit</groupId>
     <artifactId>databackend</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <description>Runs analytics jobs on SAE outputs and persists results for visualization.</description>
     <packaging>pom</packaging>
 
