@@ -3,6 +3,7 @@ package de.starwit.application;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 @EnableTransactionManagement
 @EnableScheduling
+@EnableAsync
 @SpringBootApplication(scanBasePackages = {
         "de.starwit.rest",
         "de.starwit.service",

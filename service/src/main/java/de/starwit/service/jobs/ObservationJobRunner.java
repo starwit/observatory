@@ -2,8 +2,6 @@ package de.starwit.service.jobs;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -23,6 +21,9 @@ import de.starwit.persistence.databackend.entity.ObservationJobEntity;
 import de.starwit.service.analytics.AreaOccupancyService;
 import de.starwit.service.analytics.LineCrossingService;
 import de.starwit.service.databackend.ObservationJobService;
+import de.starwit.service.geojson.GeoJsonMapper;
+import de.starwit.service.geojson.GeoJsonSenderService;
+import de.starwit.service.geojson.GeoJsonService;
 import de.starwit.service.sae.SaeDetectionDto;
 import de.starwit.service.sae.SaeMessageListener;
 import jakarta.annotation.PostConstruct;
@@ -51,6 +52,9 @@ public class ObservationJobRunner {
 
     @Autowired
     private AreaOccupancyService areaOccupancyService;
+
+    @Autowired
+    private GeoJsonService geoJsonService;
 
     @Autowired
     private StreamMessageListenerContainer<String, MapRecord<String, String, String>> streamListenerContainer;
@@ -89,9 +93,9 @@ public class ObservationJobRunner {
             activeSubscriptions.add(redisSubscription);
         }
 
-        streamListenerContainer.start();        
+        streamListenerContainer.start();
     }
-            
+
     @Scheduled(fixedDelay = 500, timeUnit = TimeUnit.MILLISECONDS)
     public void feedJobs() {
         List<SaeDetectionDto> newDtos = saeMessageListener.getBufferedMessages();
@@ -111,5 +115,8 @@ public class ObservationJobRunner {
         
         List<LineCrossingObservation> lineCrossingObservations = lineCrossingObservationListener.getBufferedMessages();
         lineCrossingObservations.forEach(obs -> lineCrossingService.addEntry(obs.det(), obs.direction(), obs.jobEntity()));
+
+        geoJsonService.sendAreaOccupancies(areaOccupancyObservations);
+        geoJsonService.sendLineCrossings(lineCrossingObservations);
     }
 }
