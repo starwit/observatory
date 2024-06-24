@@ -1,11 +1,13 @@
 package de.starwit.service.sae;
 
+import java.time.Duration;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.connection.stream.MapRecord;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
 
@@ -20,12 +22,14 @@ public class RedisConfiguration {
     
     @Bean
     StreamMessageListenerContainer<String, MapRecord<String, String, String>> streamMessageListenerContainer() {
-        return StreamMessageListenerContainer.create(redisConnectionFactory());
+        return StreamMessageListenerContainer.create(lettuceConnectionFactory());
     }
 
     @Bean
-    RedisConnectionFactory redisConnectionFactory() {
-        return new JedisConnectionFactory(new RedisStandaloneConfiguration(redisHost, redisPort));
+    LettuceConnectionFactory lettuceConnectionFactory() {
+        return new LettuceConnectionFactory(
+            new RedisStandaloneConfiguration(redisHost, redisPort), 
+            LettuceClientConfiguration.builder().commandTimeout(Duration.ofDays(9999)).build());
     }
     
 }
