@@ -41,7 +41,7 @@ Please note DataBackend is just one of a collection of components and thus helmf
 
 __Prerequisites__ 
 
-* Java JDK 17 or later
+* Java JDK 21 or later
 * Maven 3
 * PostgreSQL (available for development via docker-compose scripts)
 * Keycloak for authentication (optional)
