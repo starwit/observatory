@@ -74,6 +74,11 @@ mvn spring-boot:run
 
 When using Docker compose application the API can be reached at: http://localhost:8082/databackend/api/ (e.g. .../api/obvervationJob)
 
+## How to build docker image
+As long as `vision-lib` and `vision-api` are not publicly available yet, we need to provide the docker build with a settings.xml,
+that contains the GitHub package registry credentials (i.e. one that you have correctly set up for a local build).\
+Then, run the build command with a secret mount: `docker build -t A_TAG_YOU_LIKE --secret id=mvn-settings,src=$HOME/.m2/settings.xml .`
+
 ## How to (manually) test
 - Start a SAE instance (see https://github.com/starwit/starwit-awareness-engine/tree/main/docker-compose)
 - Start databackend infrastructure (`./deployment/postgreslocal-docker-compose.yaml`)

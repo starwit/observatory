@@ -1,21 +1,14 @@
-FROM maven:3-eclipse-temurin-21 as build
+FROM maven:3-eclipse-temurin-21 AS build
 
 WORKDIR /code
 
-COPY ${HOME}/.m2/settings.xml /root/.m2
-
-COPY pom.xml .
-COPY application/pom.xml application/pom.xml
-COPY persistence/pom.xml persistence/pom.xml
-COPY rest/pom.xml rest/pom.xml
-COPY service/pom.xml service/pom.xml
-
-RUN mvn verify --fail-never
-
 COPY . .
-RUN mvn package
+RUN \
+    --mount=type=cache,target=/root/.m2 \
+    --mount=type=secret,target=/root/.m2/settings.xml,id=mvn-settings,required=true \
+    mvn package
 
 FROM eclipse-temurin:21-jre
 
-COPY --from=build /code/target/*.jar /application.jar
+COPY --from=build /code/application/target/*.jar /application.jar
 ENTRYPOINT [ "java", "-jar", "/application.jar" ]
