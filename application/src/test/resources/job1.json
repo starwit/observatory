@@ -1,0 +1,22 @@
+{
+	"name": "job1",
+	"observationAreaId": 1,
+	"cameraId": "stream1",
+	"detectionClassId": 2,
+	"type": "LINE_CROSSING",
+	"enabled": true,
+	"geoReferenced": false,
+	"classification": "Lichtschranke",
+	"geometryPoints": [
+		{
+			"x": 0.547,
+			"y": 0.426,
+			"orderIdx": 0
+		},
+		{
+			"x": 0.729,
+			"y": 0.509,
+			"orderIdx": 1
+		}
+	]
+}

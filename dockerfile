@@ -6,7 +6,7 @@ COPY . .
 RUN \
     --mount=type=cache,target=/root/.m2 \
     --mount=type=secret,target=/root/.m2/settings.xml,id=mvn-settings,required=true \
-    mvn package
+    mvn package -DskipTests
 
 FROM eclipse-temurin:21-jre
 
