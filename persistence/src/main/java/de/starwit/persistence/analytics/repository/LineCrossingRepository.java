@@ -22,11 +22,10 @@ public class LineCrossingRepository {
 
     @Transactional("analyticsTransactionManager")
     public void insert(LineCrossingEntity entity) {
-        String insertString = "insert into linecrossing(crossing_time, observation_area_id, object_id, direction, object_class_id, metadata_id) values(:crossingTime, :observationAreaId, :objectId, :direction, :classId, :metadataId)";
+        String insertString = "insert into linecrossing(crossing_time, object_id, direction, object_class_id, metadata_id) values(:crossingTime, :objectId, :direction, :classId, :metadataId)";
 
         entityManager.createNativeQuery(insertString)
                 .setParameter("crossingTime", entity.getCrossingTime())
-                .setParameter("observationAreaId", entity.getObservationAreaId())
                 .setParameter("objectId", entity.getObjectId())
                 .setParameter("direction", entity.getDirection().toString())
                 .setParameter("classId", entity.getObjectClassId())

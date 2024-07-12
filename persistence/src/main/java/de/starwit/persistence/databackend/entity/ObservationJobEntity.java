@@ -1,5 +1,6 @@
 package de.starwit.persistence.databackend.entity;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import de.starwit.persistence.common.entity.AbstractEntity;
@@ -40,6 +41,12 @@ public class ObservationJobEntity extends AbstractEntity<Long> {
 
     @Column(name = "geo_referenced")
     private Boolean geoReferenced;
+
+    @Column(name = "center_longitude")
+    private BigDecimal centerLongitude;
+
+    @Column(name = "center_latitude")
+    private BigDecimal centerLatitude;
 
     @OneToMany(mappedBy = "observationJob", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<PointEntity> geometryPoints;
@@ -115,4 +122,21 @@ public class ObservationJobEntity extends AbstractEntity<Long> {
     public void setGeoReferenced(Boolean geoReferenced) {
         this.geoReferenced = geoReferenced;
     }
+
+    public BigDecimal getCenterLongitude() {
+        return centerLongitude;
+    }
+
+    public void setCenterLongitude(BigDecimal centerLongitude) {
+        this.centerLongitude = centerLongitude;
+    }
+
+    public BigDecimal getCenterLatitude() {
+        return centerLatitude;
+    }
+
+    public void setCenterLatitude(BigDecimal centerLatitude) {
+        this.centerLatitude = centerLatitude;
+    }
+    
 }
