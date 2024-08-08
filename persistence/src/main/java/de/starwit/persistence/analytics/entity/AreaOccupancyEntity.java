@@ -26,11 +26,6 @@ public class AreaOccupancyEntity {
     @JsonDeserialize(using = ZonedDateTimeDeserializer.class)
     private ZonedDateTime occupancyTime;
 
-    // entity fields
-    @NotNull
-    @Column(name = "observation_area_id", nullable = false)
-    private Long observationAreaId;
-
     @NotNull
     @Column(name = "count", nullable = false)
     private Integer count;
@@ -56,14 +51,6 @@ public class AreaOccupancyEntity {
 
     public void setOccupancyTime(ZonedDateTime occupancyTime) {
         this.occupancyTime = occupancyTime;
-    }
-
-    public Long getObservationAreaId() {
-        return observationAreaId;
-    }
-
-    public void setObservationAreaId(Long observationAreaId) {
-        this.observationAreaId = observationAreaId;
     }
 
     public Integer getCount() {

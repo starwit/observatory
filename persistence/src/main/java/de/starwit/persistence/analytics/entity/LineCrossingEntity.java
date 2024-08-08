@@ -29,10 +29,6 @@ public class LineCrossingEntity {
     private ZonedDateTime crossingTime;
 
     // entity fields
-    @NotNull
-    @Column(name = "observation_area_id", nullable = false)
-    private Long observationAreaId;
-
     @Column(name = "object_id")
     private String objectId;
 
@@ -61,15 +57,6 @@ public class LineCrossingEntity {
 
     public void setMetadataId(Long metadata) {
         this.metadataId = metadata;
-    }
-
-    // entity fields getters and setters
-    public Long getObservationAreaId() {
-        return observationAreaId;
-    }
-
-    public void setObservationAreaId(Long observationAreaId) {
-        this.observationAreaId = observationAreaId;
     }
 
     public String getObjectId() {

@@ -33,7 +33,6 @@ public class AreaOccupancyService {
         AreaOccupancyEntity entity = new AreaOccupancyEntity();
         entity.setCount(Math.toIntExact(count));
         entity.setOccupancyTime(occupancyTime);
-        entity.setObservationAreaId(jobEntity.getObservationAreaId());
         entity.setObjectClassId(jobEntity.getDetectionClassId());
         entity.setMetadataId(metadata.getId());
         areaoccupancyRepository.insert(entity);

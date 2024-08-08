@@ -1,5 +1,6 @@
 package de.starwit.persistence.analytics.entity;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import de.starwit.persistence.common.entity.AbstractEntity;
@@ -24,6 +25,15 @@ public class MetadataEntity extends AbstractEntity<Long> {
 
     @Column(name = "geo_referenced")
     private Boolean geoReferenced;
+
+    @Column(name = "center_longitude")
+    private BigDecimal centerLongitude;
+
+    @Column(name = "center_latitude")
+    private BigDecimal centerLatitude;
+
+    @Column(name = "observation_area_id")
+    private Long observationAreaId;
 
     @OneToMany(mappedBy = "metadata", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<CoordinateEntity> geometryCoordinates;
@@ -60,4 +70,28 @@ public class MetadataEntity extends AbstractEntity<Long> {
         this.geometryCoordinates = geometryCoordinates;
     }
 
+    public BigDecimal getCenterLongitude() {
+        return centerLongitude;
+    }
+
+    public void setCenterLongitude(BigDecimal centerLongitude) {
+        this.centerLongitude = centerLongitude;
+    }
+
+    public BigDecimal getCenterLatitude() {
+        return centerLatitude;
+    }
+
+    public void setCenterLatitude(BigDecimal centerLatitude) {
+        this.centerLatitude = centerLatitude;
+    }
+
+    public Long getObservationAreaId() {
+        return observationAreaId;
+    }
+
+    public void setObservationAreaId(Long observationAreaId) {
+        this.observationAreaId = observationAreaId;
+    }
+    
 }
