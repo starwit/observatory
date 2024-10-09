@@ -133,8 +133,7 @@ public class ObservationJobControllerAcceptanceTest extends AbstractControllerAc
     public void canDeleteAll() throws Exception {
         // given
         ObservationJobEntity entity = readFromFile(data + "job1.json");
-        MockHttpServletResponse response1 = create(entity);
-        MockHttpServletResponse response2 = create(entity);
+        create(entity);
     
         // when
         MockHttpServletResponse deleteResponse = deleteAll();
@@ -152,9 +151,9 @@ public class ObservationJobControllerAcceptanceTest extends AbstractControllerAc
         // given
         ObservationJobEntity entity = readFromFile(data + "job1.json");
         entity.setObservationAreaId(1L);
-        MockHttpServletResponse response1 = create(entity);
+        create(entity);
         entity.setObservationAreaId(2L);
-        MockHttpServletResponse response2 = create(entity);
+        create(entity);
     
         // when
         MockHttpServletResponse deleteResponse = deleteByObservationAreaId(1L);
