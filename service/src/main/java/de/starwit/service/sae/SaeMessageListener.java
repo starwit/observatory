@@ -13,7 +13,7 @@ import org.springframework.data.redis.stream.StreamListener;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
-import de.starwit.visionapi.Messages.SaeMessage;
+import de.starwit.visionapi.Sae.SaeMessage;
 
 public class SaeMessageListener implements StreamListener<String, MapRecord<String, String, String>> {
 

@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.List;
 
-import de.starwit.visionapi.Messages.Detection;
-import de.starwit.visionapi.Messages.SaeMessage;
+import de.starwit.visionapi.Sae.Detection;
+import de.starwit.visionapi.Sae.SaeMessage;
 
 public class SaeDetectionDto {
 
