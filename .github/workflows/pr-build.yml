@@ -31,24 +31,10 @@ jobs:
       with:
         fetch-depth: '0'
 
-    - name: setup node
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
-        
-    - run: npm --version
-    - run: node --version
     - run: mvn --version
 
-    - name: npm install
-      run: |
-        if [ -d "webclient/app" ]; then
-          cd webclient/app
-          npm install
-        fi
-
     - name: Build with Maven
-      run: mvn clean -B package -P frontend --settings .github/workflows/settings.xml --file pom.xml
+      run: mvn clean -B package --settings .github/workflows/settings.xml --file pom.xml
       env:
          CI: false
          PRIVATE_REPO_USERNAME: ${{ vars.PRIVATE_REPO_USERNAME }}

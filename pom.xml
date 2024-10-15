@@ -11,9 +11,14 @@
 
     <groupId>de.starwit</groupId>
     <artifactId>databackend</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1-SNAPSHOT</version>
     <description>Runs analytics jobs on SAE outputs and persists results for visualization.</description>
     <packaging>pom</packaging>
+
+    <scm>
+        <connection>scm:git:https://github.com/starwit/databackend.git</connection>
+        <tag>1.2.0</tag>
+    </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -117,8 +122,99 @@
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>${spring-boot-version}</version>
                     <configuration>
-                        <skip>true</skip>
+                        <skip>false</skip>
+                        <mainClass>de.starwit.application.Application</mainClass>
                     </configuration>
+                    <executions>
+                        <execution>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>build-info</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>3.1.1</version>
+                    <configuration>
+                        <checkModificationExcludes>
+                            <checkModificationExclude>pom.xml</checkModificationExclude>
+                        </checkModificationExcludes>
+                        <tagNameFormat>@{project.version}</tagNameFormat>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>3.1.0</version>
+                    <executions>
+                        <execution>
+                            <phase>prepare-package</phase>
+                            <configuration>
+                                <target>
+                                    <concat
+                                        destfile="${project.build.outputDirectory}/static/info.txt">
+                                        <fileset
+                                            file="${project.build.outputDirectory}/META-INF/build-info.properties" />
+                                        <fileset
+                                            file="${project.build.outputDirectory}/git.properties" />
+                                        <filterchain>
+                                            <filterreader
+                                                classname="org.apache.tools.ant.filters.LineContains">
+                                                <param type="negate" value="true" />
+                                                <param type="contains" value="#" />
+                                            </filterreader>
+                                            <replaceregex pattern="=" replace=": " />
+                                        </filterchain>
+                                    </concat>
+                                </target>
+                            </configuration>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>se.bjurr.gitchangelog</groupId>
+                    <artifactId>git-changelog-maven-plugin</artifactId>
+                    <version>2.2.0</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.openjdk.nashorn</groupId>
+                            <artifactId>nashorn-core</artifactId>
+                            <version>15.4</version>
+                        </dependency>
+                    </dependencies>
+                    <executions>
+                        <execution>
+                            <id>GenerateGitChangelogTemplateFromFileAndToken</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>git-changelog</goal>
+                            </goals>
+                            <configuration>
+                                <customIssues>
+                                    <customIssue>
+                                        <name>Incident</name>
+                                        <pattern>^feat:|^fix:|^feat!:|^BREAKING
+                                            CHANGE:|^fix!:|^BREAKING
+                                            CHANGE!:</pattern>
+                                        <title>${PATTERN_GROUP_1}</title>
+                                    </customIssue>
+                                </customIssues>
+                                <useIntegrations>true</useIntegrations>
+                                <readableTagName>-([^-]+?)$</readableTagName>
+                                <ignoreCommitsWithoutIssue>true</ignoreCommitsWithoutIssue>
+                                <ignoreCommitsIfMessageMatches>^\\[maven-release-plugin\\].*|^\\[Gradle
+                                    Release Plugin\\].*|^Merge.*</ignoreCommitsIfMessageMatches>
+                                <untaggedName>Current Version</untaggedName>
+                                <file>../CHANGELOG.md</file>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
