@@ -4,11 +4,9 @@ description: A Helm chart to deploy DataBackend to Kubernetes
 
 type: application
 
-# This is the chart version.
-version: 1.2.0
+version: ${project.version}
 
-# Docker image version number
-appVersion: 1.2.0
+appVersion: "${project.version}"
 
 dependencies:
   - name: postgresql
