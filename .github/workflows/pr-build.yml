@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 
-# just runs Maven, NPM and Docker build
+# just runs Maven and Docker build
 jobs:
   build:
     name: "Install software"
