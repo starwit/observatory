@@ -1,7 +1,7 @@
 {{- $appDbUrl := "" }}
 {{- $appDbHost := "" }}
 {{- $appDbPort := "" }}
-{{- with .Values.databases.databackend }}
+{{- with .Values.databases.observatory }}
   {{- if .internal }}
   {{- $appDbHost = (include "postgresql.servicename" $) }}
   {{- $appDbPort = 5432 }}
@@ -17,14 +17,14 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "databackend.fullname" . }}
+  name: {{ include "observatory.fullname" . }}
   labels:
-    {{- include "databackend.labels" . | nindent 4 }}
+    {{- include "observatory.labels" . | nindent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      {{- include "databackend.selectorLabels" . | nindent 6 }}
+      {{- include "observatory.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -32,13 +32,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "databackend.selectorLabels" . | nindent 8 }}
+        {{- include "observatory.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "databackend.serviceAccountName" . }}
+      serviceAccountName: {{ include "observatory.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
@@ -62,9 +62,9 @@ spec:
             - name: SPRING_DATASOURCE_URL
               value: jdbc:postgresql://{{ $appDbUrl }}
             - name: SPRING_DATASOURCE_USERNAME
-              value: {{ .Values.databases.databackend.username }}
+              value: {{ .Values.databases.observatory.username }}
             - name: SPRING_DATASOURCE_PASSWORD
-              value: {{ .Values.databases.databackend.password }}
+              value: {{ .Values.databases.observatory.password }}
 
             - name: SAE_REDISSTREAMPREFIX
               value: {{ .Values.sae.redisStreamPrefix | quote }}

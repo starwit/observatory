@@ -1,15 +1,15 @@
-name: databackend
+name: observatory
 
 services:
   postgres:
     image: postgres:latest
     environment:
-      POSTGRES_DB: databackend
-      POSTGRES_USER: databackend
-      POSTGRES_PASSWORD: databackend
+      POSTGRES_DB: observatory
+      POSTGRES_USER: observatory
+      POSTGRES_PASSWORD: observatory
       PGDATA: /var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U databackend']
+      test: ['CMD-SHELL', 'pg_isready -U observatory']
       interval: 5s
       timeout: 60s
       retries: 30

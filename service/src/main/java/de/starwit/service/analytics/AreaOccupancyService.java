@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import de.starwit.persistence.analytics.entity.AreaOccupancyEntity;
 import de.starwit.persistence.analytics.entity.MetadataEntity;
 import de.starwit.persistence.analytics.repository.AreaOccupancyRepository;
-import de.starwit.persistence.databackend.entity.ObservationJobEntity;
+import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 
 @Service
 public class AreaOccupancyService {

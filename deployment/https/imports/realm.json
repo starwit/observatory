@@ -1,6 +1,6 @@
 {
-  "id": "databackend",
-  "realm": "databackend",
+  "id": "observatory",
+  "realm": "observatory",
   "enabled": true,
   "roles": {
     "realm": [
@@ -8,32 +8,32 @@
         "name": "ROLE_user",
         "composite": false,
         "clientRole": false,
-        "containerId": "databackend",
+        "containerId": "observatory",
         "attributes": {}
       },
       {
         "name": "ROLE_admin",
         "composite": false,
         "clientRole": false,
-        "containerId": "databackend",
+        "containerId": "observatory",
         "attributes": {}
       },
       {
         "name": "ROLE_reader",
         "composite": false,
         "clientRole": false,
-        "containerId": "databackend",
+        "containerId": "observatory",
         "attributes": {}
       }
     ],
     "client": {
-      "databackend": []
+      "observatory": []
     }
   },
   "groups": [
     {
-      "name": "databackend-default",
-      "path": "/databackend-default",
+      "name": "observatory-default",
+      "path": "/observatory-default",
       "attributes": {},
       "realmRoles": [
         "ROLE_reader"
@@ -43,12 +43,12 @@
     }
   ],
   "defaultGroups": [
-    "/databackend-default"
+    "/observatory-default"
   ],
   "clients": [
     {
-      "clientId": "databackend",
-      "name": "databackend",
+      "clientId": "observatory",
+      "name": "observatory",
       "rootUrl": "https://pb.starwit.de",
       "baseUrl": "https://pb.starwit.de",
       "surrogateAuthRequired": false,

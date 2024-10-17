@@ -1,11 +1,11 @@
-package de.starwit.persistence.databackend.repository;
+package de.starwit.persistence.observatory.repository;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import de.starwit.persistence.databackend.entity.ObservationJobEntity;
+import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 
 /**
  * ObjectClass Repository class

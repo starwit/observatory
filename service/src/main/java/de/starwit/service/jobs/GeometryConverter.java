@@ -5,8 +5,8 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 
-import de.starwit.persistence.databackend.entity.ObservationJobEntity;
-import de.starwit.persistence.databackend.entity.PointEntity;
+import de.starwit.persistence.observatory.entity.ObservationJobEntity;
+import de.starwit.persistence.observatory.entity.PointEntity;
 import de.starwit.service.sae.SaeDetectionDto;
 
 /**

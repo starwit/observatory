@@ -17,10 +17,10 @@ import org.springframework.data.redis.stream.Subscription;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import de.starwit.persistence.databackend.entity.ObservationJobEntity;
+import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 import de.starwit.service.analytics.AreaOccupancyService;
 import de.starwit.service.analytics.LineCrossingService;
-import de.starwit.service.databackend.ObservationJobService;
+import de.starwit.service.observatory.ObservationJobService;
 import de.starwit.service.geojson.GeoJsonService;
 import de.starwit.service.sae.SaeDetectionDto;
 import de.starwit.service.sae.SaeMessageListener;

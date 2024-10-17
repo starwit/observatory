@@ -13,7 +13,7 @@ import org.geojson.LngLatAlt;
 import org.geojson.Point;
 import org.geojson.Polygon;
 
-import de.starwit.persistence.databackend.entity.PointEntity;
+import de.starwit.persistence.observatory.entity.PointEntity;
 import de.starwit.service.jobs.AreaOccupancyObservation;
 import de.starwit.service.jobs.LineCrossingObservation;
 

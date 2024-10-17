@@ -50,9 +50,9 @@ jobs:
       uses: azure/setup-helm@v4
 
     - name: run helm dependency update
-      working-directory: application/target/helm/databackend
+      working-directory: application/target/helm/observatory
       run: helm dep update
 
     - name: run helm template
       working-directory: application/target/helm
-      run: helm template databackend
+      run: helm template observatory

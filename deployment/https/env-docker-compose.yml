@@ -32,14 +32,14 @@ services:
       PGADMIN_DEFAULT_PASSWORD: ${DB_PW_ROOT}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     volumes:
-       - databackend-pgadmin:/var/lib/pgadmin
+       - observatory-pgadmin:/var/lib/pgadmin
     ports:
       - "5050:80"
     networks:
       - backend
     restart: unless-stopped
 
-  databackend-db-keycloak:
+  observatory-db-keycloak:
     image: postgres:latest
     restart: on-failure
     environment:
@@ -53,20 +53,20 @@ services:
       timeout: 60s
       retries: 30
     volumes:
-      - databackend-keycloak-db:/var/lib/postgresql/data
+      - observatory-keycloak-db:/var/lib/postgresql/data
     networks:
       - backend
 
-  databackend-keycloak:
+  observatory-keycloak:
     image: quay.io/keycloak/keycloak
     volumes:
       - ./keycloak/imports:/opt/keycloak/data/import
     depends_on:
-      databackend-db-keycloak:
+      observatory-db-keycloak:
         condition: service_healthy
     restart: on-failure
     environment:
-      KC_DB_URL: jdbc:postgresql://databackend-db-keycloak:5432/keycloak
+      KC_DB_URL: jdbc:postgresql://observatory-db-keycloak:5432/keycloak
       KC_DB: postgres
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: ${DB_PW_KEYCLOAK}

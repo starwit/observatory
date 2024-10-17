@@ -6,7 +6,7 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.starwit.persistence.databackend.entity.ObservationJobEntity;
+import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 import de.starwit.service.sae.SaeDetectionDto;
 
 public abstract class AbstractJob {

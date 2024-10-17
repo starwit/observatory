@@ -1,4 +1,4 @@
-package de.starwit.persistence.databackend;
+package de.starwit.persistence.observatory;
 
 import java.util.Objects;
 
@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = "de.starwit.persistence.databackend", entityManagerFactoryRef = "primaryEntityManagerFactory", transactionManagerRef = "primaryTransactionManager")
+@EnableJpaRepositories(basePackages = "de.starwit.persistence.observatory", entityManagerFactoryRef = "primaryEntityManagerFactory", transactionManagerRef = "primaryTransactionManager")
 public class PrimaryDataSourceConfig {
 
     @Bean
@@ -55,7 +55,7 @@ public class PrimaryDataSourceConfig {
                 .migrate();
         return builder
                 .dataSource(primaryDataSource())
-                .packages("de.starwit.persistence.databackend")
+                .packages("de.starwit.persistence.observatory")
                 .build();
     }
 

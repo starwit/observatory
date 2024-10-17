@@ -1,4 +1,4 @@
-package de.starwit.service.databackend;
+package de.starwit.service.observatory;
 
 import java.util.List;
 
@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import de.starwit.persistence.databackend.entity.ObservationJobEntity;
-import de.starwit.persistence.databackend.entity.PointEntity;
-import de.starwit.persistence.databackend.repository.ObservationJobRepository;
-import de.starwit.persistence.databackend.repository.PointRepository;
+import de.starwit.persistence.observatory.entity.ObservationJobEntity;
+import de.starwit.persistence.observatory.entity.PointEntity;
+import de.starwit.persistence.observatory.repository.ObservationJobRepository;
+import de.starwit.persistence.observatory.repository.PointRepository;
 import de.starwit.service.jobs.ObservationJobRunner;
 import jakarta.transaction.Transactional;
 

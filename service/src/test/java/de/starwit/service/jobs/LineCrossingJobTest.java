@@ -19,8 +19,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import de.starwit.persistence.analytics.entity.Direction;
-import de.starwit.persistence.databackend.entity.JobType;
-import de.starwit.persistence.databackend.entity.ObservationJobEntity;
+import de.starwit.persistence.observatory.entity.JobType;
+import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 import de.starwit.service.sae.SaeDetectionDto;
 
 @ExtendWith(MockitoExtension.class)

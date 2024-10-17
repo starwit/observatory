@@ -1,6 +1,6 @@
 apiVersion: v2
-name: databackend-chart
-description: A Helm chart to deploy DataBackend to Kubernetes
+name: observatory-chart
+description: A Helm chart to deploy observatory to Kubernetes
 
 type: application
 
@@ -12,4 +12,4 @@ dependencies:
   - name: postgresql
     version: "13.2.30"
     repository: "oci://registry-1.docker.io/bitnamicharts"
-    condition: databases.databackend.internal
+    condition: databases.observatory.internal

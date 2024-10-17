@@ -14,7 +14,7 @@ permissions:
 
 env:
   RELEASE_VERSION: ${{ github.event.inputs.release-version }}
-  IMAGE_NAME: databackend
+  IMAGE_NAME: observatory
   DOCKERHUB_USERNAME: starwit
   DOCKERHUB_ORG: starwitorg  
 
@@ -130,18 +130,18 @@ jobs:
       run: helm registry login registry-1.docker.io -u starwit -p ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: run helm update
-      working-directory: application/target/helm/databackend
+      working-directory: application/target/helm/observatory
       run: helm dep update
 
     - name: run helm package
       working-directory: application/target/helm
-      run: helm package databackend
+      run: helm package observatory
 
     - name: get version number
-      working-directory: application/target/helm/databackend
+      working-directory: application/target/helm/observatory
       run: |
         echo "HELM_VERSION=$(grep version: Chart.yaml | head -1 | awk '{print $2}')" >> $GITHUB_ENV
 
     - name: run helm push
       working-directory: application/target/helm
-      run: helm push databackend-chart-${{ env.HELM_VERSION }}.tgz oci://registry-1.docker.io/starwitorg
+      run: helm push observatory-chart-${{ env.HELM_VERSION }}.tgz oci://registry-1.docker.io/starwitorg

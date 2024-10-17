@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import de.starwit.persistence.databackend.entity.ObservationJobEntity;
-import de.starwit.service.databackend.ObservationJobService;
+import de.starwit.persistence.observatory.entity.ObservationJobEntity;
+import de.starwit.service.observatory.ObservationJobService;
 
 @RestController
 @RequestMapping("${rest.base-path}/observation-job")

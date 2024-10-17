@@ -1,14 +1,14 @@
 {
     "Servers": {
-        "databackend": {
-            "Name": "Databackend",
+        "observatory": {
+            "Name": "observatory",
             "Group": "Servers",
             "Port": 5432,
-            "Username": "databackend",
+            "Username": "observatory",
             "Host": "postgres",
             "SSLMode": "prefer",
             "MaintenanceDB": "postgres",
-            "PasswordExecCommand": "echo 'databackend'"
+            "PasswordExecCommand": "echo 'observatory'"
         },
         "analytics": {
             "Name": "Analytics",

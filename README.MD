@@ -1,5 +1,5 @@
-# Data Backend
-This repository contains a software module written in Java, that can run analytical jobs, to condense raw tracking data from Starwit's Awareness Engine (SAE) into usable knowledge. Software is targeted to be run in a Kubernetes cluster. Thus this repo produces a [Docker image](https://hub.docker.com/repository/docker/starwitorg/databackend/general) and DataBackend can be deployed using Helm.
+# Observatory
+This repository contains a software module written in Java, that can run analytical jobs, to condense raw tracking data from Starwit's Awareness Engine (SAE) into usable knowledge. Software is targeted to be run in a Kubernetes cluster. Thus this repo produces a [Docker image](https://hub.docker.com/repository/docker/starwitorg/observatory/general) and Observatory can be deployed using Helm.
 
 Its current application focus is to extract usable knowledge about traffic from raw data produced by SAE.
 
@@ -14,7 +14,7 @@ More details on political and organizational background can be found here: https
 We are grateful for any contribution. Please refer to our [contribution guideline](CONTRIBUTING.md) and instructions document for any information.
 
 ## Observation Jobs
-Main task of DataBackend is to run a multitude of observation jobs that turn raw tracking data into usable knowledge. This section thus lists all available jobs and a brief description of their intended function.
+Main task of Observatory is to run a multitude of observation jobs that turn raw tracking data into usable knowledge. This section thus lists all available jobs and a brief description of their intended function.
 
 ### Counting Traffic
 This job counts traffic passing a line including direction of movement. The technical name is `LINE_CROSSING`.
@@ -23,19 +23,19 @@ This job counts traffic passing a line including direction of movement. The tech
 In a defined area this job counts how many vehicles are not moving and so considered as parked vehicles. The technical name is `AREA_OCCUPANCY`.
 
 ## How to Deploy/Install
-Helm is the preferred tool to install DataBackend. Installation can be done with the following command:
+Helm is the preferred tool to install Observatory. Installation can be done with the following command:
 
 ```bash
-helm -n yournamespace install databackend oci://registry-1.docker.io/starwitorg/databackend -f yourvalues.yaml
+helm -n yournamespace install observatory oci://registry-1.docker.io/starwitorg/observatory -f yourvalues.yaml
 ```
 
 Please note, that namespace is optional and you can define your own release name. For how to use Helm refer to their [docs](https://helm.sh/docs/intro/using_helm/).
 
-More details on the values you need to provide in order run Helm chart on your environment can be found [here](deployment/helm/databackend/Readme.md).
+More details on the values you need to provide in order run Helm chart on your environment can be found [here](deployment/helm/observatory/Readme.md).
 
-Once you have installed DataBackend you can reach it's API documentation at http://domain/databackend/swagger-ui/index.html.
+Once you have installed Observatory you can reach it's API documentation at http://domain/observatory/swagger-ui/index.html.
 
-Please note DataBackend is just one of a collection of components and thus helmfile can also be used to install DataBackend along side everything else. This is described here: https://gitlab.opencode.de/OC000026793282/testfeld-smart-parking-wolfsburg/-/tree/main/deployment?ref_type=heads
+Please note Observatory is just one of a collection of components and thus helmfile can also be used to install Observatory along side everything else. This is described here: https://gitlab.opencode.de/OC000026793282/testfeld-smart-parking-wolfsburg/-/tree/main/deployment?ref_type=heads
 
 ## How to Build
 
@@ -72,14 +72,14 @@ Alternatively, you can run the application using the Spring Boot Maven Plugin:
 mvn spring-boot:run
 ```
 
-When using Docker compose application the API can be reached at: http://localhost:8082/databackend/api/ (e.g. .../api/obvervationJob)
+When using Docker compose application the API can be reached at: http://localhost:8082/observatory/api/ (e.g. .../api/obvervationJob)
 
 ## How to (manually) test
 - Start a SAE instance (see https://github.com/starwit/starwit-awareness-engine/tree/main/docker-compose)
-- Start databackend infrastructure (`./deployment/postgreslocal-docker-compose.yaml`)
-- Start databackend with default settings
+- Start Observatory infrastructure (`./deployment/postgreslocal-docker-compose.yaml`)
+- Start Observatory with default settings
 - Add an observation job that makes sense for the video your SAE is processing (use `POST /api/observation-job`).\
-  The easiest way is to use the integrated Swagger UI with the payload below (http://localhost:8082/databackend/swagger-ui/index.html).\
+  The easiest way is to use the integrated Swagger UI with the payload below (http://localhost:8082/observatory/swagger-ui/index.html).\
   Sample for the usual video:
     ```json
     {
@@ -115,7 +115,7 @@ You can start the spring boot application in debug mode. See Spring Boot documen
 The database is available under localhost:5434. A database GUI (pgadmin) is available at localhost:5050 (if you started one of the docker compose environments in `./deployment`).
 
 ```
-Username:databackend
-Database:databackend
-Password:databackend
+Username:observatory
+Database:observatory
+Password:observatory
 ```

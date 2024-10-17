@@ -1,5 +1,5 @@
 [ {
-  "realm" : "databackend",
+  "realm" : "observatory",
   "users" : [ {
     "username" : "admin",
     "enabled" : true,
@@ -11,7 +11,7 @@
     "realmRoles" : [ "ROLE_admin" ]
   } ]
 }, {
-  "realm" : "databackend",
+  "realm" : "observatory",
   "users" : [ {
     "username" : "user",
     "enabled" : true,
@@ -23,7 +23,7 @@
     "realmRoles" : [ "ROLE_user" ]
   } ]
 }, {
-  "realm" : "databackend",
+  "realm" : "observatory",
   "users" : [ {
     "username" : "reader",
     "enabled" : true,

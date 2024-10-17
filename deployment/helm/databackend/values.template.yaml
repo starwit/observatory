@@ -1,5 +1,5 @@
 app:
-  context_path: "/databackend"
+  context_path: "/observatory"
 
 analyticsJobRunInterval: 2000
 
@@ -9,14 +9,14 @@ sae:
   redisPort: 6379
 
 databases:
-  databackend: 
+  observatory: 
     internal: true
     # `host` and `port` are only relevant if `internal` is `false`
     host: local.starwit.de
     port: 31222
-    database: databackend
-    username: databackend
-    password: databackend
+    database: observatory
+    username: observatory
+    password: observatory
   analytics:
     host: local.starwit.de
     port: 31222
@@ -31,7 +31,7 @@ ingress:
   hosts:
     - host: local.starwit.de
       paths:
-        - path: /databackend
+        - path: /observatory
           pathType: ImplementationSpecific
   tls: 
     - secretName: local.starwit.de

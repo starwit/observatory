@@ -1,5 +1,5 @@
 {
-  "realm": "databackend",
+  "realm": "observatory",
   "notBefore": 0,
   "defaultSignatureAlgorithm": "RS256",
   "revokeRefreshToken": false,
@@ -59,7 +59,7 @@
         "attributes": {}
       },
       {
-        "name": "default-roles-databackend",
+        "name": "default-roles-observatory",
         "description": "${role_default-roles}",
         "composite": true,
         "composites": {
@@ -355,12 +355,12 @@
           "attributes": {}
         }
       ],
-      "databackend": []
+      "observatory": []
     }
   },
   "groups": [],
   "defaultRole": {
-    "name": "default-roles-databackend",
+    "name": "default-roles-observatory",
     "description": "${role_default-roles}",
     "composite": true,
     "clientRole": false
@@ -427,13 +427,13 @@
       "clientId": "account",
       "name": "${client_account}",
       "rootUrl": "${authBaseUrl}",
-      "baseUrl": "/realms/databackend/account/",
+      "baseUrl": "/realms/observatory/account/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "/realms/databackend/account/*"
+        "/realms/observatory/account/*"
       ],
       "webOrigins": [],
       "notBefore": 0,
@@ -471,13 +471,13 @@
       "clientId": "account-console",
       "name": "${client_account-console}",
       "rootUrl": "${authBaseUrl}",
-      "baseUrl": "/realms/databackend/account/",
+      "baseUrl": "/realms/observatory/account/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "/realms/databackend/account/*"
+        "/realms/observatory/account/*"
       ],
       "webOrigins": [],
       "notBefore": 0,
@@ -600,8 +600,8 @@
       "rootUrl": null
     },
     {
-      "clientId": "databackend",
-      "name": "databackend",
+      "clientId": "observatory",
+      "name": "observatory",
       "description": "",
       "adminUrl": "",
       "baseUrl": "",
@@ -609,7 +609,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "databackend",
+      "secret": "observatory",
       "redirectUris": [
         "*"
       ],
@@ -726,13 +726,13 @@
       "clientId": "security-admin-console",
       "name": "${client_security-admin-console}",
       "rootUrl": "${authAdminUrl}",
-      "baseUrl": "/admin/databackend/console/",
+      "baseUrl": "/admin/observatory/console/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "/admin/databackend/console/*"
+        "/admin/observatory/console/*"
       ],
       "webOrigins": [
         "+"
@@ -2115,7 +2115,7 @@
       "disableableCredentialTypes": [],
       "requiredActions": [],
       "realmRoles": [
-        "default-roles-databackend",
+        "default-roles-observatory",
         "ROLE_admin"
       ],
       "notBefore": 0
@@ -2138,7 +2138,7 @@
       "disableableCredentialTypes": [],
       "requiredActions": [],
       "realmRoles": [
-        "default-roles-databackend",
+        "default-roles-observatory",
         "ROLE_reader"
       ],
       "notBefore": 0
@@ -2161,7 +2161,7 @@
       "disableableCredentialTypes": [],
       "requiredActions": [],
       "realmRoles": [
-        "default-roles-databackend",
+        "default-roles-observatory",
         "ROLE_user"
       ],
       "notBefore": 0

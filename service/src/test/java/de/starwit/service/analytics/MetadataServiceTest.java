@@ -22,8 +22,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import de.starwit.persistence.analytics.entity.CoordinateEntity;
 import de.starwit.persistence.analytics.entity.MetadataEntity;
 import de.starwit.persistence.analytics.repository.MetadataRepository;
-import de.starwit.persistence.databackend.entity.ObservationJobEntity;
-import de.starwit.persistence.databackend.entity.PointEntity;
+import de.starwit.persistence.observatory.entity.ObservationJobEntity;
+import de.starwit.persistence.observatory.entity.PointEntity;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(SpringExtension.class)

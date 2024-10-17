@@ -1,4 +1,4 @@
-package de.starwit.persistence.databackend.entity;
+package de.starwit.persistence.observatory.entity;
 
 public enum JobType {
     LINE_CROSSING,

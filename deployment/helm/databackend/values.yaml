@@ -1,9 +1,9 @@
-# Default values for databackend.
+# Default values for observatory.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 image:
-  repository: docker.io/starwitorg/databackend
+  repository: docker.io/starwitorg/observatory
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ${project.version}
@@ -13,7 +13,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 app:
-  context_path: "/databackend"
+  context_path: "/observatory"
 
 analyticsJobRunInterval: 2000
 
@@ -23,14 +23,14 @@ sae:
   redisPort: 6379
 
 databases:
-  databackend:
+  observatory:
     internal: true
     # Host and Port are only relevant if `internal` is `false`
     host: localhost
     port: 5432
-    database: databackend
-    username: databackend
-    password: databackend
+    database: observatory
+    username: observatory
+    password: observatory
   analytics:
     host: localhost
     port: 5432
@@ -45,7 +45,7 @@ ingress:
   hosts:
     - host: test.starwit.de
       paths:
-        - path: /databackend
+        - path: /observatory
           pathType: ImplementationSpecific
   tls: 
     - secretName: test.starwit.de
@@ -54,9 +54,9 @@ ingress:
 
 postgresql:
   auth:
-    database: databackend
-    username: databackend
-    password: databackend
+    database: observatory
+    username: observatory
+    password: observatory
 
 serviceAccount:
   # Specifies whether a service account should be created

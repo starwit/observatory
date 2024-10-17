@@ -29,11 +29,11 @@ This is configured for running on server for domain pb.starwit.de.
     apt install docker-ce docker-ce-cli containerd.io docker-compose
 ```
 * 6. restart machine and relogin
-* 7. checkout project and go to `/databackend/deployment/https`
+* 7. checkout project and go to `/observatory/deployment/https`
 * 8. set passwords in env.sh and execute `source env.sh` to set environment variables dor docker compose scripts
 * 9. execute `bash init-letsencrypt.sh` to get initial credentials. It uses docker-compose.yml (nginx + certbot) in order to get initial letsencrypt certificates.
-* 10. execute `databackend-docker-compose up -d` and `env-docker-compose up -d`
+* 10. execute `observatory-docker-compose up -d` and `env-docker-compose up -d`
    * !!! if you change database passwords after initial starting of docker compose scripts, it wont't work
 * 11. chech network and open ports `netstat -tulpn`
-* go to https://pb.startwit.de/auth, login and create user for databackend
+* go to https://pb.startwit.de/auth, login and create user for observatory
 * check prohectbuilder on https://pb.startwit.de/

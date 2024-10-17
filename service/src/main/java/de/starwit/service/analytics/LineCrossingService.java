@@ -13,7 +13,7 @@ import de.starwit.persistence.analytics.entity.Direction;
 import de.starwit.persistence.analytics.entity.LineCrossingEntity;
 import de.starwit.persistence.analytics.entity.MetadataEntity;
 import de.starwit.persistence.analytics.repository.LineCrossingRepository;
-import de.starwit.persistence.databackend.entity.ObservationJobEntity;
+import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 import de.starwit.service.sae.SaeDetectionDto;
 
 @Service

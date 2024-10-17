@@ -1,4 +1,4 @@
-package de.starwit.persistence.databackend.repository;
+package de.starwit.persistence.ovservatory.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -9,21 +9,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import de.starwit.persistence.databackend.entity.ObservationJobEntity;
+import de.starwit.persistence.observatory.entity.PointEntity;
+import de.starwit.persistence.observatory.repository.PointRepository;
 
 /**
- * Tests for FlowRepository
+ * Tests for ObjectClassRepository
  */
 @EnableAutoConfiguration
 @SpringBootTest
-class ObservationJobRepositoryTest {
+class PointRepositoryTest {
 
     @Autowired
-    private ObservationJobRepository repository;
+    private PointRepository repository;
 
     @Test
     void testFindAll() {
-        List<ObservationJobEntity> flows = repository.findAll();
-        assertTrue(flows.isEmpty());
+        List<PointEntity> objectclasss = repository.findAll();
+        assertTrue(objectclasss.isEmpty());
     }
 }

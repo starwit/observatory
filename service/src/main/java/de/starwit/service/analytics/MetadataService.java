@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import de.starwit.persistence.analytics.entity.CoordinateEntity;
 import de.starwit.persistence.analytics.entity.MetadataEntity;
 import de.starwit.persistence.analytics.repository.MetadataRepository;
-import de.starwit.persistence.databackend.entity.ObservationJobEntity;
+import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 import de.starwit.service.impl.ServiceInterface;
 
 @Service

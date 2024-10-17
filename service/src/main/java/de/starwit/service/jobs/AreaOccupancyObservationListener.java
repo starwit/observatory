@@ -8,7 +8,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.starwit.persistence.databackend.entity.ObservationJobEntity;
+import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 
 public class AreaOccupancyObservationListener {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
