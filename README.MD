@@ -1,9 +1,11 @@
 # Observatory
+
 This repository contains a software module written in Java, that can run analytical jobs, to condense raw tracking data from Starwit's Awareness Engine (SAE) into usable knowledge. Software is targeted to be run in a Kubernetes cluster. Thus this repo produces a [Docker image](https://hub.docker.com/repository/docker/starwitorg/observatory/general) and Observatory can be deployed using Helm.
 
 Its current application focus is to extract usable knowledge about traffic from raw data produced by SAE.
 
 ## License & Usage
+
 Project is licensed under AGPL 3 and the license can be found [here](LICENSE). This component is part of a publicly funded project by the city of Wolfsburg and thus usage in your community is very much encouraged. It is part of a group of software modules that shall help communities to manage traffic and to gain statistical insights. 
 
 For mor information how complete software stack can be used and what it can do for your community please refer to the main repository at: https://gitlab.opencode.de/OC000026793282/testfeld-smart-parking-wolfsburg 
@@ -11,18 +13,23 @@ For mor information how complete software stack can be used and what it can do f
 More details on political and organizational background can be found here: https://www.wolfsburg.de/en-us/leben/smart-city
 
 ### Contribution
+
 We are grateful for any contribution. Please refer to our [contribution guideline](CONTRIBUTING.md) and instructions document for any information.
 
 ## Observation Jobs
+
 Main task of Observatory is to run a multitude of observation jobs that turn raw tracking data into usable knowledge. This section thus lists all available jobs and a brief description of their intended function.
 
 ### Counting Traffic
+
 This job counts traffic passing a line including direction of movement. The technical name is `LINE_CROSSING`.
 
 ### Counting Parked Vehicles
+
 In a defined area this job counts how many vehicles are not moving and so considered as parked vehicles. The technical name is `AREA_OCCUPANCY`.
 
 ## How to Deploy/Install
+
 Helm is the preferred tool to install Observatory. Installation can be done with the following command:
 
 ```bash
@@ -57,6 +64,7 @@ docker compose up
 ```
 
 Run following Command in Root folder:
+
 ```bash
 mvn clean install
 ```
@@ -68,6 +76,7 @@ java -jar application/target/application-*.jar
 ```
 
 Alternatively, you can run the application using the Spring Boot Maven Plugin:
+
 ```bash
 mvn spring-boot:run
 ```
@@ -75,12 +84,14 @@ mvn spring-boot:run
 When using Docker compose application the API can be reached at: http://localhost:8082/observatory/api/ (e.g. .../api/obvervationJob)
 
 ## How to (manually) test
-- Start a SAE instance (see https://github.com/starwit/starwit-awareness-engine/tree/main/docker-compose)
-- Start Observatory infrastructure (`./deployment/postgreslocal-docker-compose.yaml`)
-- Start Observatory with default settings
-- Add an observation job that makes sense for the video your SAE is processing (use `POST /api/observation-job`).\
+
+* Start a SAE instance (see https://github.com/starwit/starwit-awareness-engine/tree/main/docker-compose)
+* Start Observatory infrastructure (`./deployment/postgreslocal-docker-compose.yaml`)
+* Start Observatory with default settings
+* Add an observation job that makes sense for the video your SAE is processing (use `POST /api/observation-job`).\
   The easiest way is to use the integrated Swagger UI with the payload below (http://localhost:8082/observatory/swagger-ui/index.html).\
   Sample for the usual video:
+
     ```json
     {
         "name": "job1",
@@ -114,7 +125,7 @@ You can start the spring boot application in debug mode. See Spring Boot documen
 
 The database is available under localhost:5434. A database GUI (pgadmin) is available at localhost:5050 (if you started one of the docker compose environments in `./deployment`).
 
-```
+```properties
 Username:observatory
 Database:observatory
 Password:observatory
