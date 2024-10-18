@@ -2,7 +2,6 @@ package de.starwit.service.jobs;
 
 import java.awt.geom.Area;
 import java.time.Duration;
-import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.LinkedList;
@@ -17,8 +16,8 @@ public class AreaOccupancyJob extends AbstractJob {
 
     private AreaOccupancyObservationListener observationListener;
 
-    private static Duration SLIDING_WINDOW_TARGET_LENGTH = Duration.ofSeconds(5);
-    private LinkedList<SaeDetectionDto> slidingWindow = new LinkedList<>();
+    private static Duration ANALYZING_WINDOW_LENGTH = Duration.ofSeconds(5);
+    private LinkedList<SaeDetectionDto> detectionBuffer = new LinkedList<>();
 
     public AreaOccupancyJob(ObservationJobEntity configEntity, AreaOccupancyObservationListener observationListener) {
         super(configEntity);
@@ -27,12 +26,12 @@ public class AreaOccupancyJob extends AbstractJob {
 
     @Override
     protected void processNewDetection(SaeDetectionDto dto) {
-        addDataToSlidingWindow(dto);
-        if (slidingWindowLength().toMillis() < SLIDING_WINDOW_TARGET_LENGTH.toMillis()) {
+        detectionBuffer.add(dto);
+        if (!isBufferHealthy()) {
             return;
         }
 
-        Map<Long, List<SaeDetectionDto>> detByCaptureTs = this.slidingWindow.stream().collect(Collectors.groupingBy(det -> det.getCaptureTs().toEpochMilli()));
+        Map<Long, List<SaeDetectionDto>> detByCaptureTs = this.detectionBuffer.stream().collect(Collectors.groupingBy(det -> det.getCaptureTs().toEpochMilli()));
     
         Area polygon = GeometryConverter.areaFrom(this.configEntity);
     
@@ -47,23 +46,15 @@ public class AreaOccupancyJob extends AbstractJob {
         }
     
         observationListener.onObservation(this.configEntity, maxTs, maxCount);
-        slidingWindow.clear();
+        detectionBuffer.clear();
     }
 
-    private void addDataToSlidingWindow(SaeDetectionDto dto) {
-        slidingWindow.addLast(dto);
-
-        // Keep sliding window within target time interval
-        Instant windowEndTime = dto.getCaptureTs();
-        Instant windowStartTime = slidingWindow.peekFirst().getCaptureTs();
-        while (Duration.between(windowStartTime, windowEndTime).minus(SLIDING_WINDOW_TARGET_LENGTH).toMillis() > 0) {
-            slidingWindow.removeFirst();
-            windowStartTime = slidingWindow.peekFirst().getCaptureTs();
-        }
+    private boolean isBufferHealthy() {
+        return bufferLength().toMillis() >= ANALYZING_WINDOW_LENGTH.toMillis();
     }
 
-    private Duration slidingWindowLength() {
-        return Duration.between(slidingWindow.peekFirst().getCaptureTs(), slidingWindow.peekLast().getCaptureTs());
+    private Duration bufferLength() {
+        return Duration.between(detectionBuffer.peekFirst().getCaptureTs(), detectionBuffer.peekLast().getCaptureTs());
     }
 
     private Long objCountInPolygon(List<SaeDetectionDto> objects, Area polygon) {

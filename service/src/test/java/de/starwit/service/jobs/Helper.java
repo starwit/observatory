@@ -16,7 +16,7 @@ public class Helper {
         return point;
     }
 
-    static SaeDetectionDto createDetection(Instant captureTs, Point2D center) {
+    static SaeDetectionDto createDetection(Instant captureTs, Point2D center, String objectId) {
         SaeDetectionDto det = new SaeDetectionDto();
 
         det.setCaptureTs(captureTs);
@@ -28,7 +28,7 @@ public class Helper {
         // defaults (we do not need to vary these)
         det.setCameraId("camId");
         det.setClassId(1);
-        det.setObjectId("objId");
+        det.setObjectId(objectId);
         det.setConfidence(0.5);
         
         return det;

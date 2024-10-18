@@ -70,14 +70,14 @@ public class LineCrossingJobTest {
 
         Instant startTime = Instant.now();
 
-        trajectory.add(Helper.createDetection(startTime, new Point2D.Double(start.getX(), start.getY())));
+        trajectory.add(Helper.createDetection(startTime, new Point2D.Double(start.getX(), start.getY()), "obj1"));
         double currentX = start.getX();
         double currentY = start.getY();
         
         for (int i = 0; i < numSteps; i++) {
             currentX += (end.getX() - start.getX()) / numSteps;
             currentY += (end.getY() - start.getY()) / numSteps;
-            trajectory.add(Helper.createDetection(startTime.plus(stepInterval.multipliedBy(i+1)), new Point2D.Double(currentX, currentY)));
+            trajectory.add(Helper.createDetection(startTime.plus(stepInterval.multipliedBy(i+1)), new Point2D.Double(currentX, currentY), "obj1"));
         }
 
         return trajectory;
