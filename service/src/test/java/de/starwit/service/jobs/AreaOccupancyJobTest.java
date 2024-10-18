@@ -32,16 +32,15 @@ public class AreaOccupancyJobTest {
         ObservationJobEntity jobEntity = prepareJobEntity();
 
         List<SaeDetectionDto> detections = Arrays.asList(
-            Helper.createDetection(Instant.ofEpochSecond(0), new Point2D.Double(50, 50)),
-            Helper.createDetection(Instant.ofEpochSecond(0), new Point2D.Double(50, 50)),
-            Helper.createDetection(Instant.ofEpochSecond(0), new Point2D.Double(50, 200)),
-            Helper.createDetection(Instant.ofEpochSecond(0), new Point2D.Double(50, 200)),
-            Helper.createDetection(Instant.ofEpochSecond(2), new Point2D.Double(50, 50)),
-            Helper.createDetection(Instant.ofEpochSecond(2), new Point2D.Double(50, 50)),
-            Helper.createDetection(Instant.ofEpochSecond(2), new Point2D.Double(50, 50)),
-            Helper.createDetection(Instant.ofEpochSecond(2), new Point2D.Double(50, 200)),
-            Helper.createDetection(Instant.ofEpochSecond(5), new Point2D.Double(50, 50)),
-            Helper.createDetection(Instant.ofEpochSecond(5), new Point2D.Double(50, 50))
+            Helper.createDetection(Instant.ofEpochMilli(0000), new Point2D.Double(50, 50), "obj1"),
+            Helper.createDetection(Instant.ofEpochMilli(0000), new Point2D.Double(50, 50), "obj2"),
+            Helper.createDetection(Instant.ofEpochMilli(0000), new Point2D.Double(50, 200), "obj3"),
+            Helper.createDetection(Instant.ofEpochMilli(2000), new Point2D.Double(50, 50), "obj1"),
+            Helper.createDetection(Instant.ofEpochMilli(2000), new Point2D.Double(50, 50), "obj2"),
+            Helper.createDetection(Instant.ofEpochMilli(2000), new Point2D.Double(50, 50), "obj3"),
+            Helper.createDetection(Instant.ofEpochMilli(2000), new Point2D.Double(50, 200), "obj4"),
+            Helper.createDetection(Instant.ofEpochMilli(5200), new Point2D.Double(50, 50), "obj1"),
+            Helper.createDetection(Instant.ofEpochMilli(5200), new Point2D.Double(50, 50), "obj2")
         );
 
         AreaOccupancyJob testee = new AreaOccupancyJob(jobEntity, observationListenerMock);
