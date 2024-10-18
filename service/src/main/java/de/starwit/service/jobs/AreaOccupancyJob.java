@@ -28,11 +28,10 @@ public class AreaOccupancyJob extends AbstractJob {
     @Override
     protected void processNewDetection(SaeDetectionDto dto) {
         addDataToSlidingWindow(dto);
-        //log.info(slidingWindowLength().toMillis() + " < " + SLIDING_WINDOW_TARGET_LENGTH.toMillis());
-        if (slidingWindowLength().toMillis() < SLIDING_WINDOW_TARGET_LENGTH.toMillis() - 150) {
+        if (slidingWindowLength().toMillis() < SLIDING_WINDOW_TARGET_LENGTH.toMillis()) {
             return;
         }
-        
+
         Map<Long, List<SaeDetectionDto>> detByCaptureTs = this.slidingWindow.stream().collect(Collectors.groupingBy(det -> det.getCaptureTs().toEpochMilli()));
     
         Area polygon = GeometryConverter.areaFrom(this.configEntity);
