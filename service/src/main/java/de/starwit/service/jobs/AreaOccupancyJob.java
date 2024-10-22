@@ -7,24 +7,39 @@ import java.time.ZonedDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
 import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 import de.starwit.service.sae.SaeDetectionDto;
 
-public class AreaOccupancyJob extends AbstractJob {
+public class AreaOccupancyJob implements Job {
 
+    private ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
+    
     private AreaOccupancyObservationListener observationListener;
-
+    
+    private ObservationJobEntity configEntity;
+    
     private static Duration ANALYZING_WINDOW_LENGTH = Duration.ofSeconds(5);
     private LinkedList<SaeDetectionDto> detectionBuffer = new LinkedList<>();
-
+    
     public AreaOccupancyJob(ObservationJobEntity configEntity, AreaOccupancyObservationListener observationListener) {
-        super(configEntity);
+        this.configEntity = configEntity;
         this.observationListener = observationListener;
+    }
+    
+    @Override
+    public void pushNewDetection(SaeDetectionDto dto) {
+        this.scheduledExecutor.execute(() -> processNewDetection(dto));
     }
 
     @Override
+    public ObservationJobEntity getConfigEntity() {
+        return this.configEntity;
+    }
+
     protected void processNewDetection(SaeDetectionDto dto) {
         detectionBuffer.add(dto);
         if (!isBufferHealthy()) {

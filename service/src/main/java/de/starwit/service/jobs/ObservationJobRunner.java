@@ -35,7 +35,7 @@ public class ObservationJobRunner {
     private String REDIS_STREAM_PREFIX;
 
     private List<Subscription> activeSubscriptions = new ArrayList<>();
-    private List<AbstractJob> activeJobs = new ArrayList<>();
+    private List<Job> activeJobs = new ArrayList<>();
 
     private SaeMessageListener saeMessageListener = new SaeMessageListener();
     private LineCrossingObservationListener lineCrossingObservationListener = new LineCrossingObservationListener();
@@ -77,7 +77,7 @@ public class ObservationJobRunner {
         List<ObservationJobEntity> enabledJobEntities = observationJobService.findByEnabledTrue();
 
         for (ObservationJobEntity jobEntity : enabledJobEntities) {
-            AbstractJob job = switch (jobEntity.getType()) {
+            Job job = switch (jobEntity.getType()) {
                 case AREA_OCCUPANCY -> new AreaOccupancyJob(jobEntity, areaOccupancyObservationListener);
                 case LINE_CROSSING -> new LineCrossingJob(jobEntity, lineCrossingObservationListener);
             };
@@ -98,7 +98,7 @@ public class ObservationJobRunner {
     public void feedJobs() {
         List<SaeDetectionDto> newDtos = saeMessageListener.getBufferedMessages();
         for (SaeDetectionDto dto : newDtos) {
-            for (AbstractJob job : activeJobs) {
+            for (Job job : activeJobs) {
                 if (job.getConfigEntity().getCameraId().equals(dto.getCameraId())) {
                     job.pushNewDetection(dto);
                 }
