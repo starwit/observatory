@@ -14,4 +14,6 @@ public interface Job {
 
     public ObservationJobEntity getConfigEntity();
 
+    public void stop();
+
 }

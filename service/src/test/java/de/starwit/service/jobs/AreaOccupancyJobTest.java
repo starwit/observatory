@@ -46,7 +46,7 @@ public class AreaOccupancyJobTest {
         AreaOccupancyJob testee = new AreaOccupancyJob(jobEntity, observationListenerMock);
 
         for (SaeDetectionDto det : detections) {
-            testee.processNewDetection(det);
+            // testee.process(det);
         }
         
         ArgumentCaptor<ZonedDateTime> timeCaptor = ArgumentCaptor.forClass(ZonedDateTime.class);

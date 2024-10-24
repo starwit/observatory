@@ -1,38 +1,48 @@
 package de.starwit.service.jobs;
 
 import java.awt.geom.Area;
+import java.awt.geom.Point2D;
 import java.time.Duration;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.stream.Collectors;
+import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 import de.starwit.service.sae.SaeDetectionDto;
 
 public class AreaOccupancyJob implements Job {
 
+    private Logger log = LoggerFactory.getLogger(this.getClass());
+
     private ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
     
     private AreaOccupancyObservationListener observationListener;
     
     private ObservationJobEntity configEntity;
+    private Area polygon;
+
+    private TrajectoryStore trajectoryStore;
     
-    private static Duration ANALYZING_WINDOW_LENGTH = Duration.ofSeconds(5);
-    private LinkedList<SaeDetectionDto> detectionBuffer = new LinkedList<>();
+    private static Duration ANALYZING_WINDOW_LENGTH = Duration.ofSeconds(10);
+    private static Duration ANALYZING_INTERVAL = Duration.ofSeconds(10);
+    private static double STDDEV_THRESHOLD = 0.001;
     
     public AreaOccupancyJob(ObservationJobEntity configEntity, AreaOccupancyObservationListener observationListener) {
         this.configEntity = configEntity;
+        this.polygon = GeometryConverter.areaFrom(configEntity);
         this.observationListener = observationListener;
+        this.trajectoryStore = new TrajectoryStore(ANALYZING_WINDOW_LENGTH);
+        this.scheduledExecutor.scheduleAtFixedRate(this::process, (int) (Math.random() * 2000), ANALYZING_INTERVAL.toMillis(), TimeUnit.MILLISECONDS);
     }
     
     @Override
     public void pushNewDetection(SaeDetectionDto dto) {
-        this.scheduledExecutor.execute(() -> processNewDetection(dto));
+        this.trajectoryStore.addDetection(dto);
     }
 
     @Override
@@ -40,42 +50,70 @@ public class AreaOccupancyJob implements Job {
         return this.configEntity;
     }
 
-    protected void processNewDetection(SaeDetectionDto dto) {
-        detectionBuffer.add(dto);
-        if (!isBufferHealthy()) {
-            return;
+    @Override
+    public void stop() {
+        scheduledExecutor.shutdown();
+        try {
+            boolean cleanExit = scheduledExecutor.awaitTermination(1, TimeUnit.SECONDS);
+            if (!cleanExit) {
+                log.warn("Executor tasks did not finish after waiting for 1 second.");
+            }
+        } catch (InterruptedException e) {
+            log.warn("Interruption while waiting for executor shutdown", e);
         }
+        
+    }
 
-        Map<Long, List<SaeDetectionDto>> detByCaptureTs = this.detectionBuffer.stream().collect(Collectors.groupingBy(det -> det.getCaptureTs().toEpochMilli()));
-    
-        Area polygon = GeometryConverter.areaFrom(this.configEntity);
-    
-        long maxCount = 0L;
-        ZonedDateTime maxTs = ZonedDateTime.now();
-        for (List<SaeDetectionDto> detList : detByCaptureTs.values()) {
-            long count = objCountInPolygon(detList, polygon);
-            if (count > maxCount) {
-                maxCount = count;
-                maxTs = detList.get(0).getCaptureTs().atZone(ZoneOffset.UTC);
+    protected void process() {
+        long objectCount = 0;
+        List<List<SaeDetectionDto>> trajectories = this.trajectoryStore.getAllTrajectories();
+        
+        for (List<SaeDetectionDto> trajectory : trajectories) {
+            List<Point2D> pointTrajectory = GeometryConverter.toCenterPoints(trajectory, this.configEntity.getGeoReferenced());
+            Point2D avgPos = getAveragePosition(pointTrajectory);
+            if (isStationary(pointTrajectory) && polygon.contains(avgPos)) {
+                objectCount++;
             }
         }
+        
+        this.trajectoryStore.purge();
+
+        log.info("Count: " + objectCount);
+
+        // TODO what about non-geo?
+
+        observationListener.onObservation(this.configEntity, this.trajectoryStore.getMostRecentTimestamp().atZone(ZoneOffset.UTC), objectCount);
+    }
+
+    /**
+     * Determines if the passed trajectory meets our stationary position requirements.
+     * Right now that means the average of standard deviation in x and y coordinates is below some threshold.
+     * @param pointTrajectory
+     * @return
+     */
+    private boolean isStationary(List<Point2D> pointTrajectory) {
+        Point2D avgPos = getAveragePosition(pointTrajectory);
+        double squareSumX = 0;
+        double squareSumY = 0;
+        for (Point2D point : pointTrajectory) {
+            squareSumX += Math.pow(avgPos.getX() - point.getX(), 2);
+            squareSumY += Math.pow(avgPos.getY() - point.getY(), 2);
+        }
+        double stdDevX = Math.sqrt(squareSumX / pointTrajectory.size());
+        double stdDevY = Math.sqrt(squareSumY / pointTrajectory.size());
+
+        double avgStdDev = (stdDevX + stdDevY) / 2;
+
+        log.info("len " + String.format("%04d", pointTrajectory.size()) + ", avgStdDev: " + String.format("%10.8f", avgStdDev));
     
-        observationListener.onObservation(this.configEntity, maxTs, maxCount);
-        detectionBuffer.clear();
+        return avgStdDev < STDDEV_THRESHOLD;
     }
 
-    private boolean isBufferHealthy() {
-        return bufferLength().toMillis() >= ANALYZING_WINDOW_LENGTH.toMillis();
-    }
+    private Point2D getAveragePosition(List<Point2D> pointTrajectory) {
+        double avgX = pointTrajectory.stream().mapToDouble(p -> p.getX()).summaryStatistics().getAverage();
+        double avgY = pointTrajectory.stream().mapToDouble(p -> p.getY()).summaryStatistics().getAverage();
 
-    private Duration bufferLength() {
-        return Duration.between(detectionBuffer.peekFirst().getCaptureTs(), detectionBuffer.peekLast().getCaptureTs());
-    }
-
-    private Long objCountInPolygon(List<SaeDetectionDto> objects, Area polygon) {
-        return objects.stream()
-            .filter(det -> polygon.contains(GeometryConverter.toCenterPoint(det, configEntity.getGeoReferenced())))
-            .count();
+        return new Point2D.Double(avgX, avgY);
     }
 
 }

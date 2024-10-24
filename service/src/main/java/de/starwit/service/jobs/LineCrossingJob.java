@@ -5,7 +5,9 @@ import java.awt.geom.Point2D;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +19,7 @@ import de.starwit.service.sae.SaeDetectionDto;
 public class LineCrossingJob implements Job {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private final Executor jobExecutor = Executors.newSingleThreadExecutor();
+    private final ExecutorService jobExecutor = Executors.newSingleThreadExecutor();
 
     private static int TARGET_WINDOW_SIZE_SEC = 1;
 
@@ -33,7 +35,7 @@ public class LineCrossingJob implements Job {
         this.observationListener = observationListener;
         this.countingLine = GeometryConverter.lineFrom(this.configEntity);
         this.isGeoReferenced = this.configEntity.getGeoReferenced();
-        this.trajectoryStore = new TrajectoryStore();
+        this.trajectoryStore = new TrajectoryStore(Duration.ofSeconds(60));
     }
 
     @Override
@@ -44,6 +46,20 @@ public class LineCrossingJob implements Job {
     @Override
     public ObservationJobEntity getConfigEntity() {
         return this.configEntity;
+    }
+
+    @Override
+    public void stop() {
+        jobExecutor.shutdown();
+        try {
+            boolean cleanExit = jobExecutor.awaitTermination(1, TimeUnit.SECONDS);
+            if (!cleanExit) {
+                log.warn("Executor tasks did not finish after waiting for 1 second.");
+            }
+        } catch (InterruptedException e) {
+            log.warn("Interruption while waiting for executor shutdown", e);
+        }
+        
     }
     
     protected void processNewDetection(SaeDetectionDto dto) {

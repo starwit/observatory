@@ -71,6 +71,10 @@ public class ObservationJobRunner {
             streamListenerContainer.remove(activeSub);
         }
 
+        for (Job job : activeJobs) {
+            job.stop();
+        }
+
         this.activeSubscriptions = new ArrayList<>();
         this.activeJobs = new ArrayList<>();
 
