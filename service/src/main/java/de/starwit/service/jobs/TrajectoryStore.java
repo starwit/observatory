@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.stream.Collectors;
 
 import de.starwit.service.sae.SaeDetectionDto;
 
@@ -18,11 +17,11 @@ import de.starwit.service.sae.SaeDetectionDto;
  */
 public class TrajectoryStore {
     private ConcurrentHashMap<String, ConcurrentLinkedDeque<SaeDetectionDto>> trajectoryByObjId = new ConcurrentHashMap<>();
-    private final Duration MAX_TRAJECTORY_LENGTH;
+    private final Duration TARGET_TRAJECTORY_LENGTH;
     private Instant mostRecentTimestamp;
 
-    public TrajectoryStore(Duration maxTrajectoryLength) {
-        this.MAX_TRAJECTORY_LENGTH = maxTrajectoryLength;
+    public TrajectoryStore(Duration targetTrajectoryLength) {
+        this.TARGET_TRAJECTORY_LENGTH = targetTrajectoryLength;
         this.mostRecentTimestamp = Instant.ofEpochSecond(0);
     }
 
@@ -74,10 +73,16 @@ public class TrajectoryStore {
         }
     }
 
-    public List<List<SaeDetectionDto>> getAllTrajectories() {
+    /**
+     * Returns all trajectories that satisfy the target length (i.e. length > 0.80 * targetTrajectoryLength)
+     * @return
+     */
+    public List<List<SaeDetectionDto>> getAllValidTrajectories() {
         List<List<SaeDetectionDto>> trajectories = new ArrayList<>();
-        for (Entry<String, ConcurrentLinkedDeque<SaeDetectionDto>> entry : trajectoryByObjId.entrySet()) {
-            trajectories.add(new ArrayList<>(entry.getValue()));
+        for (ConcurrentLinkedDeque<SaeDetectionDto> trajectory : trajectoryByObjId.values()) {
+            if (trajectoryLength(trajectory).toMillis() > 0.8 * TARGET_TRAJECTORY_LENGTH.toMillis()) {
+                trajectories.add(new ArrayList<>(trajectory));
+            }
         }
         return trajectories;
     }
@@ -87,7 +92,7 @@ public class TrajectoryStore {
     }
 
     private void truncateTrajectory(ConcurrentLinkedDeque<SaeDetectionDto> trajectory) {
-        while (trajectoryLength(trajectory).minus(MAX_TRAJECTORY_LENGTH).isPositive()) {
+        while (trajectoryLength(trajectory).minus(TARGET_TRAJECTORY_LENGTH).isPositive()) {
             trajectory.pollFirst();
         }
     }
@@ -103,7 +108,7 @@ public class TrajectoryStore {
      */
     public void purge(Instant referenceTime) {
         List<String> keysToDelete = new ArrayList<>();
-        Instant cutOff = referenceTime.minus(MAX_TRAJECTORY_LENGTH);
+        Instant cutOff = referenceTime.minus(TARGET_TRAJECTORY_LENGTH);
         
         for (Entry<String, ConcurrentLinkedDeque<SaeDetectionDto>> entry: trajectoryByObjId.entrySet()) {
             ConcurrentLinkedDeque<SaeDetectionDto> trajectory = entry.getValue();

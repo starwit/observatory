@@ -37,7 +37,10 @@ public class AreaOccupancyJob implements Job {
         this.polygon = GeometryConverter.areaFrom(configEntity);
         this.observationListener = observationListener;
         this.trajectoryStore = new TrajectoryStore(ANALYZING_WINDOW_LENGTH);
-        this.scheduledExecutor.scheduleAtFixedRate(this::process, (int) (Math.random() * 2000), ANALYZING_INTERVAL.toMillis(), TimeUnit.MILLISECONDS);
+
+        // Add some random offset to job schedule to spread the load
+        int initialDelay = (int) (Math.random() * ANALYZING_INTERVAL.toMillis() / 2);
+        this.scheduledExecutor.scheduleAtFixedRate(this::process, initialDelay, ANALYZING_INTERVAL.toMillis(), TimeUnit.MILLISECONDS);
     }
     
     @Override
@@ -66,13 +69,14 @@ public class AreaOccupancyJob implements Job {
 
     protected void process() {
         long objectCount = 0;
-        List<List<SaeDetectionDto>> trajectories = this.trajectoryStore.getAllTrajectories();
+        List<List<SaeDetectionDto>> trajectories = this.trajectoryStore.getAllValidTrajectories();
         
         for (List<SaeDetectionDto> trajectory : trajectories) {
             List<Point2D> pointTrajectory = GeometryConverter.toCenterPoints(trajectory, this.configEntity.getGeoReferenced());
             Point2D avgPos = getAveragePosition(pointTrajectory);
             if (isStationary(pointTrajectory) && polygon.contains(avgPos)) {
                 objectCount++;
+                log.info("Stationary " + trajectory.get(0).getObjectId().substring(0, 4));
             }
         }
         
