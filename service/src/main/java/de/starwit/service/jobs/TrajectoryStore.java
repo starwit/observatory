@@ -17,11 +17,11 @@ import de.starwit.service.sae.SaeDetectionDto;
  */
 public class TrajectoryStore {
     private ConcurrentHashMap<String, ConcurrentLinkedDeque<SaeDetectionDto>> trajectoryByObjId = new ConcurrentHashMap<>();
-    private final Duration TARGET_TRAJECTORY_LENGTH;
+    private final Duration TARGET_WINDOW;
     private Instant mostRecentTimestamp;
 
-    public TrajectoryStore(Duration targetTrajectoryLength) {
-        this.TARGET_TRAJECTORY_LENGTH = targetTrajectoryLength;
+    public TrajectoryStore(Duration targetWindow) {
+        this.TARGET_WINDOW = targetWindow;
         this.mostRecentTimestamp = Instant.ofEpochSecond(0);
     }
 
@@ -32,8 +32,11 @@ public class TrajectoryStore {
             trajectoryByObjId.put(det.getObjectId(), trajectory);
         }
         trajectory.addLast(det);
+
+        if (det.getCaptureTs().isAfter(mostRecentTimestamp)) {
+            this.mostRecentTimestamp = det.getCaptureTs();
+        }
         truncateTrajectory(trajectory);
-        this.mostRecentTimestamp = det.getCaptureTs();
     }
 
     public SaeDetectionDto getFirst(SaeDetectionDto det) {
@@ -80,7 +83,7 @@ public class TrajectoryStore {
     public List<List<SaeDetectionDto>> getAllValidTrajectories() {
         List<List<SaeDetectionDto>> trajectories = new ArrayList<>();
         for (ConcurrentLinkedDeque<SaeDetectionDto> trajectory : trajectoryByObjId.values()) {
-            if (trajectoryLength(trajectory).toMillis() > 0.8 * TARGET_TRAJECTORY_LENGTH.toMillis()) {
+            if (trajectoryLength(trajectory).toMillis() > 0.8 * TARGET_WINDOW.toMillis()) {
                 trajectories.add(new ArrayList<>(trajectory));
             }
         }
@@ -92,13 +95,13 @@ public class TrajectoryStore {
     }
 
     private void truncateTrajectory(ConcurrentLinkedDeque<SaeDetectionDto> trajectory) {
-        while (trajectoryLength(trajectory).minus(TARGET_TRAJECTORY_LENGTH).isPositive()) {
+        while (trajectoryLength(trajectory).minus(TARGET_WINDOW).isPositive()) {
             trajectory.pollFirst();
         }
     }
 
     private Duration trajectoryLength(ConcurrentLinkedDeque<SaeDetectionDto> trajectory) {
-        return Duration.between(trajectory.getFirst().getCaptureTs(), trajectory.getLast().getCaptureTs());
+        return Duration.between(trajectory.getFirst().getCaptureTs(), this.mostRecentTimestamp);
     }
 
     /**
@@ -108,7 +111,7 @@ public class TrajectoryStore {
      */
     public void purge(Instant referenceTime) {
         List<String> keysToDelete = new ArrayList<>();
-        Instant cutOff = referenceTime.minus(TARGET_TRAJECTORY_LENGTH);
+        Instant cutOff = referenceTime.minus(TARGET_WINDOW);
         
         for (Entry<String, ConcurrentLinkedDeque<SaeDetectionDto>> entry: trajectoryByObjId.entrySet()) {
             ConcurrentLinkedDeque<SaeDetectionDto> trajectory = entry.getValue();

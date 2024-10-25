@@ -3,6 +3,8 @@ package de.starwit.service.jobs;
 import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.InstantSource;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -18,34 +20,43 @@ import de.starwit.service.sae.SaeDetectionDto;
 public class AreaOccupancyJob implements Job {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
+    
+    private static Duration ANALYZING_INTERVAL = Duration.ofSeconds(10);
+    private static double STDDEV_THRESHOLD = 0.001;
+
+    private TrajectoryStore trajectoryStore;
+    private AreaOccupancyObservationListener observationListener;
+    // This is to facilitate reproducible testing
+    private InstantSource instantSource;
+    private ObservationJobEntity configEntity;
+    private Area polygon;
+    
+    private Instant lastUpdate;
 
     private ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
     
-    private AreaOccupancyObservationListener observationListener;
-    
-    private ObservationJobEntity configEntity;
-    private Area polygon;
-
-    private TrajectoryStore trajectoryStore;
-    
-    private static Duration ANALYZING_WINDOW_LENGTH = Duration.ofSeconds(10);
-    private static Duration ANALYZING_INTERVAL = Duration.ofSeconds(10);
-    private static double STDDEV_THRESHOLD = 0.001;
-    
-    public AreaOccupancyJob(ObservationJobEntity configEntity, AreaOccupancyObservationListener observationListener) {
+    public AreaOccupancyJob(ObservationJobEntity configEntity, AreaOccupancyObservationListener observationListener, InstantSource instantSource) {
+        this.trajectoryStore = new TrajectoryStore(ANALYZING_INTERVAL);
+        this.observationListener = observationListener;
+        this.instantSource = instantSource;
         this.configEntity = configEntity;
         this.polygon = GeometryConverter.areaFrom(configEntity);
-        this.observationListener = observationListener;
-        this.trajectoryStore = new TrajectoryStore(ANALYZING_WINDOW_LENGTH);
 
+        this.lastUpdate = Instant.ofEpochMilli(0);
+        
         // Add some random offset to job schedule to spread the load
         int initialDelay = (int) (Math.random() * ANALYZING_INTERVAL.toMillis() / 2);
         this.scheduledExecutor.scheduleAtFixedRate(this::process, initialDelay, ANALYZING_INTERVAL.toMillis(), TimeUnit.MILLISECONDS);
     }
     
+    public AreaOccupancyJob(ObservationJobEntity configEntity, AreaOccupancyObservationListener observationListener) {
+        this(configEntity, observationListener, InstantSource.system());
+    }
+    
     @Override
     public void pushNewDetection(SaeDetectionDto dto) {
         this.trajectoryStore.addDetection(dto);
+        this.lastUpdate = instantSource.instant();
     }
 
     @Override
@@ -68,6 +79,12 @@ public class AreaOccupancyJob implements Job {
     }
 
     protected void process() {
+        // Skip processing if we have not received any new data within the last analyzing interval
+        if (this.lastUpdate.isBefore(instantSource.instant().minus(ANALYZING_INTERVAL))) {
+            log.warn("Skipping processing due to stale data");
+            return;
+        }
+        
         long objectCount = 0;
         List<List<SaeDetectionDto>> trajectories = this.trajectoryStore.getAllValidTrajectories();
         
