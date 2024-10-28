@@ -6,6 +6,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.awt.geom.Point2D;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -20,14 +22,23 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import de.starwit.persistence.observatory.entity.JobType;
 import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 import de.starwit.service.sae.SaeDetectionDto;
+import de.starwit.testing.SaeDump;
+import de.starwit.visionapi.Sae.SaeMessage;
 
 @ExtendWith(MockitoExtension.class)
 public class AreaOccupancyJobTest {
 
     @Mock
     AreaOccupancyObservationListener observationListenerMock;
-    
+
     @Test
+    public void testAreaOccupancyDump() {
+        Path dumpFile = Paths.get("src/test/resources/test.saedump");
+        SaeDump dump = new SaeDump(dumpFile);
+        dump.forEach(msg -> System.out.println(msg.getDetectionsCount()));
+    }
+    
+    // @Test
     public void testAreaOccupancy() throws InterruptedException {
         ObservationJobEntity jobEntity = prepareJobEntity();
 
