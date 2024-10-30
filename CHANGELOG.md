@@ -2,6 +2,12 @@
 
 Changelog of observatory.
 
+## Current Version ()
+
+### Features
+
+-  new postgres version in helm chart ([4b6d0](https://github.com/starwit/observatory/commit/4b6d0e5c72dc6ad) Anett Hübner)  
+
 ## refs/tags/v0.5.0 (2024-03-19)
 
 ### Features
