@@ -10,7 +10,7 @@ image:
 
 imagePullSecrets:
 nameOverride: ""
-fullnameOverride: ""
+fullnameOverride: "observatory"
 
 app:
   context_path: "/observatory"
