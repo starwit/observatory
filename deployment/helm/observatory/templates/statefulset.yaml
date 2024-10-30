@@ -65,7 +65,8 @@ spec:
               value: {{ .Values.databases.observatory.username }}
             - name: SPRING_DATASOURCE_PASSWORD
               value: {{ .Values.databases.observatory.password }}
-
+            - name: SERVER_PORT
+              value: {{ .Values.app.port | quote }}
             - name: SAE_REDISSTREAMPREFIX
               value: {{ .Values.sae.redisStreamPrefix | quote }}
             - name: SAE_REDISHOST
@@ -88,7 +89,7 @@ spec:
             {{- end }}
           ports:
             - name: http
-              containerPort: 8082
+              containerPort: {{ .Values.app.port }}
               protocol: TCP
           livenessProbe:
             httpGet:

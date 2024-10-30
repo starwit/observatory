@@ -1,5 +1,6 @@
 app:
   context_path: "/observatory"
+  port: 8081
 
 analyticsJobRunInterval: 2000
 
