@@ -6,6 +6,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.awt.geom.Point2D;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -21,7 +22,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import de.starwit.persistence.analytics.entity.Direction;
 import de.starwit.persistence.observatory.entity.JobType;
 import de.starwit.persistence.observatory.entity.ObservationJobEntity;
+import de.starwit.persistence.observatory.entity.PointEntity;
 import de.starwit.service.sae.SaeDetectionDto;
+import de.starwit.testing.SaeDump;
+import de.starwit.visionapi.Sae.SaeMessage;
 
 @ExtendWith(MockitoExtension.class)
 public class LineCrossingJobTest {
@@ -30,9 +34,12 @@ public class LineCrossingJobTest {
     LineCrossingObservationListener observationListenerMock;
     
     @Test
-    public void testLineCrossing() throws InterruptedException {
+    public void testLineCrossingSynthetic() throws InterruptedException {
 
-        ObservationJobEntity entity = prepareJobEntity();
+        ObservationJobEntity entity = prepareJobEntity(Arrays.asList(
+            Helper.createPoint(0, 100), 
+            Helper.createPoint(100, 100)
+        ));
         
         // No point on trajectory should be ON the counting line (b/c direction is then ambiguous)
         List<SaeDetectionDto> detections = createLinearTrajectory(
@@ -51,14 +58,32 @@ public class LineCrossingJobTest {
         assertThat(directionCaptor.getValue()).isEqualTo(Direction.out);
     }
 
-    static ObservationJobEntity prepareJobEntity() {
-        ObservationJobEntity entity = new ObservationJobEntity();
-        entity.setCameraId("camId");
-        entity.setDetectionClassId(1);
-        entity.setGeometryPoints(Arrays.asList(
-            Helper.createPoint(0, 100), 
-            Helper.createPoint(100, 100)
+    @Test
+    public void testLineCrossingReal() {
+        ObservationJobEntity jobEntity = prepareJobEntity(Arrays.asList(
+            Helper.createPoint(0.5, 0.5), 
+            Helper.createPoint(0.7, 0.7)
         ));
+
+        SaeDump saeDump = new SaeDump(Paths.get("src/test/resources/test.saedump"));
+
+        LineCrossingJob testee = new LineCrossingJob(jobEntity, observationListenerMock);
+
+        for (SaeMessage msg : saeDump) {
+            for (SaeDetectionDto dto : SaeDetectionDto.from(msg)) {
+                testee.processNewDetection(dto);
+            }
+        }
+
+        verify(observationListenerMock, times(10)).onObservation(any(), any(), any());
+
+    }
+
+    static ObservationJobEntity prepareJobEntity(List<PointEntity> geometryPoints) {
+        ObservationJobEntity entity = new ObservationJobEntity();
+        entity.setCameraId("geomapper:stream1");
+        entity.setDetectionClassId(2);
+        entity.setGeometryPoints(geometryPoints);
         entity.setType(JobType.LINE_CROSSING);
         entity.setGeoReferenced(false);
 
