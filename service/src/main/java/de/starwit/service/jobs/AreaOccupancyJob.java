@@ -35,7 +35,7 @@ public class AreaOccupancyJob implements Job {
 
     private ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
     
-    public AreaOccupancyJob(ObservationJobEntity configEntity, AreaOccupancyObservationListener observationListener, InstantSource instantSource) {
+    public AreaOccupancyJob(ObservationJobEntity configEntity, AreaOccupancyObservationListener observationListener, InstantSource instantSource, ScheduledExecutorService executorService) {
         this.trajectoryStore = new TrajectoryStore(ANALYZING_INTERVAL);
         this.observationListener = observationListener;
         this.instantSource = instantSource;
@@ -44,13 +44,14 @@ public class AreaOccupancyJob implements Job {
 
         this.lastUpdate = Instant.ofEpochMilli(0);
         
+        this.scheduledExecutor = executorService;
         // Add some random offset to job schedule to spread the load
         int initialDelay = (int) (Math.random() * ANALYZING_INTERVAL.toMillis() / 2);
         this.scheduledExecutor.scheduleAtFixedRate(this::process, initialDelay, ANALYZING_INTERVAL.toMillis(), TimeUnit.MILLISECONDS);
     }
     
     public AreaOccupancyJob(ObservationJobEntity configEntity, AreaOccupancyObservationListener observationListener) {
-        this(configEntity, observationListener, InstantSource.system());
+        this(configEntity, observationListener, InstantSource.system(), Executors.newSingleThreadScheduledExecutor());
     }
     
     @Override

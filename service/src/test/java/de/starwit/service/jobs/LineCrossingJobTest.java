@@ -75,7 +75,19 @@ public class LineCrossingJobTest {
             }
         }
 
-        verify(observationListenerMock, times(10)).onObservation(any(), any(), any());
+        ArgumentCaptor<SaeDetectionDto> detectionCaptor = ArgumentCaptor.forClass(SaeDetectionDto.class);
+
+        verify(observationListenerMock, times(7)).onObservation(detectionCaptor.capture(), any(), any());
+
+        assertThat(detectionCaptor.getAllValues().stream().map(det -> det.getObjectId())).containsExactly(
+            "dfbcb22fc5eb3a28911494db9c4ccf75",
+            "19295f0a2c443a11a51394dad7be5233",
+            "5383a7053f91347c86515731882d3b43",
+            "ae6565fbbb83354083bcf536e74ae409",
+            "85adfec29c6634f791d9d3e846b24663",
+            "e2cc4567099f3712a6d56e1807794df2",
+            "e8c7a510570f32fb9e09618178fb035f"
+        );
 
     }
 
