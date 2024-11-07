@@ -4,7 +4,7 @@
     <parent>
         <groupId>de.starwit</groupId>
         <artifactId>observatory</artifactId>
-        <version>1.2.9</version>
+        <version>1.2.10-SNAPSHOT</version>
     </parent>
 
     <artifactId>application</artifactId>
