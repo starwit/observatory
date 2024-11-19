@@ -9,11 +9,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import de.starwit.persistence.observatory.entity.JobType;
 import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 import de.starwit.persistence.observatory.entity.PointEntity;
 import de.starwit.persistence.observatory.repository.ObservationJobRepository;
 import de.starwit.persistence.observatory.repository.PointRepository;
-import de.starwit.service.jobs.ObservationJobRunner;
+import de.starwit.service.jobs.AreaOccupancyRunner;
+import de.starwit.service.jobs.LineCrossingRunner;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -30,7 +32,11 @@ public class ObservationJobService {
 
     @Lazy
     @Autowired
-    private ObservationJobRunner observationJobRunner;
+    private LineCrossingRunner lineCrossingRunner;
+
+    @Lazy
+    @Autowired
+    private AreaOccupancyRunner areaOccupancyRunner;
 
     @Autowired
     private PointRepository pointRepository;
@@ -47,12 +53,20 @@ public class ObservationJobService {
         return observationJobRepository.findByEnabledTrue();
     }
 
+    public List<ObservationJobEntity> findActiveAreaOccupancyJobs() {
+        return observationJobRepository.findByEnabledTrueAndType(JobType.AREA_OCCUPANCY);
+    }
+
+    public List<ObservationJobEntity> findActiveLineCrossingJobs() {
+        return observationJobRepository.findByEnabledTrueAndType(JobType.LINE_CROSSING);
+    }
+
     public ObservationJobEntity saveNew(ObservationJobEntity newJob) {
         newJob.getGeometryPoints().forEach(p -> p.setObservationJob(newJob));
 
         ObservationJobEntity savedEntity = observationJobRepository.save(newJob);
         
-        observationJobRunner.refreshJobs();
+        refreshJobs();
         
         return savedEntity;
     }
@@ -84,7 +98,7 @@ public class ObservationJobService {
 
         pointRepository.deleteAll(oldPoints);
 
-        observationJobRunner.refreshJobs();
+        refreshJobs();
 
         return updatedJob;
     }
@@ -92,18 +106,23 @@ public class ObservationJobService {
     public void deleteById(Long id) {
         observationJobRepository.deleteById(id);
 
-        observationJobRunner.refreshJobs();
+        refreshJobs();
     }
 
     public void deleteByObservationAreaId(Long observationAreaId) {
         observationJobRepository.deleteByObservationAreaId(observationAreaId);
 
-        observationJobRunner.refreshJobs();
+        refreshJobs();
     }
 
     public void deleteAll() {
         observationJobRepository.deleteAll();
 
-        observationJobRunner.refreshJobs();
+        refreshJobs();
+    }
+
+    private void refreshJobs() {
+        lineCrossingRunner.refreshJobs();
+        areaOccupancyRunner.refreshJobs();
     }
 }

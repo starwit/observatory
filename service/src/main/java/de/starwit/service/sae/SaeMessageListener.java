@@ -1,10 +1,8 @@
 package de.starwit.service.sae;
 
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +17,10 @@ public class SaeMessageListener implements StreamListener<String, MapRecord<Stri
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private BlockingQueue<SaeDetectionDto> inputQueue;
-    
-    public SaeMessageListener() {
-        this.inputQueue = new ArrayBlockingQueue<>(1000);
+    private Consumer<SaeDetectionDto> messageCallback;
+
+    public SaeMessageListener(Consumer<SaeDetectionDto> messageCallback) {
+        this.messageCallback = messageCallback;
     }
     
     @Override
@@ -39,22 +37,7 @@ public class SaeMessageListener implements StreamListener<String, MapRecord<Stri
 
         List<SaeDetectionDto> dtoList = SaeDetectionDto.from(saeMsg);
         
-        int discardCount = 0;
-        for (SaeDetectionDto dto : dtoList) {
-            boolean success = this.inputQueue.offer(dto);
-            if (!success) {
-                discardCount++;
-            }
-        }
-        if (discardCount > 0) {
-            log.warn("Discarded {} messages", discardCount);
-        }
-    }
-
-    public List<SaeDetectionDto> getBufferedMessages() {
-        List<SaeDetectionDto> outputList = new ArrayList<>();
-        this.inputQueue.drainTo(outputList);
-        return outputList;
+        dtoList.forEach(messageCallback);
     }
     
 }
