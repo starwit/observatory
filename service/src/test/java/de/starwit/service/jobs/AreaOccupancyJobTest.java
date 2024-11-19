@@ -83,8 +83,8 @@ public class AreaOccupancyJobTest {
             Helper.createDetection(Instant.ofEpochMilli(2000), new Point2D.Double(50, 50), "obj2"),
             Helper.createDetection(Instant.ofEpochMilli(2000), new Point2D.Double(50, 50), "obj3"),
             Helper.createDetection(Instant.ofEpochMilli(2000), new Point2D.Double(50, 200), "obj4"),
-            Helper.createDetection(Instant.ofEpochMilli(5200), new Point2D.Double(50, 50), "obj1"),
-            Helper.createDetection(Instant.ofEpochMilli(5200), new Point2D.Double(50, 50), "obj2")
+            Helper.createDetection(Instant.ofEpochMilli(10200), new Point2D.Double(50, 50), "obj1"),
+            Helper.createDetection(Instant.ofEpochMilli(10200), new Point2D.Double(50, 50), "obj2")
         );
 
         AreaOccupancyJob testee = new AreaOccupancyJob(jobEntity, observationListenerMock, InstantSource.fixed(Instant.ofEpochMilli(0)), scheduledExecutorServiceMock);
@@ -99,8 +99,8 @@ public class AreaOccupancyJobTest {
         ArgumentCaptor<Long> countCaptor = ArgumentCaptor.forClass(Long.class);
 
         verify(observationListenerMock, times(1)).onObservation(any(), timeCaptor.capture(), countCaptor.capture());
-        assertThat(timeCaptor.getValue().toEpochSecond()).isEqualTo(2);
-        assertThat(countCaptor.getValue()).isEqualTo(3);
+        assertThat(timeCaptor.getValue().toEpochSecond()).isEqualTo(10);
+        assertThat(countCaptor.getValue()).isEqualTo(2);
     }
 
     static ObservationJobEntity prepareJobEntity(List<PointEntity> geometryPoints) {
