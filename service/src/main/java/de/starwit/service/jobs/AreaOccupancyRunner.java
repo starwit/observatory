@@ -111,7 +111,7 @@ public class AreaOccupancyRunner {
         job.setLastUpdate(instantSource.instant());
     }
 
-    @Scheduled(fixedRate = 5000, fixedDelay = 2000)
+    @Scheduled(fixedRate = 5000)
     private void runJobs() {
         for (AreaOccupancyJob job : activeJobs) {
             runJob(job);
@@ -142,13 +142,11 @@ public class AreaOccupancyRunner {
 
             if (stationary && job.getPolygon().contains(avgPos)) {
                 objectCount++;
-                log.info("Stationary " + trajectory.get(0).getObjectId().substring(0, 4));
+                log.debug("Stationary " + trajectory.get(0).getObjectId().substring(0, 4));
             }
         }
         
         job.getTrajectoryStore().purge();
-
-        log.info("Count: " + objectCount);
 
         storeObservation(new AreaOccupancyObservation(job.getConfigEntity(), job.getTrajectoryStore().getMostRecentTimestamp().atZone(ZoneOffset.UTC), objectCount));
     }
@@ -172,7 +170,7 @@ public class AreaOccupancyRunner {
 
         double avgStdDev = (stdDevX + stdDevY) / 2;
 
-        log.info("len " + String.format("%04d", pointTrajectory.size()) + ", avgStdDev: " + String.format("%10.8f", avgStdDev));
+        log.debug("len " + String.format("%04d", pointTrajectory.size()) + ", avgStdDev: " + String.format("%10.8f", avgStdDev));
     
         return avgStdDev < stdDevThreshold;
     }

@@ -34,8 +34,8 @@ public class AreaOccupancyJob {
         return lastUpdate;
     }
     
-    public Instant setLastUpdate(Instant lastUpdate) {
-        return lastUpdate;
+    public void setLastUpdate(Instant lastUpdate) {
+        this.lastUpdate = lastUpdate;
     }
 
     public Duration getAnalyzingInterval() {
