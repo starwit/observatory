@@ -9,7 +9,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Function;
 
+import org.apache.commons.math3.stat.descriptive.rank.Percentile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +43,8 @@ public class AreaOccupancyRunner {
     @Value("${sae.areaOccupancy.analyzingInterval:10s}")
     private Duration ANALYZING_INTERVAL;
     
-    @Value("${sae.areaOccupancy.stdDevThreshold:0.001}")
-    private double STDDEV_THRESHOLD;
+    @Value("${sae.areaOccupancy.geoDistanceP95Threshold:0.001}")
+    private double GEO_DISTANCE_P95_THRESHOLD;
 
     @Autowired
     private ObservationJobService observationJobService;
@@ -132,15 +134,19 @@ public class AreaOccupancyRunner {
             List<Point2D> pointTrajectory = GeometryConverter.toCenterPoints(trajectory, job.getConfigEntity().getGeoReferenced());
             Point2D avgPos = getAveragePosition(pointTrajectory);
 
+            if (!job.getPolygon().contains(avgPos)) {
+                continue;
+            }
+
             // Use bounding box size as stationarity constraint if not geo-referenced (to compensate for perspective)
             boolean stationary = false;
             if (job.getConfigEntity().getGeoReferenced()) {
-                stationary = isStationary(pointTrajectory, STDDEV_THRESHOLD);
+                stationary = isStationary(pointTrajectory, GEO_DISTANCE_P95_THRESHOLD);
             } else {
                 stationary = isStationary(pointTrajectory, getAverageBoundingBoxDiagonal(trajectory) * 0.1);
             }
 
-            if (stationary && job.getPolygon().contains(avgPos)) {
+            if (stationary) {
                 objectCount++;
                 log.debug("Stationary " + trajectory.get(0).getObjectId().substring(0, 4));
             }
@@ -153,26 +159,21 @@ public class AreaOccupancyRunner {
 
     /**
      * Determines if the passed trajectory meets our stationary position requirements.
-     * Right now that means the average of standard deviation in x and y coordinates is below some threshold.
+     * Right now that means the 95 percentile of distances to the average position (within the recorded track) is smaller than a certain threshold.
      * @param pointTrajectory
      * @return
      */
-    private boolean isStationary(List<Point2D> pointTrajectory, double stdDevThreshold) {
+    private boolean isStationary(List<Point2D> pointTrajectory, double threshold) {
         Point2D avgPos = getAveragePosition(pointTrajectory);
-        double squareSumX = 0;
-        double squareSumY = 0;
-        for (Point2D point : pointTrajectory) {
-            squareSumX += Math.pow(avgPos.getX() - point.getX(), 2);
-            squareSumY += Math.pow(avgPos.getY() - point.getY(), 2);
-        }
-        double stdDevX = Math.sqrt(squareSumX / pointTrajectory.size());
-        double stdDevY = Math.sqrt(squareSumY / pointTrajectory.size());
 
-        double avgStdDev = (stdDevX + stdDevY) / 2;
+        double[] distances = pointTrajectory.stream().map(p -> p.distance(avgPos)).mapToDouble(d -> d).toArray();
+        double distanceP95 = new Percentile().evaluate(distances, 0.95);
 
-        log.debug("len " + String.format("%04d", pointTrajectory.size()) + ", avgStdDev: " + String.format("%10.8f", avgStdDev));
+        boolean stationary = distanceP95 < threshold;
+
+        log.debug("trajLen " + String.format("%04d", pointTrajectory.size()) + ", distance P95: " + String.format("%10.8f", distanceP95) + ", threshold: " + String.format("%10.8f", threshold));
     
-        return avgStdDev < stdDevThreshold;
+        return stationary;
     }
 
     private Point2D getAveragePosition(List<Point2D> pointTrajectory) {

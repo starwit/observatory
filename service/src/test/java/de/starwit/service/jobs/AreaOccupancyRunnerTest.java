@@ -119,7 +119,7 @@ public class AreaOccupancyRunnerTest {
         
         verify(areaOccupancyServiceMock, times(1)).addEntry(any(), any(), countCaptor.capture());
         
-        assertThat(countCaptor.getValue()).isEqualTo(34);
+        assertThat(countCaptor.getValue()).isEqualTo(42);
     }
 
     static ObservationJobEntity prepareJobEntity(List<PointEntity> geometryPoints) {
@@ -127,7 +127,6 @@ public class AreaOccupancyRunnerTest {
         entity.setCameraId("camId");
         entity.setDetectionClassId(1);
         
-        // This is a square of width 100
         entity.setGeometryPoints(geometryPoints);
         entity.setType(JobType.AREA_OCCUPANCY);
         entity.setGeoReferenced(false);
@@ -138,7 +137,7 @@ public class AreaOccupancyRunnerTest {
     private AreaOccupancyRunner prepareTestee() {
         AreaOccupancyRunner testee = new AreaOccupancyRunner(InstantSource.fixed(Instant.ofEpochMilli(0)), scheduledExecutorServiceMock);
         ReflectionTestUtils.setField(testee, "ANALYZING_INTERVAL", Duration.ofSeconds(10));
-        ReflectionTestUtils.setField(testee, "STDDEV_THRESHOLD", 0.001);
+        ReflectionTestUtils.setField(testee, "GEO_DISTANCE_P95_THRESHOLD", 0.001);
         ReflectionTestUtils.setField(testee, "areaOccupancyService", areaOccupancyServiceMock);
         ReflectionTestUtils.setField(testee, "geoJsonService", geoJsonServiceMock);
         return testee;
