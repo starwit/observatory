@@ -19,11 +19,13 @@ public class Helper {
     static SaeDetectionDto createDetection(Instant captureTs, Point2D center, String objectId) {
         SaeDetectionDto det = new SaeDetectionDto();
 
+        if (center != null) {
+            det.setMinX(center.getX() - 50);
+            det.setMaxX(center.getX() + 50);
+            det.setMinY(center.getY() - 50);
+            det.setMaxY(center.getY() + 50);
+        }
         det.setCaptureTs(captureTs);
-        det.setMinX(center.getX() - 50);
-        det.setMaxX(center.getX() + 50);
-        det.setMinY(center.getY() - 50);
-        det.setMaxY(center.getY() + 50);
 
         // defaults (we do not need to vary these)
         det.setCameraId("camId");

@@ -3,6 +3,7 @@ package de.starwit.service.jobs;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -94,13 +95,13 @@ public class TrajectoryStore {
         return this.mostRecentTimestamp;
     }
 
-    private void truncateTrajectory(ConcurrentLinkedDeque<SaeDetectionDto> trajectory) {
+    private void truncateTrajectory(Deque<SaeDetectionDto> trajectory) {
         while (trajectoryLength(trajectory).minus(TARGET_WINDOW).isPositive()) {
             trajectory.pollFirst();
         }
     }
 
-    private Duration trajectoryLength(ConcurrentLinkedDeque<SaeDetectionDto> trajectory) {
+    private Duration trajectoryLength(Deque<SaeDetectionDto> trajectory) {
         return Duration.between(trajectory.getFirst().getCaptureTs(), this.mostRecentTimestamp);
     }
 
