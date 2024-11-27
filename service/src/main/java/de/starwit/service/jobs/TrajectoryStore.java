@@ -37,7 +37,7 @@ public class TrajectoryStore {
         if (det.getCaptureTs().isAfter(mostRecentTimestamp)) {
             this.mostRecentTimestamp = det.getCaptureTs();
         }
-        truncateTrajectory(trajectory);
+        truncateTrajectories();
     }
 
     public SaeDetectionDto getFirst(SaeDetectionDto det) {
@@ -78,7 +78,10 @@ public class TrajectoryStore {
     }
 
     /**
-     * Returns all trajectories that satisfy the target length (i.e. length > 0.80 * targetTrajectoryLength)
+     * Returns all trajectories that satisfy the target length (i.e. length > 0.80 * targetTrajectoryLength).
+     * As the trajectories are truncated during addDetection(), trajectory starts must by within the analyzing window.
+     * Trajectory length is defined by the time between the first and last detection in the trajectory.
+     * The analyzing window is relative to the most recent timestamp we have seen so far, there is no tie to the actual time!
      * @return
      */
     public List<List<SaeDetectionDto>> getAllValidTrajectories() {
@@ -95,14 +98,16 @@ public class TrajectoryStore {
         return this.mostRecentTimestamp;
     }
 
-    private void truncateTrajectory(Deque<SaeDetectionDto> trajectory) {
-        while (trajectoryLength(trajectory).minus(TARGET_WINDOW).isPositive()) {
-            trajectory.pollFirst();
+    private void truncateTrajectories() {
+        for (Deque<SaeDetectionDto> trajectory : this.trajectoryByObjId.values()) {
+            while (trajectory.getFirst().getCaptureTs().isBefore(this.mostRecentTimestamp.minus(TARGET_WINDOW))) {
+                trajectory.pollFirst();
+            }
         }
     }
 
     private Duration trajectoryLength(Deque<SaeDetectionDto> trajectory) {
-        return Duration.between(trajectory.getFirst().getCaptureTs(), this.mostRecentTimestamp);
+        return Duration.between(trajectory.getFirst().getCaptureTs(), trajectory.getLast().getCaptureTs());
     }
 
     /**
