@@ -87,7 +87,7 @@ public class TrajectoryStore {
     public List<List<SaeDetectionDto>> getAllValidTrajectories() {
         List<List<SaeDetectionDto>> trajectories = new ArrayList<>();
         for (ConcurrentLinkedDeque<SaeDetectionDto> trajectory : trajectoryByObjId.values()) {
-            if (trajectoryLength(trajectory).toMillis() > 0.8 * TARGET_WINDOW.toMillis()) {
+            if (!trajectory.isEmpty() && trajectoryLength(trajectory).toMillis() > 0.8 * TARGET_WINDOW.toMillis()) {
                 trajectories.add(new ArrayList<>(trajectory));
             }
         }
@@ -100,7 +100,7 @@ public class TrajectoryStore {
 
     private void truncateTrajectories() {
         for (Deque<SaeDetectionDto> trajectory : this.trajectoryByObjId.values()) {
-            while (trajectory.getFirst().getCaptureTs().isBefore(this.mostRecentTimestamp.minus(TARGET_WINDOW))) {
+            while (!trajectory.isEmpty() && trajectory.getFirst().getCaptureTs().isBefore(this.mostRecentTimestamp.minus(TARGET_WINDOW))) {
                 trajectory.pollFirst();
             }
         }

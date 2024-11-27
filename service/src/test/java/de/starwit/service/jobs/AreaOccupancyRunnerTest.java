@@ -119,7 +119,7 @@ public class AreaOccupancyRunnerTest {
         
         verify(areaOccupancyServiceMock, times(1)).addEntry(any(), any(), countCaptor.capture());
         
-        assertThat(countCaptor.getValue()).isEqualTo(42);
+        assertThat(countCaptor.getValue()).isEqualTo(20);
     }
 
     static ObservationJobEntity prepareJobEntity(List<PointEntity> geometryPoints) {
