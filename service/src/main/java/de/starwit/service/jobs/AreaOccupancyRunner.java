@@ -45,6 +45,9 @@ public class AreaOccupancyRunner {
     
     @Value("${sae.areaOccupancy.geoDistanceP95Threshold:0.001}")
     private double GEO_DISTANCE_P95_THRESHOLD;
+    
+    @Value("${sae.areaOccupancy.pxDistanceP95ThresholdScale:0.1}")
+    private double PX_DISTANCE_P95_THRESHOLD_SCALE;
 
     @Autowired
     private ObservationJobService observationJobService;
@@ -147,7 +150,7 @@ public class AreaOccupancyRunner {
             if (job.getConfigEntity().getGeoReferenced()) {
                 stationary = isStationary(pointTrajectory, GEO_DISTANCE_P95_THRESHOLD);
             } else {
-                stationary = isStationary(pointTrajectory, getAverageBoundingBoxDiagonal(trajectory) * 0.1);
+                stationary = isStationary(pointTrajectory, getAverageBoundingBoxDiagonal(trajectory) * PX_DISTANCE_P95_THRESHOLD_SCALE);
             }
 
             if (stationary) {

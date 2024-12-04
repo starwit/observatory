@@ -138,6 +138,7 @@ public class AreaOccupancyRunnerTest {
         AreaOccupancyRunner testee = new AreaOccupancyRunner(InstantSource.fixed(Instant.ofEpochMilli(0)), scheduledExecutorServiceMock);
         ReflectionTestUtils.setField(testee, "ANALYZING_INTERVAL", Duration.ofSeconds(10));
         ReflectionTestUtils.setField(testee, "GEO_DISTANCE_P95_THRESHOLD", 0.001);
+        ReflectionTestUtils.setField(testee, "PX_DISTANCE_P95_THRESHOLD_SCALE", 0.1);
         ReflectionTestUtils.setField(testee, "areaOccupancyService", areaOccupancyServiceMock);
         ReflectionTestUtils.setField(testee, "geoJsonService", geoJsonServiceMock);
         return testee;
