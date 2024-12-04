@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.commons.math3.stat.descriptive.rank.Percentile;
 import org.slf4j.Logger;
@@ -91,11 +91,13 @@ public class AreaOccupancyRunner {
         this.activeSubscriptions = new ArrayList<>();
 
         List<ObservationJobEntity> enabledJobEntites = observationJobService.findActiveAreaOccupancyJobs();
+        log.info("Enabled jobs: " + enabledJobEntites.stream().map(j -> j.getName()).collect(Collectors.joining(",")));
 
         this.activeJobs = enabledJobEntites.stream().map(jobEntity -> new AreaOccupancyJob(jobEntity, ANALYZING_INTERVAL)).toList();
 
         for (String streamId : enabledJobEntites.stream().map(e -> e.getCameraId()).distinct().toList()) {
             String streamKey = REDIS_STREAM_PREFIX + ":" + streamId;
+            log.info("Subscribing to " + streamKey);
             StreamOffset<String> streamOffset = StreamOffset.create(streamKey, ReadOffset.lastConsumed());
             Subscription redisSubscription = streamListenerContainer.receive(streamOffset, saeMessageListener);
             activeSubscriptions.add(redisSubscription);
@@ -104,7 +106,9 @@ public class AreaOccupancyRunner {
 
     public void messageHandler(SaeDetectionDto dto) {
         for (AreaOccupancyJob job : activeJobs) {
-            addDetection(job, dto);
+            if (job.getConfigEntity().getCameraId().equals(dto.getCameraId())) {
+                addDetection(job, dto);
+            }
         }
     }
 
@@ -123,7 +127,7 @@ public class AreaOccupancyRunner {
     public void runJob(AreaOccupancyJob job) {
         // Skip processing if we have not received any new data within the last analyzing interval
         if (job.getLastUpdate().isBefore(instantSource.instant().minus(job.getAnalyzingInterval()))) {
-            log.warn("Skipping processing due to stale data");
+            log.warn("Skipping processing due to stale data (" + job.getConfigEntity().getName() + ")");
             return;
         }
         
