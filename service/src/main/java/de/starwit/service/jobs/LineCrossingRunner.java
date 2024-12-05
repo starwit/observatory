@@ -17,7 +17,6 @@ import org.springframework.data.redis.connection.stream.ReadOffset;
 import org.springframework.data.redis.connection.stream.StreamOffset;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
 import org.springframework.data.redis.stream.Subscription;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import de.starwit.persistence.analytics.entity.Direction;
@@ -33,8 +32,8 @@ import jakarta.annotation.PostConstruct;
 public class LineCrossingRunner {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Value("${sae.lineCrossing.targetWindowSizeSec:1}")
-    private int TARGET_WINDOW_SIZE_SEC;    
+    @Value("${sae.lineCrossing.targetWindowSize:1s}")
+    private Duration TARGET_WINDOW_SIZE;    
 
     @Value("${sae.redisStreamPrefix:output}")
     private String REDIS_STREAM_PREFIX;
@@ -79,7 +78,7 @@ public class LineCrossingRunner {
 
         List<ObservationJobEntity> enabledJobEntites = observationJobService.findActiveLineCrossingJobs();
 
-        this.activeJobs = enabledJobEntites.stream().map(jobEntity -> new LineCrossingJob(jobEntity)).toList();
+        this.activeJobs = enabledJobEntites.stream().map(jobEntity -> new LineCrossingJob(jobEntity, TARGET_WINDOW_SIZE.plusSeconds(5))).toList();
 
         for (String streamId : enabledJobEntites.stream().map(e -> e.getCameraId()).distinct().toList()) {
             String streamKey = REDIS_STREAM_PREFIX + ":" + streamId;
@@ -89,7 +88,6 @@ public class LineCrossingRunner {
         }
     }
     
-    @Async
     public void messageHandler(SaeDetectionDto dto) {
         for (LineCrossingJob lineJob : activeJobs) {
             if (lineJob.getConfigEntity().getCameraId().equals(dto.getCameraId())) {
@@ -126,7 +124,7 @@ public class LineCrossingRunner {
         boolean trimming = true;
         while (trimming) {
             Instant trajectoryStart = trajectoryStore.getFirst(det).getCaptureTs();
-            if (Duration.between(trajectoryStart, trajectoryEnd).toSeconds() > TARGET_WINDOW_SIZE_SEC) {
+            if (Duration.between(trajectoryStart, trajectoryEnd).toMillis() > TARGET_WINDOW_SIZE.toMillis()) {
                 trajectoryStore.removeFirst(det);
             } else {
                 trimming = false;
@@ -139,7 +137,7 @@ public class LineCrossingRunner {
 
         Instant trajectoryStart = trajectoryStore.getFirst(det).getCaptureTs();
         Instant trajectoryEnd = trajectoryStore.getLast(det).getCaptureTs();
-        return Duration.between(trajectoryStart, trajectoryEnd).toSeconds() >= TARGET_WINDOW_SIZE_SEC;
+        return Duration.between(trajectoryStart, trajectoryEnd).toMillis() >= TARGET_WINDOW_SIZE.toMillis();
     }
 
     private boolean objectHasCrossed(SaeDetectionDto det) {

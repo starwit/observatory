@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.mockingDetails;
 
 import java.awt.geom.Point2D;
 import java.nio.file.Paths;
@@ -47,7 +48,7 @@ public class LineCrossingRunnerTest {
             Helper.createPoint(100, 100)
         ));
 
-        LineCrossingJob job = new LineCrossingJob(jobEntity);
+        LineCrossingJob job = new LineCrossingJob(jobEntity, Duration.ofSeconds(10));
         
         // No point on trajectory should be ON the counting line (b/c direction is then ambiguous)
         List<SaeDetectionDto> detections = createLinearTrajectory(
@@ -69,11 +70,11 @@ public class LineCrossingRunnerTest {
     @Test
     public void testLineCrossingDump() {
         ObservationJobEntity jobEntity = prepareJobEntity(Arrays.asList(
-            Helper.createPoint(0.5, 0.5), 
+            Helper.createPoint(0.35, 0.5), 
             Helper.createPoint(0.7, 0.7)
         ));
             
-        LineCrossingJob job = new LineCrossingJob(jobEntity);
+        LineCrossingJob job = new LineCrossingJob(jobEntity, Duration.ofSeconds(10));
             
         SaeDump saeDump = new SaeDump(Paths.get("src/test/resources/test.saedump"));
             
@@ -84,6 +85,8 @@ public class LineCrossingRunnerTest {
                 testee.processNewDetection(job, dto);
             }
         }
+
+        System.out.println(mockingDetails(lineCrossingServiceMock).printInvocations());
 
         ArgumentCaptor<SaeDetectionDto> detectionCaptor = ArgumentCaptor.forClass(SaeDetectionDto.class);
 
@@ -132,7 +135,7 @@ public class LineCrossingRunnerTest {
 
     private LineCrossingRunner prepareTestee() {
         LineCrossingRunner testee = new LineCrossingRunner();
-        ReflectionTestUtils.setField(testee, "TARGET_WINDOW_SIZE_SEC", 1);
+        ReflectionTestUtils.setField(testee, "TARGET_WINDOW_SIZE", Duration.ofSeconds(1));
         ReflectionTestUtils.setField(testee, "lineCrossingService", lineCrossingServiceMock);
         ReflectionTestUtils.setField(testee, "geoJsonService", geoJsonServiceMock);
         return testee;

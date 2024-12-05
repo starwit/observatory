@@ -135,7 +135,7 @@ public class AreaOccupancyRunner {
         }
         
         long objectCount = 0;
-        List<List<SaeDetectionDto>> trajectories = job.getTrajectoryStore().getAllValidTrajectories();
+        List<List<SaeDetectionDto>> trajectories = job.getTrajectoryStore().getAllHealthyTrajectories();
         
         for (List<SaeDetectionDto> trajectory : trajectories) {
             List<Point2D> pointTrajectory = GeometryConverter.toCenterPoints(trajectory, job.getConfigEntity().getGeoReferenced());

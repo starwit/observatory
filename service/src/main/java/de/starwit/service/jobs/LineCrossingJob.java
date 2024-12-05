@@ -12,11 +12,11 @@ public class LineCrossingJob {
     private Line2D countingLine;
     private Boolean isGeoReferenced;
     
-    public LineCrossingJob(ObservationJobEntity configEntity) {
+    public LineCrossingJob(ObservationJobEntity configEntity, Duration targetWindowSize) {
         this.configEntity = configEntity;
         this.countingLine = GeometryConverter.lineFrom(this.configEntity);
         this.isGeoReferenced = this.configEntity.getGeoReferenced();
-        this.trajectoryStore = new TrajectoryStore(Duration.ofSeconds(60));
+        this.trajectoryStore = new TrajectoryStore(targetWindowSize);
     }
     
     public ObservationJobEntity getConfigEntity() {

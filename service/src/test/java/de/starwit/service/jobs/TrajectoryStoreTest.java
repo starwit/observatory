@@ -25,13 +25,13 @@ public class TrajectoryStoreTest {
         testee.addDetection(Helper.createDetection(Instant.ofEpochMilli(800), null, "o2"));
         testee.addDetection(Helper.createDetection(Instant.ofEpochMilli(1500), null, "o2"));
         
-        List<List<SaeDetectionDto>> validTrajectories = testee.getAllValidTrajectories();
+        List<List<SaeDetectionDto>> validTrajectories = testee.getAllHealthyTrajectories();
         assertThat(validTrajectories).hasSize(1);
         assertThat(validTrajectories.get(0).get(0).getObjectId()).isEqualTo("o2");
         
         testee.addDetection(Helper.createDetection(Instant.ofEpochMilli(1600), null, "o1"));
 
-        validTrajectories = testee.getAllValidTrajectories();
+        validTrajectories = testee.getAllHealthyTrajectories();
         assertThat(validTrajectories).hasSize(1);
         assertThat(validTrajectories.get(0).get(0).getObjectId()).isEqualTo("o1");
     }

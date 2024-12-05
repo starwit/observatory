@@ -84,14 +84,18 @@ public class TrajectoryStore {
      * The analyzing window is relative to the most recent timestamp we have seen so far, there is no tie to the actual time!
      * @return
      */
-    public List<List<SaeDetectionDto>> getAllValidTrajectories() {
+    public List<List<SaeDetectionDto>> getAllHealthyTrajectories() {
         List<List<SaeDetectionDto>> trajectories = new ArrayList<>();
         for (ConcurrentLinkedDeque<SaeDetectionDto> trajectory : trajectoryByObjId.values()) {
-            if (!trajectory.isEmpty() && trajectoryLength(trajectory).toMillis() > 0.8 * TARGET_WINDOW.toMillis()) {
+            if (isHealthy(trajectory)) {
                 trajectories.add(new ArrayList<>(trajectory));
             }
         }
         return trajectories;
+    }
+    
+    private boolean isHealthy(Deque<SaeDetectionDto> trajectory) {
+        return !trajectory.isEmpty() && trajectoryLength(trajectory).toMillis() > 0.8 * TARGET_WINDOW.toMillis();
     }
 
     public Instant getMostRecentTimestamp() {
