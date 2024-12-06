@@ -6,6 +6,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 import org.apache.commons.math3.stat.descriptive.rank.Percentile;
@@ -26,6 +27,8 @@ public class AreaOccupancyJob {
     private double GEO_DISTANCE_P95_THRESHOLD;
     private double PX_DISTANCE_P95_THRESHOLD_SCALE;
     private Consumer<AreaOccupancyObservation> observationConsumer;
+    
+    private ReentrantLock lock = new ReentrantLock(true);
     
     public AreaOccupancyJob(ObservationJobEntity configEntity, Duration analyzingInterval, double geoDistanceP95Threshold, double pxDistanceP95ThresholdScale, Consumer<AreaOccupancyObservation> observationConsumer) {
         this.configEntity = configEntity;
@@ -50,12 +53,30 @@ public class AreaOccupancyJob {
         return analyzingInterval;
     }
 
+    // `run()` and `addDetection()` are called from different threads, so we need to lock to make sure data is consistent.
+    // If this becomes a performance bottleneck, we could optimize this away, e.g. by using a queue for input data and updating the `TrajectoryStore` from that queue during `run()`
     public void addDetection(SaeDetectionDto dto, Instant currentTime) {
-        trajectoryStore.addDetection(dto);
-        this.lastUpdate = currentTime;
+        lock.lock();
+
+        try {
+            trajectoryStore.addDetection(dto);
+            this.lastUpdate = currentTime;
+        } finally {
+            lock.unlock();
+        }
     }
 
     public void run() {
+        lock.lock();
+
+        try {
+            runInternal();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private void runInternal() {
         long objectCount = 0;
         List<List<SaeDetectionDto>> trajectories = trajectoryStore.getAllHealthyTrajectories();
         
