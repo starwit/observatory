@@ -1,18 +1,12 @@
 package de.starwit.service.jobs;
 
-import java.awt.geom.Point2D;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.InstantSource;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
-import org.apache.commons.math3.stat.descriptive.rank.Percentile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,13 +35,13 @@ public class AreaOccupancyRunner {
     @Value("${sae.redisStreamPrefix:output}")
     private String REDIS_STREAM_PREFIX;
     
-    @Value("${sae.areaOccupancy.analyzingInterval:10s}")
-    private Duration ANALYZING_INTERVAL;
-    
-    @Value("${sae.areaOccupancy.geoDistanceP95Threshold:0.001}")
+    @Value("${areaOccupancy.analyzingWindow:10s}")
+    private Duration ANALYZING_WINDOW;
+
+    @Value("${areaOccupancy.geoDistanceP95Threshold:0.001}")
     private double GEO_DISTANCE_P95_THRESHOLD;
     
-    @Value("${sae.areaOccupancy.pxDistanceP95ThresholdScale:0.1}")
+    @Value("${areaOccupancy.pxDistanceP95ThresholdScale:0.1}")
     private double PX_DISTANCE_P95_THRESHOLD_SCALE;
 
     @Autowired
@@ -89,7 +83,7 @@ public class AreaOccupancyRunner {
         List<ObservationJobEntity> enabledJobEntites = observationJobService.findActiveAreaOccupancyJobs();
         log.info("Enabled jobs: " + enabledJobEntites.stream().map(j -> j.getName()).collect(Collectors.joining(",")));
 
-        this.activeJobs = enabledJobEntites.stream().map(jobEntity -> new AreaOccupancyJob(jobEntity, ANALYZING_INTERVAL, GEO_DISTANCE_P95_THRESHOLD, PX_DISTANCE_P95_THRESHOLD_SCALE, this::storeObservation)).toList();
+        this.activeJobs = enabledJobEntites.stream().map(jobEntity -> new AreaOccupancyJob(jobEntity, ANALYZING_WINDOW, GEO_DISTANCE_P95_THRESHOLD, PX_DISTANCE_P95_THRESHOLD_SCALE, this::storeObservation)).toList();
 
         for (String streamId : enabledJobEntites.stream().map(e -> e.getCameraId()).distinct().toList()) {
             String streamKey = REDIS_STREAM_PREFIX + ":" + streamId;
@@ -108,7 +102,7 @@ public class AreaOccupancyRunner {
         }
     }
 
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRateString = "${areaOccupancy.analyzingInterval:5s}")
     private void runJobs() {
         for (AreaOccupancyJob job : activeJobs) {
             // Skip processing if we have not received any new data within the last analyzing interval

@@ -29,7 +29,7 @@ import jakarta.annotation.PostConstruct;
 public class LineCrossingRunner {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Value("${sae.lineCrossing.targetWindowSize:1s}")
+    @Value("${lineCrossing.targetWindowSize:1s}")
     private Duration TARGET_WINDOW_SIZE;    
 
     @Value("${sae.redisStreamPrefix:output}")
