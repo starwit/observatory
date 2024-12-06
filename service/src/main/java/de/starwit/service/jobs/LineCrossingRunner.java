@@ -77,11 +77,13 @@ public class LineCrossingRunner {
         this.activeSubscriptions = new ArrayList<>();
 
         List<ObservationJobEntity> enabledJobEntites = observationJobService.findActiveLineCrossingJobs();
+        log.info("Enabled jobs: " + enabledJobEntites.stream().map(j -> j.getName()).collect(Collectors.joining(",")));
 
-        this.activeJobs = enabledJobEntites.stream().map(jobEntity -> new LineCrossingJob(jobEntity, TARGET_WINDOW_SIZE.plusSeconds(5))).toList();
+        this.activeJobs = enabledJobEntites.stream().map(jobEntity -> new LineCrossingJob(jobEntity, TARGET_WINDOW_SIZE)).toList();
 
         for (String streamId : enabledJobEntites.stream().map(e -> e.getCameraId()).distinct().toList()) {
             String streamKey = REDIS_STREAM_PREFIX + ":" + streamId;
+            log.info("Subscribing to " + streamKey);
             StreamOffset<String> streamOffset = StreamOffset.create(streamKey, ReadOffset.lastConsumed());
             Subscription redisSubscription = streamListenerContainer.receive(streamOffset, saeMessageListener);
             activeSubscriptions.add(redisSubscription);
@@ -108,8 +110,6 @@ public class LineCrossingRunner {
             if (objectHasCrossed(dto)) {
                 storeObservation(new LineCrossingObservation(dto, getCrossingDirection(dto), job.getConfigEntity()));
                 trajectoryStore.clear(dto);
-            } else {
-                trajectoryStore.removeFirst(dto);
             }
         }
 
@@ -137,7 +137,7 @@ public class LineCrossingRunner {
 
         Instant trajectoryStart = trajectoryStore.getFirst(det).getCaptureTs();
         Instant trajectoryEnd = trajectoryStore.getLast(det).getCaptureTs();
-        return Duration.between(trajectoryStart, trajectoryEnd).toMillis() >= TARGET_WINDOW_SIZE.toMillis();
+        return Duration.between(trajectoryStart, trajectoryEnd).toMillis() > 0.8 * TARGET_WINDOW_SIZE.toMillis();
     }
 
     private boolean objectHasCrossed(SaeDetectionDto det) {

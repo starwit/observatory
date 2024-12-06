@@ -4,20 +4,19 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
 
 import de.starwit.service.sae.SaeDetectionDto;
 
 /**
  * Provides storage for object trajectories (i.e. sequences of `SaeDetectionDto`)
- * All contained data structures are thread-safe, so this can be shared among threads.
- * However, there are no guarantees that operations see the most recent updates.
+ * Not thread-safe, should not be shared.
  */
 public class TrajectoryStore {
-    private ConcurrentHashMap<String, ConcurrentLinkedDeque<SaeDetectionDto>> trajectoryByObjId = new ConcurrentHashMap<>();
+    private HashMap<String, LinkedList<SaeDetectionDto>> trajectoryByObjId = new HashMap<>();
     private final Duration TARGET_WINDOW;
     private Instant mostRecentTimestamp;
 
@@ -27,9 +26,9 @@ public class TrajectoryStore {
     }
 
     public void addDetection(SaeDetectionDto det) {
-        ConcurrentLinkedDeque<SaeDetectionDto> trajectory = trajectoryByObjId.get(det.getObjectId());
+        LinkedList<SaeDetectionDto> trajectory = trajectoryByObjId.get(det.getObjectId());
         if (trajectory == null) {
-            trajectory = new ConcurrentLinkedDeque<>();
+            trajectory = new LinkedList<>();
             trajectoryByObjId.put(det.getObjectId(), trajectory);
         }
         trajectory.addLast(det);
@@ -41,7 +40,7 @@ public class TrajectoryStore {
     }
 
     public SaeDetectionDto getFirst(SaeDetectionDto det) {
-        ConcurrentLinkedDeque<SaeDetectionDto> trajectory = trajectoryByObjId.get(det.getObjectId());
+        LinkedList<SaeDetectionDto> trajectory = trajectoryByObjId.get(det.getObjectId());
         if (trajectory == null || trajectory.isEmpty()) {
             return null;
         }
@@ -49,7 +48,7 @@ public class TrajectoryStore {
     }
 
     public SaeDetectionDto getLast(SaeDetectionDto det) {
-        ConcurrentLinkedDeque<SaeDetectionDto> trajectory = trajectoryByObjId.get(det.getObjectId());
+        LinkedList<SaeDetectionDto> trajectory = trajectoryByObjId.get(det.getObjectId());
         if (trajectory == null || trajectory.isEmpty()) {
             return null;
         }
@@ -57,21 +56,21 @@ public class TrajectoryStore {
     }
 
     public void removeFirst(SaeDetectionDto det) {
-        ConcurrentLinkedDeque<SaeDetectionDto> trajectory = trajectoryByObjId.get(det.getObjectId());
+        LinkedList<SaeDetectionDto> trajectory = trajectoryByObjId.get(det.getObjectId());
         if (trajectory != null) {
             trajectory.pollFirst();
         }
     }
 
     public void removeLast(SaeDetectionDto det) {
-        ConcurrentLinkedDeque<SaeDetectionDto> trajectory = trajectoryByObjId.get(det.getObjectId());
+        LinkedList<SaeDetectionDto> trajectory = trajectoryByObjId.get(det.getObjectId());
         if (trajectory != null) {
             trajectory.pollLast();
         }
     }
 
     public void clear(SaeDetectionDto det) {
-        ConcurrentLinkedDeque<SaeDetectionDto> trajectory = trajectoryByObjId.get(det.getObjectId());
+        LinkedList<SaeDetectionDto> trajectory = trajectoryByObjId.get(det.getObjectId());
         if (trajectory != null) {
             trajectory.clear();
         }
@@ -86,7 +85,7 @@ public class TrajectoryStore {
      */
     public List<List<SaeDetectionDto>> getAllHealthyTrajectories() {
         List<List<SaeDetectionDto>> trajectories = new ArrayList<>();
-        for (ConcurrentLinkedDeque<SaeDetectionDto> trajectory : trajectoryByObjId.values()) {
+        for (LinkedList<SaeDetectionDto> trajectory : trajectoryByObjId.values()) {
             if (isHealthy(trajectory)) {
                 trajectories.add(new ArrayList<>(trajectory));
             }
@@ -123,8 +122,8 @@ public class TrajectoryStore {
         List<String> keysToDelete = new ArrayList<>();
         Instant cutOff = referenceTime.minus(TARGET_WINDOW);
         
-        for (Entry<String, ConcurrentLinkedDeque<SaeDetectionDto>> entry: trajectoryByObjId.entrySet()) {
-            ConcurrentLinkedDeque<SaeDetectionDto> trajectory = entry.getValue();
+        for (Entry<String, LinkedList<SaeDetectionDto>> entry: trajectoryByObjId.entrySet()) {
+            LinkedList<SaeDetectionDto> trajectory = entry.getValue();
             if (trajectory.isEmpty() || trajectory.getLast().getCaptureTs().isBefore(cutOff)) {
                 keysToDelete.add(entry.getKey());
             }
