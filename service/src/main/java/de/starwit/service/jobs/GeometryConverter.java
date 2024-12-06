@@ -4,6 +4,7 @@ import java.awt.geom.Area;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
+import java.util.List;
 
 import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 import de.starwit.persistence.observatory.entity.PointEntity;
@@ -51,6 +52,10 @@ public class GeometryConverter {
         pt2 = fromPoint(jobConfig.getGeometryPoints().get(1), jobConfig.getGeoReferenced());
 
         return new Line2D.Double(pt1, pt2);
+    }
+
+    public static List<Point2D> toCenterPoints(List<SaeDetectionDto> detections, boolean isGeo) {
+        return detections.stream().map(det -> toCenterPoint(det, isGeo)).toList();
     }
 
     public static Point2D toCenterPoint(SaeDetectionDto detection, boolean isGeo) {
