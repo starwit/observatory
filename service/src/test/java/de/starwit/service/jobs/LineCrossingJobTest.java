@@ -79,7 +79,7 @@ public class LineCrossingJobTest {
 
         verify(consumerMock, times(9)).accept(observationCaptor.capture());
 
-        // This list was manually validated (by playing back the dumpfile), i.e. it is correct given the job coordinates above
+        // This list was manually validated, i.e. it is correct (!) given the job coordinates and dumpfile above
         assertThat(observationCaptor.getAllValues().stream().map(obs -> obs.det().getObjectId())).containsExactly(
             "da2aa810706137e09c23e7d80324ead9",
             "19295f0a2c443a11a51394dad7be5233",

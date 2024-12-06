@@ -32,18 +32,6 @@ public class LineCrossingJob {
         return this.configEntity;
     }
 
-    public TrajectoryStore getTrajectoryStore() {
-        return trajectoryStore;
-    }
-
-    public Line2D getCountingLine() {
-        return countingLine;
-    }
-
-    public Boolean isGeoReferenced() {
-        return isGeoReferenced;
-    }
-
     public void processNewDetection(SaeDetectionDto dto) {
         trajectoryStore.addDetection(dto);
         trimTrajectory(dto);
