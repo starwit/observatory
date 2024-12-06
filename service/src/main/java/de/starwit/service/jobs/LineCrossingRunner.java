@@ -1,9 +1,6 @@
 package de.starwit.service.jobs;
 
-import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,7 +17,6 @@ import org.springframework.data.redis.stream.StreamMessageListenerContainer;
 import org.springframework.data.redis.stream.Subscription;
 import org.springframework.stereotype.Service;
 
-import de.starwit.persistence.analytics.entity.Direction;
 import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 import de.starwit.service.analytics.LineCrossingService;
 import de.starwit.service.geojson.GeoJsonService;
@@ -56,8 +52,6 @@ public class LineCrossingRunner {
     private List<Subscription> activeSubscriptions = new ArrayList<>();
     private List<LineCrossingJob> activeJobs = new ArrayList<>();
 
-    private LineCrossingJob currentJob;
-
     public LineCrossingRunner() {
         this.saeMessageListener = new SaeMessageListener(this::messageHandler);
     }
@@ -80,7 +74,7 @@ public class LineCrossingRunner {
         List<ObservationJobEntity> enabledJobEntites = observationJobService.findActiveLineCrossingJobs();
         log.info("Enabled jobs: " + enabledJobEntites.stream().map(j -> j.getName()).collect(Collectors.joining(",")));
 
-        this.activeJobs = enabledJobEntites.stream().map(jobEntity -> new LineCrossingJob(jobEntity, TARGET_WINDOW_SIZE)).toList();
+        this.activeJobs = enabledJobEntites.stream().map(jobEntity -> new LineCrossingJob(jobEntity, TARGET_WINDOW_SIZE, this::storeObservation)).toList();
 
         for (String streamId : enabledJobEntites.stream().map(e -> e.getCameraId()).distinct().toList()) {
             String streamKey = REDIS_STREAM_PREFIX + ":" + streamId;
@@ -90,77 +84,12 @@ public class LineCrossingRunner {
             activeSubscriptions.add(redisSubscription);
         }
     }
-    
+
     public void messageHandler(SaeDetectionDto dto) {
         for (LineCrossingJob lineJob : activeJobs) {
             if (lineJob.getConfigEntity().getCameraId().equals(dto.getCameraId())) {
-                processNewDetection(lineJob, dto);
+                lineJob.processNewDetection(dto);
             }
-        }
-    }
-
-    protected void processNewDetection(LineCrossingJob job, SaeDetectionDto dto) {
-        this.currentJob = job;
-
-        TrajectoryStore trajectoryStore = job.getTrajectoryStore();
-        log.debug("store size: {}", trajectoryStore.size());
-
-        trajectoryStore.addDetection(dto);
-        trimTrajectory(dto);
-        if (isTrajectoryValid(dto)) {
-            if (objectHasCrossed(dto)) {
-                storeObservation(new LineCrossingObservation(dto, getCrossingDirection(dto), job.getConfigEntity()));
-                trajectoryStore.clear(dto);
-            }
-        }
-
-        trajectoryStore.purge(dto.getCaptureTs());
-    }
-    
-    private void trimTrajectory(SaeDetectionDto det) {
-        TrajectoryStore trajectoryStore = currentJob.getTrajectoryStore();
-
-        Instant trajectoryEnd = trajectoryStore.getLast(det).getCaptureTs();
-
-        boolean trimming = true;
-        while (trimming) {
-            Instant trajectoryStart = trajectoryStore.getFirst(det).getCaptureTs();
-            if (Duration.between(trajectoryStart, trajectoryEnd).toMillis() > TARGET_WINDOW_SIZE.toMillis()) {
-                trajectoryStore.removeFirst(det);
-            } else {
-                trimming = false;
-            }
-        }
-    }
-
-    private boolean isTrajectoryValid(SaeDetectionDto det) {
-        TrajectoryStore trajectoryStore = currentJob.getTrajectoryStore();
-
-        Instant trajectoryStart = trajectoryStore.getFirst(det).getCaptureTs();
-        Instant trajectoryEnd = trajectoryStore.getLast(det).getCaptureTs();
-        return Duration.between(trajectoryStart, trajectoryEnd).toMillis() > 0.8 * TARGET_WINDOW_SIZE.toMillis();
-    }
-
-    private boolean objectHasCrossed(SaeDetectionDto det) {
-        TrajectoryStore trajectoryStore = currentJob.getTrajectoryStore();
-        Line2D countingLine = currentJob.getCountingLine();
-        
-        Point2D firstPoint = GeometryConverter.toCenterPoint(trajectoryStore.getFirst(det), currentJob.isGeoReferenced());
-        Point2D lastPoint = GeometryConverter.toCenterPoint(trajectoryStore.getLast(det), currentJob.isGeoReferenced());
-        Line2D trajectory = new Line2D.Double(firstPoint, lastPoint);
-        return trajectory.intersectsLine(countingLine);
-    }
-    
-    private Direction getCrossingDirection(SaeDetectionDto det) {
-        TrajectoryStore trajectoryStore = currentJob.getTrajectoryStore();
-        Line2D countingLine = currentJob.getCountingLine();
-
-        Point2D trajectoryEnd = GeometryConverter.toCenterPoint(trajectoryStore.getLast(det), currentJob.isGeoReferenced());
-        int ccw = countingLine.relativeCCW(trajectoryEnd);
-        if (ccw == -1) {
-            return Direction.out;
-        } else {
-            return Direction.in;
         }
     }
 
