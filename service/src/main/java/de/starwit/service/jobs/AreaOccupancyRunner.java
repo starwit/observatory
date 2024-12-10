@@ -103,6 +103,7 @@ public class AreaOccupancyRunner {
         }
     }
 
+    // TODO: Change this back to simpel duration format ("5s") after upgrading to Spring Boot 3.4.x
     @Scheduled(fixedRateString = "${areaOccupancy.analyzingIntervalMs:5000}", timeUnit = TimeUnit.MILLISECONDS)
     private void runJobs() {
         for (AreaOccupancyJob job : activeJobs) {
