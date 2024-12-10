@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -102,7 +103,7 @@ public class AreaOccupancyRunner {
         }
     }
 
-    @Scheduled(fixedRateString = "${areaOccupancy.analyzingInterval:5s}")
+    @Scheduled(fixedRateString = "${areaOccupancy.analyzingIntervalMs:5000}", timeUnit = TimeUnit.MILLISECONDS)
     private void runJobs() {
         for (AreaOccupancyJob job : activeJobs) {
             // Skip processing if we have not received any new data within the last analyzing interval
