@@ -120,6 +120,11 @@ public class SaeDetectionDto {
         this.longitude = longitude;
     }
 
+    @Override
+    public String toString() {
+        return "SaeDetectionDto(" + cameraId + ", " + captureTs.toString() + ", " + objectId + ", " + classId + ")";
+    }
+
     public static List<SaeDetectionDto> from(SaeMessage msg) {
         List<SaeDetectionDto> results = new ArrayList<>();
         for (Detection det : msg.getDetectionsList()) {
