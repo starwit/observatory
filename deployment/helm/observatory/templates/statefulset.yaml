@@ -80,7 +80,11 @@ spec:
             - name: ANALYTICS_DATASOURCE_USERNAME
               value: {{ .Values.databases.analytics.username }}
             - name: ANALYTICS_DATASOURCE_PASSWORD
-              value: {{ .Values.databases.analytics.password }}              
+              value: {{ .Values.databases.analytics.password }}   
+            {{- if .Values.databases.analytics.isTimescale }}
+            - name: ANALYTICS_TIMESCALE_DATASOURCE_FLYWAY_LOCATIONS
+              value: "classpath:db/migration/analytics-timescale"
+            {{- end }}
 
             - name: SERVER_SERVLET_CONTEXT_PATH
               value: {{ .Values.app.context_path | quote }}

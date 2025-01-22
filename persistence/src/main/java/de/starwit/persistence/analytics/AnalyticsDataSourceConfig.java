@@ -62,6 +62,7 @@ public class AnalyticsDataSourceConfig {
                 .dataSource(analyticsDataSource())
                 .locations(flywayTimescaleLocations)
                 .table("flyway_schema_history_timescale")
+                .baselineOnMigrate(true)
                 .load()
                 .migrate();
         }
