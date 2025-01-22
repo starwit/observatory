@@ -34,6 +34,9 @@ public class AnalyticsDataSourceConfig {
     @Value("${analytics.datasource.flyway.locations}")
     private String[] flywayLocations;
 
+    @Value("${analytics.timescale.datasource.flyway.locations:#{null}}")
+    private String[] flywayTimescaleLocations;
+
     @Bean
     public DataSource analyticsDataSource() {
         return analyticsDataSourceProperties()
@@ -54,6 +57,14 @@ public class AnalyticsDataSourceConfig {
                 .locations(flywayLocations)
                 .load()
                 .migrate();
+        if (flywayTimescaleLocations != null) {
+            Flyway.configure()
+                .dataSource(analyticsDataSource())
+                .locations(flywayTimescaleLocations)
+                .table("flyway_schema_history_timescale")
+                .load()
+                .migrate();
+        }
         return builder
                 .dataSource(analyticsDataSource())
                 .packages("de.starwit.persistence.analytics")
