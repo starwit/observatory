@@ -39,7 +39,7 @@ public class AreaOccupancyRunner {
     @Value("${areaOccupancy.analyzingWindow:10s}")
     private Duration ANALYZING_WINDOW;
 
-    @Value("${areaOccupancy.geoDistanceP95Threshold:0.001}")
+    @Value("${areaOccupancy.geoDistanceP95Threshold:0.0001}")
     private double GEO_DISTANCE_P95_THRESHOLD;
     
     @Value("${areaOccupancy.pxDistanceP95ThresholdScale:0.1}")
