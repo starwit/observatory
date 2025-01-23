@@ -2,6 +2,12 @@
 
 Changelog of observatory.
 
+## Current Version ()
+
+### Features
+
+-  Separate TimescaleDB-specific migrations ([8f306](https://github.com/starwit/observatory/commit/8f306a5ca192c17) flonix8)  
+
 ## refs/tags/1.2.7 (2024-10-30)
 
 ### Features
