@@ -24,9 +24,15 @@ Main task of Observatory is to run a multitude of observation jobs that turn raw
 
 This job counts traffic passing a line including direction of movement. The technical name is `LINE_CROSSING`.
 
+It works by reconstructing and windowing object trajectories. For every new detection received the algorithm checks if a straight line between the updated trajectory start and end point cross the defined counting line.
+The property `lineCrossing.targetWindowSize` defines how big that window is, i.e. how long the trajectories are allowed to get.
+
 ### Counting Parked Vehicles
 
 In a defined area this job counts how many vehicles are not moving and so considered as parked vehicles. The technical name is `AREA_OCCUPANCY`.
+
+It works by reconstructing and windowing object trajectories (length of analyzing window: `areaOccupancy.analyzingWindow`). Every new detection is added to its corresponding object trajectory. In regular intervals (`areaOccupancy.analyzingIntervalMs`) the trajectories are evaluated. The algorithm checks all objects that have trajectories of at least 80% the length of `areaOccupancy.analyzingWindow` if they have been stationary within that window. If yes, the object is added to the count.
+The stationary detection works by taking the entire (windowed) trajectory, calculating the average position and then checking if the average position is within the defined area and the 95-percentile of distances to that average point is smaller than the given threshold. For non-geo-referenced jobs the property `areaOccupancy.pxDistanceP95ThresholdScale` defines that threshold on the 95-percentile through a scaling factor on the individual bounding box diagonal (to account for objects being smaller if they're further away from the camera). For geo-referenced jobs the property `areaOccupancy.geoDistanceP95Threshold` directly defines the 95-percentile threshold in coordinate space (there is a known relationship to distance in meters). E.g. in northern Germany a distance of 0.0001 in geo-space translates to roughly 10m.
 
 ## How to Deploy/Install
 
