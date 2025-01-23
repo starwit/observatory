@@ -89,6 +89,11 @@ mvn spring-boot:run
 
 When using Docker compose application the API can be reached at: http://localhost:8082/observatory/api/ (e.g. .../api/obvervationJob)
 
+### How to build Helm Chart only
+The Helm Chart is templated as part of the Maven build process to make version setting easier. Therefore, the files in `deployment/helm` do not form a valid Helm Chart.\
+To generate the Helm Chart only you can run: `mvn validate -pl application`\
+The generated chart can then be found in `application/target/helm`
+
 ## How to (manually) test
 
 * Start a SAE instance (see https://github.com/starwit/starwit-awareness-engine/tree/main/docker-compose)

@@ -38,6 +38,7 @@ databases:
     database: analytics
     username: analytics
     password: analytics
+    isTimescale: false
 
 ingress:
   enabled: false
