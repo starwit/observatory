@@ -4,6 +4,12 @@ Changelog of observatory.
 
 ## Current Version ()
 
+### Bug Fixes
+
+-  Enable data migration for hypertable creation ([879bc](https://github.com/starwit/observatory/commit/879bc11514cbe49) flonix8)  
+
+## refs/tags/1.3.0 (2025-01-23)
+
 ### Features
 
 -  Separate TimescaleDB-specific migrations ([8f306](https://github.com/starwit/observatory/commit/8f306a5ca192c17) flonix8)  
