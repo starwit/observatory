@@ -8,7 +8,7 @@ Its current application focus is to extract usable knowledge about traffic from 
 
 Project is licensed under AGPL 3 and the license can be found [here](LICENSE). This component is part of a publicly funded project by the city of Wolfsburg and thus usage in your community is very much encouraged. It is part of a group of software modules that shall help communities to manage traffic and to gain statistical insights. 
 
-For mor information how complete software stack can be used and what it can do for your community please refer to the main repository at: https://gitlab.opencode.de/OC000026793282/testfeld-smart-parking-wolfsburg 
+For more information how complete software stack can be used and what it can do for your community please refer to the main repository at: https://gitlab.opencode.de/OC000026793282/testfeld-smart-parking-wolfsburg 
 
 More details on political and organizational background can be found here: https://www.wolfsburg.de/en-us/leben/smart-city
 
