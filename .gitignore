@@ -58,3 +58,6 @@ webclient/src/main/app/package-lock.json
 test.log
 
 *.drawio.*
+
+# Ignore database import files
+deployment/sample_data/*.sql
