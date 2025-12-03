@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import de.starwit.service.jobs.AreaOccupancyObservation;
-import de.starwit.service.jobs.LineCrossingObservation;
+import de.starwit.service.jobs.areaoccupancy.AreaOccupancyObservation;
+import de.starwit.service.jobs.linecrossing.LineCrossingObservation;
 
 @Service
 public class GeoJsonService {

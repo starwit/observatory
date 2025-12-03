@@ -14,8 +14,9 @@ import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 import de.starwit.persistence.observatory.entity.PointEntity;
 import de.starwit.persistence.observatory.repository.ObservationJobRepository;
 import de.starwit.persistence.observatory.repository.PointRepository;
-import de.starwit.service.jobs.AreaOccupancyRunner;
-import de.starwit.service.jobs.LineCrossingRunner;
+import de.starwit.service.jobs.RunnerInterface;
+import de.starwit.service.jobs.areaoccupancy.AreaOccupancyRunner;
+import de.starwit.service.jobs.linecrossing.LineCrossingRunner;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -59,6 +60,14 @@ public class ObservationJobService {
 
     public List<ObservationJobEntity> findActiveLineCrossingJobs() {
         return observationJobRepository.findByEnabledTrueAndType(JobType.LINE_CROSSING);
+    }
+
+    public List<ObservationJobEntity> findActiveFlowJobs() {
+        return observationJobRepository.findByEnabledTrueAndType(JobType.FLOW);
+    }
+
+    public List<ObservationJobEntity> findActiveJobs(JobType type) {
+        return observationJobRepository.findByEnabledTrueAndType(type);
     }
 
     public ObservationJobEntity saveNew(ObservationJobEntity newJob) {
@@ -117,12 +126,11 @@ public class ObservationJobService {
 
     public void deleteAll() {
         observationJobRepository.deleteAll();
-
         refreshJobs();
     }
 
     private void refreshJobs() {
-        lineCrossingRunner.refreshJobs();
-        areaOccupancyRunner.refreshJobs();
+        lineCrossingRunner.refreshJobs(LineCrossingRunner.JOB_TYPE);
+        areaOccupancyRunner.refreshJobs(AreaOccupancyRunner.JOB_TYPE);
     }
 }
