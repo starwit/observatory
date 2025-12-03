@@ -54,18 +54,6 @@ public class ObservationJobService {
         return observationJobRepository.findByEnabledTrue();
     }
 
-    public List<ObservationJobEntity> findActiveAreaOccupancyJobs() {
-        return observationJobRepository.findByEnabledTrueAndType(JobType.AREA_OCCUPANCY);
-    }
-
-    public List<ObservationJobEntity> findActiveLineCrossingJobs() {
-        return observationJobRepository.findByEnabledTrueAndType(JobType.LINE_CROSSING);
-    }
-
-    public List<ObservationJobEntity> findActiveFlowJobs() {
-        return observationJobRepository.findByEnabledTrueAndType(JobType.FLOW);
-    }
-
     public List<ObservationJobEntity> findActiveJobs(JobType type) {
         return observationJobRepository.findByEnabledTrueAndType(type);
     }
