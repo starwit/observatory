@@ -1,5 +1,7 @@
 package de.starwit.service.analytics;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import org.slf4j.Logger;
@@ -40,6 +42,21 @@ public class AreaOccupancyService {
     }
 
     @Transactional("analyticsTransactionManager")
+    public AreaOccupancyEntity setOccupancyCount(String jobName, int class_id, Long count) {
+        MetadataEntity metadata = metadataService.findFirstByName(jobName);
+        if (metadata != null) {
+            AreaOccupancyEntity entity = new AreaOccupancyEntity();
+            entity.setCount(Math.toIntExact(count));
+            entity.setOccupancyTime(Instant.now().atZone(ZoneOffset.UTC));
+            entity.setObjectClassId(class_id);
+            entity.setMetadataId(metadata.getId());
+            areaoccupancyRepository.insert(entity);
+            return entity;
+        }
+        return null;
+    }
+
+    @Transactional("analyticsTransactionManager")
     public void addCount(ObservationJobEntity jobEntity, ZonedDateTime occupancyTime, Direction direction) {
         log.info("Detected flow in direction {} of class {} in area (area={}, name={})", direction, jobEntity.getDetectionClassId(), jobEntity.getObservationAreaId(), jobEntity.getName());
         
@@ -49,12 +66,8 @@ public class AreaOccupancyService {
         }
 
         Integer lastCount = 0;
-        try {
-            lastCount = areaoccupancyRepository.findFirstByMetadataIdAndObjectClassIdOrderByOccupancytime(metadata.getId(), jobEntity.getDetectionClassId());
-        } catch (Exception e) {
-            log.info("Detected flow not found" + lastCount);
-        }
-        
+
+        lastCount = areaoccupancyRepository.findFirstByMetadataIdAndObjectClassIdOrderByOccupancytime(metadata.getId(), jobEntity.getDetectionClassId());        
         AreaOccupancyEntity entity = new AreaOccupancyEntity();
         
         if (Direction.in.equals(direction)) {

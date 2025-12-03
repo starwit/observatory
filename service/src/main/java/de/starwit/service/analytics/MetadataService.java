@@ -59,6 +59,11 @@ public class MetadataService implements ServiceInterface<MetadataEntity, Metadat
         throw new UnsupportedOperationException("Delete is not supported");
     }
 
+    public MetadataEntity findFirstByName(String name) {
+        MetadataEntity metadata = metadataRepository.findFirstByName(name);
+        return metadata;
+    }
+
     public MetadataEntity findFirstByNameAndClassification(String name, String classification) {
         MetadataEntity metadata = metadataRepository.findFirstByNameAndClassification(name, classification);
         return metadata;
