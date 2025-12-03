@@ -14,7 +14,6 @@ import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 import de.starwit.persistence.observatory.entity.PointEntity;
 import de.starwit.persistence.observatory.repository.ObservationJobRepository;
 import de.starwit.persistence.observatory.repository.PointRepository;
-import de.starwit.service.jobs.RunnerInterface;
 import de.starwit.service.jobs.areaoccupancy.AreaOccupancyRunner;
 import de.starwit.service.jobs.flow.FlowRunner;
 import de.starwit.service.jobs.linecrossing.LineCrossingRunner;
