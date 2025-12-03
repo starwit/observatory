@@ -16,6 +16,7 @@ import de.starwit.persistence.observatory.repository.ObservationJobRepository;
 import de.starwit.persistence.observatory.repository.PointRepository;
 import de.starwit.service.jobs.RunnerInterface;
 import de.starwit.service.jobs.areaoccupancy.AreaOccupancyRunner;
+import de.starwit.service.jobs.flow.FlowRunner;
 import de.starwit.service.jobs.linecrossing.LineCrossingRunner;
 import jakarta.transaction.Transactional;
 
@@ -38,6 +39,10 @@ public class ObservationJobService {
     @Lazy
     @Autowired
     private AreaOccupancyRunner areaOccupancyRunner;
+
+    @Lazy
+    @Autowired
+    private FlowRunner flowRunner;
 
     @Autowired
     private PointRepository pointRepository;
@@ -118,7 +123,8 @@ public class ObservationJobService {
     }
 
     private void refreshJobs() {
-        lineCrossingRunner.refreshJobs(LineCrossingRunner.JOB_TYPE);
-        areaOccupancyRunner.refreshJobs(AreaOccupancyRunner.JOB_TYPE);
+        lineCrossingRunner.refreshJobs();
+        areaOccupancyRunner.refreshJobs();
+        flowRunner.refreshJobs();
     }
 }

@@ -1,7 +1,9 @@
 package de.starwit.service.jobs.flow;
 
 import java.time.Duration;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,6 +20,9 @@ import org.springframework.stereotype.Service;
 
 import de.starwit.persistence.observatory.entity.JobType;
 import de.starwit.persistence.observatory.entity.ObservationJobEntity;
+import de.starwit.service.analytics.AreaOccupancyService;
+import de.starwit.service.analytics.LineCrossingService;
+import de.starwit.service.geojson.GeoJsonService;
 import de.starwit.service.jobs.JobInterface;
 import de.starwit.service.jobs.RunnerInterface;
 import de.starwit.service.jobs.linecrossing.LineCrossingObservation;
@@ -29,7 +34,7 @@ import jakarta.annotation.PostConstruct;
 public class FlowRunner implements RunnerInterface {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-        public static final JobType JOB_TYPE = JobType.LINE_CROSSING;
+        public static final JobType JOB_TYPE = JobType.FLOW;
 
     @Value("${lineCrossing.targetWindowSize:1s}")
     private Duration TARGET_WINDOW_SIZE;    
@@ -38,8 +43,16 @@ public class FlowRunner implements RunnerInterface {
     private String REDIS_STREAM_PREFIX;
 
     @Autowired
+    private LineCrossingService lineCrossingService;
+
+    @Autowired
     private ObservationJobService observationJobService;
 
+    @Autowired
+    private GeoJsonService geoJsonService;
+
+    @Autowired
+    private AreaOccupancyService areaOccupancyService;
 
     @Autowired
     private StreamMessageListenerContainer<String, MapRecord<String, String, String>> streamListenerContainer;
@@ -89,7 +102,13 @@ public class FlowRunner implements RunnerInterface {
     }
 
     private void storeObservation(LineCrossingObservation obs) {
+        lineCrossingService.addEntry(obs.det(), obs.direction(), obs.jobEntity());
+        areaOccupancyService.addCount(obs.jobEntity(), obs.det().getCaptureTs().atZone(ZoneOffset.UTC), obs.direction());
+        geoJsonService.sendLineCrossings(Arrays.asList(obs));
+
+        
         //TODO implement storing of flow observation
+        //find area occupancy by name --> ++ or -- depending on direction
     }    
 
 }
