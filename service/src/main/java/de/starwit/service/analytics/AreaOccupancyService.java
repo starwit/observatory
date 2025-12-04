@@ -57,7 +57,7 @@ public class AreaOccupancyService {
     }
 
     @Transactional("analyticsTransactionManager")
-    public void addCount(ObservationJobEntity jobEntity, ZonedDateTime occupancyTime, Direction direction) {
+    public void updateCountFromFlow(ObservationJobEntity jobEntity, ZonedDateTime occupancyTime, Direction direction) {
         log.debug("Detected flow in direction {} of class {} in area (area={}, name={})", direction, jobEntity.getDetectionClassId(), jobEntity.getObservationAreaId(), jobEntity.getName());
         
         MetadataEntity metadata = metadataService.findFirstByNameAndClassification(jobEntity.getName(), jobEntity.getClassification());

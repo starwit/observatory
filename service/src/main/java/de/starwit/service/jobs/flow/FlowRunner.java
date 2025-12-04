@@ -101,7 +101,7 @@ public class FlowRunner implements RunnerInterface {
 
     private void storeObservation(LineCrossingObservation obs) {
         lineCrossingService.addEntry(obs.det(), obs.direction(), obs.jobEntity());
-        areaOccupancyService.addCount(obs.jobEntity(), obs.det().getCaptureTs().atZone(ZoneOffset.UTC), obs.direction());
+        areaOccupancyService.updateCountFromFlow(obs.jobEntity(), obs.det().getCaptureTs().atZone(ZoneOffset.UTC), obs.direction());
     }    
 
 }
