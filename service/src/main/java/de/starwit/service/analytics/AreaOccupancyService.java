@@ -29,7 +29,7 @@ public class AreaOccupancyService {
 
     @Transactional("analyticsTransactionManager")
     public void addEntry(ObservationJobEntity jobEntity, ZonedDateTime occupancyTime, Long count) {
-        log.info("Detected {} objects of class {} in area (area={}, name={})", count, jobEntity.getDetectionClassId(), jobEntity.getObservationAreaId(), jobEntity.getName());
+        log.debug("Detected {} objects of class {} in area (area={}, name={})", count, jobEntity.getDetectionClassId(), jobEntity.getObservationAreaId(), jobEntity.getName());
         
         MetadataEntity metadata = metadataService.saveMetadataForJob(jobEntity);
         
@@ -58,7 +58,7 @@ public class AreaOccupancyService {
 
     @Transactional("analyticsTransactionManager")
     public void addCount(ObservationJobEntity jobEntity, ZonedDateTime occupancyTime, Direction direction) {
-        log.info("Detected flow in direction {} of class {} in area (area={}, name={})", direction, jobEntity.getDetectionClassId(), jobEntity.getObservationAreaId(), jobEntity.getName());
+        log.debug("Detected flow in direction {} of class {} in area (area={}, name={})", direction, jobEntity.getDetectionClassId(), jobEntity.getObservationAreaId(), jobEntity.getName());
         
         MetadataEntity metadata = metadataService.findFirstByNameAndClassification(jobEntity.getName(), jobEntity.getClassification());
         if (metadata == null) {

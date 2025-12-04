@@ -25,6 +25,7 @@ import de.starwit.service.analytics.LineCrossingService;
 import de.starwit.service.geojson.GeoJsonService;
 import de.starwit.service.jobs.JobInterface;
 import de.starwit.service.jobs.RunnerInterface;
+import de.starwit.service.jobs.linecrossing.LineCrossingJob;
 import de.starwit.service.jobs.linecrossing.LineCrossingObservation;
 import de.starwit.service.observatory.ObservationJobService;
 import de.starwit.service.sae.SaeMessageListener;
@@ -49,9 +50,6 @@ public class FlowRunner implements RunnerInterface {
     private ObservationJobService observationJobService;
 
     @Autowired
-    private GeoJsonService geoJsonService;
-
-    @Autowired
     private AreaOccupancyService areaOccupancyService;
 
     @Autowired
@@ -60,7 +58,7 @@ public class FlowRunner implements RunnerInterface {
     private SaeMessageListener saeMessageListener;
 
     private List<Subscription> activeSubscriptions = new ArrayList<>();
-    private List<FlowJob> activeJobs = new ArrayList<>();
+    private List<LineCrossingJob> activeJobs = new ArrayList<>();
 
     public FlowRunner() {
         this.saeMessageListener = new SaeMessageListener(this::messageHandler);
@@ -90,7 +88,7 @@ public class FlowRunner implements RunnerInterface {
         List<ObservationJobEntity> enabledJobEntites = observationJobService.findActiveJobs(JOB_TYPE);
         log.info("Enabled jobs: " + enabledJobEntites.stream().map(j -> j.getName()).collect(Collectors.joining(",")));
 
-        this.activeJobs = enabledJobEntites.stream().map(jobEntity -> new FlowJob(jobEntity, TARGET_WINDOW_SIZE, this::storeObservation)).toList();
+        this.activeJobs = enabledJobEntites.stream().map(jobEntity -> new LineCrossingJob(jobEntity, TARGET_WINDOW_SIZE, this::storeObservation)).toList();
 
         for (String streamId : enabledJobEntites.stream().map(e -> e.getCameraId()).distinct().toList()) {
             String streamKey = REDIS_STREAM_PREFIX + ":" + streamId;
