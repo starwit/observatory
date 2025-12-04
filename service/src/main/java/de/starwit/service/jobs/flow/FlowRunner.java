@@ -104,11 +104,6 @@ public class FlowRunner implements RunnerInterface {
     private void storeObservation(LineCrossingObservation obs) {
         lineCrossingService.addEntry(obs.det(), obs.direction(), obs.jobEntity());
         areaOccupancyService.addCount(obs.jobEntity(), obs.det().getCaptureTs().atZone(ZoneOffset.UTC), obs.direction());
-        geoJsonService.sendLineCrossings(Arrays.asList(obs));
-
-        
-        //TODO implement storing of flow observation
-        //find area occupancy by name --> ++ or -- depending on direction
     }    
 
 }

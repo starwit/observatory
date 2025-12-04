@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import de.starwit.service.jobs.areaoccupancy.AreaOccupancyObservation;
 import de.starwit.service.jobs.linecrossing.LineCrossingObservation;
 
+/**
+ * Service for vehicle positions in GeoJSON format in order to demonstrate real-time visualization e.g. for ArcGIS.
+ */
 @Service
 public class GeoJsonService {
     
