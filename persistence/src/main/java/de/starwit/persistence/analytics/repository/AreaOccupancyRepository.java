@@ -49,7 +49,7 @@ public class AreaOccupancyRepository {
                 .setParameter("metadataId", metadataId)
                 .setParameter("objectClassId", objectClassId)
                 .getSingleResult();
-        } catch (NoResultException e) {
+        } catch (Exception e) {
             return 0;
         }
     }
