@@ -23,6 +23,8 @@ import de.starwit.persistence.analytics.entity.Direction;
 import de.starwit.persistence.observatory.entity.JobType;
 import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 import de.starwit.persistence.observatory.entity.PointEntity;
+import de.starwit.service.jobs.linecrossing.LineCrossingJob;
+import de.starwit.service.jobs.linecrossing.LineCrossingObservation;
 import de.starwit.service.sae.SaeDetectionDto;
 import de.starwit.testing.SaeDump;
 import de.starwit.visionapi.Sae.SaeMessage;
@@ -49,7 +51,7 @@ public class LineCrossingJobTest {
         LineCrossingJob testee = new LineCrossingJob(jobEntity, Duration.ofSeconds(1), consumerMock);
 
         for (SaeDetectionDto det : detections) {
-            testee.processNewDetection(det);
+            testee.processNewDetection(det, Instant.now());
         }
         
         ArgumentCaptor<LineCrossingObservation> observationCaptor = ArgumentCaptor.forClass(LineCrossingObservation.class);
@@ -71,7 +73,7 @@ public class LineCrossingJobTest {
         
         for (SaeMessage msg : saeDump) {
             for (SaeDetectionDto dto : SaeDetectionDto.from(msg)) {
-                testee.processNewDetection(dto);
+                testee.processNewDetection(dto, Instant.now());
             }
         }
 

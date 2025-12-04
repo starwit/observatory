@@ -1,7 +1,5 @@
 package de.starwit.service.geojson;
 
-import static org.mockito.Mockito.lenient;
-
 import java.time.ZoneOffset;
 import java.util.List;
 
@@ -14,8 +12,8 @@ import org.geojson.Point;
 import org.geojson.Polygon;
 
 import de.starwit.persistence.observatory.entity.PointEntity;
-import de.starwit.service.jobs.AreaOccupancyObservation;
-import de.starwit.service.jobs.LineCrossingObservation;
+import de.starwit.service.jobs.areaoccupancy.AreaOccupancyObservation;
+import de.starwit.service.jobs.linecrossing.LineCrossingObservation;
 
 public class GeoJsonMapper {
 

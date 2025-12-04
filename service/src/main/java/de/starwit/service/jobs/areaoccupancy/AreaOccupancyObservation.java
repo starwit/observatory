@@ -1,4 +1,4 @@
-package de.starwit.service.jobs;
+package de.starwit.service.jobs.areaoccupancy;
 
 import java.time.ZonedDateTime;
 

@@ -1,4 +1,4 @@
-package de.starwit.service.jobs;
+package de.starwit.service.jobs.areaoccupancy;
 
 import java.awt.geom.Area;
 import java.awt.geom.Point2D;
@@ -14,9 +14,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.starwit.persistence.observatory.entity.ObservationJobEntity;
+import de.starwit.service.jobs.GeometryConverter;
+import de.starwit.service.jobs.JobInterface;
+import de.starwit.service.jobs.TrajectoryStore;
 import de.starwit.service.sae.SaeDetectionDto;
 
-public class AreaOccupancyJob {
+public class AreaOccupancyJob implements JobInterface {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private ObservationJobEntity configEntity;
@@ -41,6 +44,7 @@ public class AreaOccupancyJob {
         this.observationConsumer = observationConsumer;
     }
     
+    @Override
     public ObservationJobEntity getConfigEntity() {
         return this.configEntity;
     }
@@ -53,9 +57,10 @@ public class AreaOccupancyJob {
         return analyzingInterval;
     }
 
-    // `run()` and `addDetection()` are called from different threads, so we need to lock to make sure data is consistent.
+    // `run()` and `processNewDetection()` are called from different threads, so we need to lock to make sure data is consistent.
     // If this becomes a performance bottleneck, we could optimize this away, e.g. by using a queue for input data and updating the `TrajectoryStore` from that queue during `run()`
-    public void addDetection(SaeDetectionDto dto, Instant currentTime) {
+    @Override
+    public void processNewDetection(SaeDetectionDto dto, Instant currentTime) {
         lock.lock();
 
         try {

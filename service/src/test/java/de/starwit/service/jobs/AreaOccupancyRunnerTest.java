@@ -21,6 +21,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import de.starwit.persistence.observatory.entity.JobType;
 import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 import de.starwit.persistence.observatory.entity.PointEntity;
+import de.starwit.service.jobs.areaoccupancy.AreaOccupancyJob;
+import de.starwit.service.jobs.areaoccupancy.AreaOccupancyObservation;
 import de.starwit.service.sae.SaeDetectionDto;
 import de.starwit.testing.SaeDump;
 import de.starwit.visionapi.Sae.SaeMessage;
@@ -56,7 +58,7 @@ public class AreaOccupancyRunnerTest {
         AreaOccupancyJob testee = new AreaOccupancyJob(jobEntity, Duration.ofSeconds(10), 0.001, 0.1, observationConsumerMock);
 
         for (SaeDetectionDto det : detections) {
-            testee.addDetection(det, Instant.ofEpochSecond(0));
+            testee.processNewDetection(det, Instant.ofEpochSecond(0));
         }
 
         testee.run();
@@ -84,7 +86,7 @@ public class AreaOccupancyRunnerTest {
         
         for (SaeMessage msg : saeDump) {
             for (SaeDetectionDto dto : SaeDetectionDto.from(msg)) {
-                testee.addDetection(dto, Instant.ofEpochMilli(0));
+                testee.processNewDetection(dto, Instant.ofEpochMilli(0));
             }
         }
 

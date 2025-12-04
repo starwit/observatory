@@ -1,4 +1,4 @@
-package de.starwit.service.jobs;
+package de.starwit.service.jobs.linecrossing;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -8,9 +8,12 @@ import java.util.function.Consumer;
 
 import de.starwit.persistence.analytics.entity.Direction;
 import de.starwit.persistence.observatory.entity.ObservationJobEntity;
+import de.starwit.service.jobs.GeometryConverter;
+import de.starwit.service.jobs.JobInterface;
+import de.starwit.service.jobs.TrajectoryStore;
 import de.starwit.service.sae.SaeDetectionDto;
 
-public class LineCrossingJob {
+public class LineCrossingJob implements JobInterface {
 
     private Duration TARGET_WINDOW_SIZE;
     private ObservationJobEntity configEntity;
@@ -32,7 +35,7 @@ public class LineCrossingJob {
         return this.configEntity;
     }
 
-    public void processNewDetection(SaeDetectionDto dto) {
+    public void processNewDetection(SaeDetectionDto dto, Instant currentTime) {
         trajectoryStore.addDetection(dto);
         trimTrajectory(dto);
         if (isTrajectoryValid(dto)) {
