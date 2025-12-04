@@ -21,6 +21,6 @@ public class AreaOccupancyController {
     @PutMapping("/count/{name}/{classid}/{count}")
     public ResponseEntity<AreaOccupancyEntity> setOccupancyCount(@PathVariable String name, @PathVariable int classid, @PathVariable Long count) {
         AreaOccupancyEntity entity = areaOccupancyService.setOccupancyCount(name, classid, count);
-        return new ResponseEntity<>(entity, HttpStatus.OK);
+        return new ResponseEntity<AreaOccupancyEntity>(entity, HttpStatus.OK);
     }    
 }
