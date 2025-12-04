@@ -29,7 +29,7 @@ public class LineCrossingService {
 
     @Transactional("analyticsTransactionManager")
     public void addEntry(SaeDetectionDto det, Direction direction, ObservationJobEntity jobEntity) {
-        log.info("{} has crossed line (area={}, name={}) in direction {}", det.getObjectId(), jobEntity.getObservationAreaId(), jobEntity.getName(), direction);
+        log.debug("{} has crossed line (area={}, name={}) in direction {}", det.getObjectId(), jobEntity.getObservationAreaId(), jobEntity.getName(), direction);
         
         MetadataEntity metadata = metadataService.saveMetadataForJob(jobEntity);
         
