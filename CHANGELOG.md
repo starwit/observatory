@@ -6,6 +6,7 @@ Changelog of observatory.
 
 ### Features
 
+-  Merge pull request #93 from starwit/feature/ab#1981-add-flow-type ([2c153](https://github.com/starwit/observatory/commit/2c153122d571c13) Anett Hübner)  
 -  ab#1981: added rest service to set occupancy count ([0ab24](https://github.com/starwit/observatory/commit/0ab24137b57e5f0) Anett Hübner)  
 -  ab#1981: added flow as job type ([ed415](https://github.com/starwit/observatory/commit/ed415b06472ab8a) Anett Hübner)  
 
