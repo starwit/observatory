@@ -35,7 +35,7 @@ public class LineCrossingJob implements JobInterface {
         return this.configEntity;
     }
 
-    public void processNewDetection(SaeDetectionDto dto, Instant currentTime) {
+    public void processNewDetection(SaeDetectionDto dto) {
         trajectoryStore.addDetection(dto);
         trimTrajectory(dto);
         if (isTrajectoryValid(dto)) {

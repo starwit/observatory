@@ -24,8 +24,7 @@ public class AreaOccupancyJob implements JobInterface {
 
     private ObservationJobEntity configEntity;
     private Area polygon;
-    private Instant lastUpdate;
-    private Duration analyzingInterval;
+    private Duration analyzingWindow;
     private TrajectoryStore trajectoryStore;
     private double GEO_DISTANCE_P95_THRESHOLD;
     private double PX_DISTANCE_P95_THRESHOLD_SCALE;
@@ -33,12 +32,11 @@ public class AreaOccupancyJob implements JobInterface {
     
     private ReentrantLock lock = new ReentrantLock(true);
     
-    public AreaOccupancyJob(ObservationJobEntity configEntity, Duration analyzingInterval, double geoDistanceP95Threshold, double pxDistanceP95ThresholdScale, Consumer<AreaOccupancyObservation> observationConsumer) {
+    public AreaOccupancyJob(ObservationJobEntity configEntity, Duration analyzingWindow, double geoDistanceP95Threshold, double pxDistanceP95ThresholdScale, Consumer<AreaOccupancyObservation> observationConsumer) {
         this.configEntity = configEntity;
         this.polygon = GeometryConverter.areaFrom(configEntity);
-        this.lastUpdate = Instant.ofEpochMilli(0);
-        this.analyzingInterval = analyzingInterval;
-        this.trajectoryStore = new TrajectoryStore(this.analyzingInterval);
+        this.analyzingWindow = analyzingWindow;
+        this.trajectoryStore = new TrajectoryStore(this.analyzingWindow);
         this.GEO_DISTANCE_P95_THRESHOLD = geoDistanceP95Threshold;
         this.PX_DISTANCE_P95_THRESHOLD_SCALE = pxDistanceP95ThresholdScale;
         this.observationConsumer = observationConsumer;
@@ -49,23 +47,18 @@ public class AreaOccupancyJob implements JobInterface {
         return this.configEntity;
     }
     
-    public Instant getLastUpdate() {
-        return lastUpdate;
-    }
-    
-    public Duration getAnalyzingInterval() {
-        return analyzingInterval;
+    public Duration getAnalyzingWindow() {
+        return analyzingWindow;
     }
 
     // `run()` and `processNewDetection()` are called from different threads, so we need to lock to make sure data is consistent.
     // If this becomes a performance bottleneck, we could optimize this away, e.g. by using a queue for input data and updating the `TrajectoryStore` from that queue during `run()`
     @Override
-    public void processNewDetection(SaeDetectionDto dto, Instant currentTime) {
+    public void processNewDetection(SaeDetectionDto dto) {
         lock.lock();
 
         try {
             trajectoryStore.addDetection(dto);
-            this.lastUpdate = currentTime;
         } finally {
             lock.unlock();
         }
@@ -84,32 +77,32 @@ public class AreaOccupancyJob implements JobInterface {
     private void runInternal() {
         long objectCount = 0;
         List<List<SaeDetectionDto>> trajectories = trajectoryStore.getAllHealthyTrajectories();
-        
-        for (List<SaeDetectionDto> trajectory : trajectories) {
-            List<Point2D> pointTrajectory = GeometryConverter.toCenterPoints(trajectory, configEntity.getGeoReferenced());
-            Point2D avgPos = getAveragePosition(pointTrajectory);
+        if (!trajectories.isEmpty()) {
+            for (List<SaeDetectionDto> trajectory : trajectories) {
+                List<Point2D> pointTrajectory = GeometryConverter.toCenterPoints(trajectory, configEntity.getGeoReferenced());
+                Point2D avgPos = getAveragePosition(pointTrajectory);
 
-            if (!polygon.contains(avgPos)) {
-                continue;
-            }
+                if (!polygon.contains(avgPos)) {
+                    continue;
+                }
 
-            // Use bounding box size as stationarity constraint if not geo-referenced (to compensate for perspective)
-            boolean stationary = false;
-            if (configEntity.getGeoReferenced()) {
-                stationary = isStationary(pointTrajectory, GEO_DISTANCE_P95_THRESHOLD);
-            } else {
-                stationary = isStationary(pointTrajectory, getAverageBoundingBoxDiagonal(trajectory) * PX_DISTANCE_P95_THRESHOLD_SCALE);
-            }
+                // Use bounding box size as stationarity constraint if not geo-referenced (to compensate for perspective)
+                boolean stationary = false;
+                if (configEntity.getGeoReferenced()) {
+                    stationary = isStationary(pointTrajectory, GEO_DISTANCE_P95_THRESHOLD);
+                } else {
+                    stationary = isStationary(pointTrajectory, getAverageBoundingBoxDiagonal(trajectory) * PX_DISTANCE_P95_THRESHOLD_SCALE);
+                }
 
-            if (stationary) {
-                objectCount++;
-                log.debug("Stationary " + trajectory.get(0).getObjectId().substring(0, 4));
+                if (stationary) {
+                    objectCount++;
+                    log.debug("Stationary " + trajectory.get(0).getObjectId().substring(0, 4));
+                }
             }
+            
+            trajectoryStore.purge();
+            observationConsumer.accept(new AreaOccupancyObservation(configEntity, trajectoryStore.getMostRecentTimestamp().atZone(ZoneOffset.UTC), objectCount));
         }
-        
-        trajectoryStore.purge();
-
-        observationConsumer.accept(new AreaOccupancyObservation(configEntity, trajectoryStore.getMostRecentTimestamp().atZone(ZoneOffset.UTC), objectCount));
     }
 
     /**

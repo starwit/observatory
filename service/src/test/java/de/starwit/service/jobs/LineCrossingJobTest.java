@@ -51,7 +51,7 @@ public class LineCrossingJobTest {
         LineCrossingJob testee = new LineCrossingJob(jobEntity, Duration.ofSeconds(1), consumerMock);
 
         for (SaeDetectionDto det : detections) {
-            testee.processNewDetection(det, Instant.now());
+            testee.processNewDetection(det);
         }
         
         ArgumentCaptor<LineCrossingObservation> observationCaptor = ArgumentCaptor.forClass(LineCrossingObservation.class);
@@ -73,7 +73,7 @@ public class LineCrossingJobTest {
         
         for (SaeMessage msg : saeDump) {
             for (SaeDetectionDto dto : SaeDetectionDto.from(msg)) {
-                testee.processNewDetection(dto, Instant.now());
+                testee.processNewDetection(dto);
             }
         }
 

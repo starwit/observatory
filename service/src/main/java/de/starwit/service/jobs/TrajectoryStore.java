@@ -9,6 +9,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.starwit.service.sae.SaeDetectionDto;
 
 /**
@@ -16,6 +19,9 @@ import de.starwit.service.sae.SaeDetectionDto;
  * Not thread-safe, should not be shared.
  */
 public class TrajectoryStore {
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
     private HashMap<String, LinkedList<SaeDetectionDto>> trajectoryByObjId = new HashMap<>();
     private final Duration TARGET_WINDOW;
     private Instant mostRecentTimestamp;
@@ -26,6 +32,10 @@ public class TrajectoryStore {
     }
 
     public void addDetection(SaeDetectionDto det) {
+        if (det == null || det.getCaptureTs().isBefore(this.mostRecentTimestamp.minus(TARGET_WINDOW))) {
+            log.warn("Ignoring detection with timestamp {} as it is outside the target window relative to most recent timestamp {}", det.getCaptureTs(), this.mostRecentTimestamp);
+            return;
+        }
         LinkedList<SaeDetectionDto> trajectory = trajectoryByObjId.get(det.getObjectId());
         if (trajectory == null) {
             trajectory = new LinkedList<>();

@@ -58,7 +58,7 @@ public class AreaOccupancyRunnerTest {
         AreaOccupancyJob testee = new AreaOccupancyJob(jobEntity, Duration.ofSeconds(10), 0.001, 0.1, observationConsumerMock);
 
         for (SaeDetectionDto det : detections) {
-            testee.processNewDetection(det, Instant.ofEpochSecond(0));
+            testee.processNewDetection(det);
         }
 
         testee.run();
@@ -86,7 +86,7 @@ public class AreaOccupancyRunnerTest {
         
         for (SaeMessage msg : saeDump) {
             for (SaeDetectionDto dto : SaeDetectionDto.from(msg)) {
-                testee.processNewDetection(dto, Instant.ofEpochMilli(0));
+                testee.processNewDetection(dto);
             }
         }
 

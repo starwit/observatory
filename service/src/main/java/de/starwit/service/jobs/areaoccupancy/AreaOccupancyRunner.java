@@ -109,11 +109,6 @@ public class AreaOccupancyRunner implements RunnerInterface {
     @Scheduled(fixedRateString = "${areaOccupancy.analyzingIntervalMs:5000}", timeUnit = TimeUnit.MILLISECONDS)
     private void runJobs() {
         for (AreaOccupancyJob job : activeJobs) {
-            // Skip processing if we have not received any new data within the last analyzing interval
-            if (job.getLastUpdate().isBefore(Instant.now().minus(job.getAnalyzingInterval()))) {
-                log.warn("Skipping processing due to stale data (" + job.getConfigEntity().getName() + ")");
-                continue;
-            }
             job.run();
         }
     }
