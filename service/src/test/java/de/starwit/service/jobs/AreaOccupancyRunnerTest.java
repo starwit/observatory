@@ -3,6 +3,7 @@ package de.starwit.service.jobs;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.awt.geom.Point2D;
 import java.nio.file.Paths;
@@ -68,6 +69,9 @@ public class AreaOccupancyRunnerTest {
         verify(observationConsumerMock, times(1)).accept(observationCaptor.capture());
         assertThat(observationCaptor.getValue().occupancyTime().toEpochSecond()).isEqualTo(10);
         assertThat(observationCaptor.getValue().count()).isEqualTo(2);
+
+        testee.run();
+        verifyNoMoreInteractions(observationConsumerMock);
     }
 
     @Test

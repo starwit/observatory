@@ -86,6 +86,15 @@ public class TrajectoryStore {
         }
     }
 
+    public void clearAll(List<List<SaeDetectionDto>> trajectories ) {
+        trajectories.forEach(traj -> {
+            LinkedList<SaeDetectionDto> storedTraj = trajectoryByObjId.get(traj.get(0).getObjectId());
+            if (storedTraj != null) {
+                storedTraj.clear();
+            }
+        });
+    }
+
     /**
      * Returns all trajectories that satisfy the target length (i.e. length > 0.80 * targetTrajectoryLength).
      * As the trajectories are truncated during addDetection(), trajectory starts must by within the analyzing window.

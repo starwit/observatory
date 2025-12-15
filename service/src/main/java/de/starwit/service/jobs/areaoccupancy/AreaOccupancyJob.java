@@ -3,7 +3,6 @@ package de.starwit.service.jobs.areaoccupancy;
 import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.time.Duration;
-import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
@@ -100,8 +99,9 @@ public class AreaOccupancyJob implements JobInterface {
                 }
             }
             
-            trajectoryStore.purge();
+            trajectoryStore.clearAll(trajectories);
             observationConsumer.accept(new AreaOccupancyObservation(configEntity, trajectoryStore.getMostRecentTimestamp().atZone(ZoneOffset.UTC), objectCount));
+            
         }
     }
 
