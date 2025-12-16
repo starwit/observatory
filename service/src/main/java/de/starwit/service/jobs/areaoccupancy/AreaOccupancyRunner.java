@@ -114,8 +114,12 @@ public class AreaOccupancyRunner implements RunnerInterface {
     }
 
     private void storeObservation(AreaOccupancyObservation obs) {
-        areaOccupancyService.addEntry(obs.jobEntity(), obs.occupancyTime(), obs.count());
-        geoJsonService.sendAreaOccupancies(Arrays.asList(obs));
+        try {
+            areaOccupancyService.addEntry(obs.jobEntity(), obs.occupancyTime(), obs.count());
+            geoJsonService.sendAreaOccupancies(Arrays.asList(obs));
+        } catch (Exception e) {
+            log.error("Error storing AreaOccupancy observation: (area={}, name={}) with count {} at time {}", obs.jobEntity().getObservationAreaId(), obs.jobEntity().getName(), obs.count(), obs.occupancyTime(), e);
+        }
     }
 
 }

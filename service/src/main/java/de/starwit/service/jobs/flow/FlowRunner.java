@@ -98,8 +98,12 @@ public class FlowRunner implements RunnerInterface {
     }
 
     private void storeObservation(LineCrossingObservation obs) {
-        lineCrossingService.addEntry(obs.det(), obs.direction(), obs.jobEntity());
-        areaOccupancyService.updateCountFromFlow(obs.jobEntity(), obs.det().getCaptureTs().atZone(ZoneOffset.UTC), obs.direction());
+        try {
+            lineCrossingService.addEntry(obs.det(), obs.direction(), obs.jobEntity());
+            areaOccupancyService.updateCountFromFlow(obs.jobEntity(), obs.det().getCaptureTs().atZone(ZoneOffset.UTC), obs.direction());
+        } catch (Exception e) {
+            log.error("Error storing flow observation in direction {} of class {} in area (area={}, name={})", obs.direction(), obs.jobEntity().getDetectionClassId(), obs.jobEntity().getObservationAreaId(), obs.jobEntity().getName(), e);
+        }
     }    
 
 }
