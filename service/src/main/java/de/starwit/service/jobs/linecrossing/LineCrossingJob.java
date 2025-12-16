@@ -3,7 +3,6 @@ package de.starwit.service.jobs.linecrossing;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.function.Consumer;
 
 import de.starwit.persistence.analytics.entity.Direction;
@@ -37,35 +36,21 @@ public class LineCrossingJob implements JobInterface {
 
     public void processNewDetection(SaeDetectionDto dto) {
         trajectoryStore.addDetection(dto);
-        trimTrajectory(dto);
-        if (isTrajectoryValid(dto)) {
+        trajectoryStore.trimTrajectory(dto);
+
+        if (isTrajectoryLongEnough(dto)) {
             if (objectHasCrossed(dto)) {
                 observationConsumer.accept(new LineCrossingObservation(dto, getCrossingDirection(dto), configEntity));
                 trajectoryStore.clear(dto);
             }
         }
 
-        trajectoryStore.purge(dto.getCaptureTs());
-    }
-    
-    private void trimTrajectory(SaeDetectionDto det) {
-        Instant trajectoryEnd = trajectoryStore.getLast(det).getCaptureTs();
-
-        boolean trimming = true;
-        while (trimming) {
-            Instant trajectoryStart = trajectoryStore.getFirst(det).getCaptureTs();
-            if (Duration.between(trajectoryStart, trajectoryEnd).toMillis() > TARGET_WINDOW_SIZE.toMillis()) {
-                trajectoryStore.removeFirst(det);
-            } else {
-                trimming = false;
-            }
-        }
+        // TODO Make this configurable
+        trajectoryStore.purge(dto.getCaptureTs().minus(Duration.ofMinutes(1)));
     }
 
-    private boolean isTrajectoryValid(SaeDetectionDto det) {
-        Instant trajectoryStart = trajectoryStore.getFirst(det).getCaptureTs();
-        Instant trajectoryEnd = trajectoryStore.getLast(det).getCaptureTs();
-        return Duration.between(trajectoryStart, trajectoryEnd).toMillis() > 0.8 * TARGET_WINDOW_SIZE.toMillis();
+    private boolean isTrajectoryLongEnough(SaeDetectionDto det) {
+        return trajectoryStore.trajectoryLength(det).toMillis() > 0.8 * TARGET_WINDOW_SIZE.toMillis();
     }
 
     private boolean objectHasCrossed(SaeDetectionDto det) {

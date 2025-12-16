@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 import de.starwit.service.jobs.GeometryConverter;
 import de.starwit.service.jobs.JobInterface;
-import de.starwit.service.jobs.TrajectoryStore;
+import de.starwit.service.jobs.MultiTrajectoryStore;
 import de.starwit.service.sae.SaeDetectionDto;
 
 public class AreaOccupancyJob implements JobInterface {
@@ -24,7 +24,7 @@ public class AreaOccupancyJob implements JobInterface {
     private ObservationJobEntity configEntity;
     private Area polygon;
     private Duration analyzingWindow;
-    private TrajectoryStore trajectoryStore;
+    private MultiTrajectoryStore trajectoryStore;
     private double GEO_DISTANCE_P95_THRESHOLD;
     private double PX_DISTANCE_P95_THRESHOLD_SCALE;
     private Consumer<AreaOccupancyObservation> observationConsumer;
@@ -35,7 +35,7 @@ public class AreaOccupancyJob implements JobInterface {
         this.configEntity = configEntity;
         this.polygon = GeometryConverter.areaFrom(configEntity);
         this.analyzingWindow = analyzingWindow;
-        this.trajectoryStore = new TrajectoryStore(this.analyzingWindow);
+        this.trajectoryStore = new MultiTrajectoryStore(this.analyzingWindow);
         this.GEO_DISTANCE_P95_THRESHOLD = geoDistanceP95Threshold;
         this.PX_DISTANCE_P95_THRESHOLD_SCALE = pxDistanceP95ThresholdScale;
         this.observationConsumer = observationConsumer;

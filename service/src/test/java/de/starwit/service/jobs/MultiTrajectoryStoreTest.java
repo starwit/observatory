@@ -5,17 +5,16 @@ import java.time.Instant;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.data.convert.Jsr310Converters.InstantToDateConverter;
 
 import de.starwit.service.sae.SaeDetectionDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class TrajectoryStoreTest {
+public class MultiTrajectoryStoreTest {
     
     @Test
     public void testLengthCalculation() {
-        TrajectoryStore testee = new TrajectoryStore(Duration.ofMillis(1000));
+        MultiTrajectoryStore testee = new MultiTrajectoryStore(Duration.ofMillis(1000));
 
         testee.addDetection(Helper.createDetection(Instant.ofEpochMilli(100), null, "o1"));
         testee.addDetection(Helper.createDetection(Instant.ofEpochMilli(300), null, "o1"));
@@ -26,11 +25,14 @@ public class TrajectoryStoreTest {
         testee.addDetection(Helper.createDetection(Instant.ofEpochMilli(800), null, "o2"));
         testee.addDetection(Helper.createDetection(Instant.ofEpochMilli(1500), null, "o2"));
         
+        List<List<SaeDetectionDto>> validTrajectories = testee.getAllHealthyTrajectories();
+        assertThat(validTrajectories).hasSize(1);
+        assertThat(validTrajectories.get(0).get(0).getObjectId()).isEqualTo("o2");
+        
         testee.addDetection(Helper.createDetection(Instant.ofEpochMilli(1600), null, "o1"));
 
-        testee.purge(Instant.ofEpochMilli(1550));
-
-        
-
+        validTrajectories = testee.getAllHealthyTrajectories();
+        assertThat(validTrajectories).hasSize(1);
+        assertThat(validTrajectories.get(0).get(0).getObjectId()).isEqualTo("o1");
     }
 }
