@@ -96,8 +96,12 @@ public class LineCrossingRunner implements RunnerInterface {
     }
 
     private void storeObservation(LineCrossingObservation obs) {
-        lineCrossingService.addEntry(obs.det(), obs.direction(), obs.jobEntity());
-        geoJsonService.sendLineCrossings(Arrays.asList(obs));
+        try {
+            lineCrossingService.addEntry(obs.det(), obs.direction(), obs.jobEntity());
+            geoJsonService.sendLineCrossings(Arrays.asList(obs));
+        } catch (Exception e) {
+            log.error("Error storing Linecrossing observation: {} has crossed line (area={}, name={}) in direction {}", obs.det().getObjectId(), obs.jobEntity().getObservationAreaId(), obs.jobEntity().getName(), obs.direction(), e);
+        }
     }
 
 }
