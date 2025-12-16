@@ -3,7 +3,6 @@ package de.starwit.service.jobs;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.starwit.service.sae.SaeDetectionDto;
-import net.bytebuddy.dynamic.scaffold.MethodGraph.Linked;
 
 /**
  * Provides storage for object trajectories (i.e. sequences of `SaeDetectionDto`)
@@ -107,17 +105,15 @@ public class TrajectoryStore {
     }
 
     /**
-     * Drops all trajectories whose most recent data point is older than (referenceTime - trajectoryLength),
-     * i.e. trajectories that would be truncated completely if a data point was to be added.
-     * @param referenceTime
+     * Drops all trajectories whose most recent data point is older than `cutOffTime`.
+     * @param cutOffTime
      */
-    public void purge(Instant referenceTime) {
+    public void purge(Instant cutOffTime) {
         List<String> keysToDelete = new ArrayList<>();
-        Instant cutOff = referenceTime.minus(TARGET_WINDOW);
         
         for (Entry<String, LinkedList<SaeDetectionDto>> entry: trajectoryByObjId.entrySet()) {
             LinkedList<SaeDetectionDto> trajectory = entry.getValue();
-            if (trajectory.isEmpty() || trajectory.getLast().getCaptureTs().isBefore(cutOff)) {
+            if (trajectory.isEmpty() || trajectory.getLast().getCaptureTs().isBefore(cutOffTime)) {
                 keysToDelete.add(entry.getKey());
             }
         }
