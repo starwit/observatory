@@ -14,20 +14,22 @@ import de.starwit.service.sae.SaeDetectionDto;
 
 public class LineCrossingJob implements JobInterface {
 
-    private Duration TARGET_WINDOW_SIZE;
-    private ObservationJobEntity configEntity;
-    private TrajectoryStore trajectoryStore;
-    private Line2D countingLine;
-    private Boolean isGeoReferenced;
-    private Consumer<LineCrossingObservation> observationConsumer;
+    private final ObservationJobEntity configEntity;
+    private final Duration TARGET_WINDOW_SIZE;
+    private final Consumer<LineCrossingObservation> observationConsumer;
+    
+    private final Line2D countingLine;
+    private final Boolean isGeoReferenced;
+    private final TrajectoryStore trajectoryStore;
     
     public LineCrossingJob(ObservationJobEntity configEntity, Duration targetWindowSize, Consumer<LineCrossingObservation> observationConsumer) {
-        this.TARGET_WINDOW_SIZE = targetWindowSize;
         this.configEntity = configEntity;
+        this.TARGET_WINDOW_SIZE = targetWindowSize;
+        this.observationConsumer = observationConsumer;
+        
         this.countingLine = GeometryConverter.lineFrom(this.configEntity);
         this.isGeoReferenced = this.configEntity.getGeoReferenced();
-        this.trajectoryStore = new TrajectoryStore(targetWindowSize);
-        this.observationConsumer = observationConsumer;
+        this.trajectoryStore = new TrajectoryStore();
     }
     
     public ObservationJobEntity getConfigEntity() {
@@ -36,7 +38,7 @@ public class LineCrossingJob implements JobInterface {
 
     public void processNewDetection(SaeDetectionDto dto) {
         trajectoryStore.addDetection(dto);
-        trajectoryStore.trimTrajectory(dto);
+        trajectoryStore.trimSingleRelative(dto, TARGET_WINDOW_SIZE);
 
         if (isTrajectoryLongEnough(dto)) {
             if (objectHasCrossed(dto)) {
@@ -50,7 +52,7 @@ public class LineCrossingJob implements JobInterface {
     }
 
     private boolean isTrajectoryLongEnough(SaeDetectionDto det) {
-        return trajectoryStore.trajectoryLength(det).toMillis() > 0.8 * TARGET_WINDOW_SIZE.toMillis();
+        return trajectoryStore.length(det).toMillis() > 0.8 * TARGET_WINDOW_SIZE.toMillis();
     }
 
     private boolean objectHasCrossed(SaeDetectionDto det) {

@@ -105,14 +105,6 @@ public class AreaOccupancyRunner implements RunnerInterface {
         }
     }
 
-    // TODO: Change this back to simple duration format ("5s") after upgrading to Spring Boot 3.4.x
-    @Scheduled(fixedRateString = "${areaOccupancy.analyzingIntervalMs:5000}", timeUnit = TimeUnit.MILLISECONDS)
-    private void runJobs() {
-        for (AreaOccupancyJob job : activeJobs) {
-            job.run();
-        }
-    }
-
     private void storeObservation(AreaOccupancyObservation obs) {
         areaOccupancyService.addEntry(obs.jobEntity(), obs.occupancyTime(), obs.count());
         geoJsonService.sendAreaOccupancies(Arrays.asList(obs));

@@ -29,7 +29,7 @@ import de.starwit.testing.SaeDump;
 import de.starwit.visionapi.Sae.SaeMessage;
 
 @ExtendWith(MockitoExtension.class)
-public class AreaOccupancyRunnerTest {
+public class AreaOccupancyJobTest {
 
     @Mock
     Consumer<AreaOccupancyObservation> observationConsumerMock;
@@ -42,19 +42,25 @@ public class AreaOccupancyRunnerTest {
             Helper.createPoint(100, 100),
             Helper.createPoint(0, 100)
         ));
-
         
+        // The dummy entries just serve to trigger the event-based processing in the job
         List<SaeDetectionDto> detections = Arrays.asList(
-            Helper.createDetection(Instant.ofEpochMilli(0000), new Point2D.Double(50, 50), "obj1"),
-            Helper.createDetection(Instant.ofEpochMilli(0000), new Point2D.Double(50, 50), "obj2"),
-            Helper.createDetection(Instant.ofEpochMilli(0000), new Point2D.Double(50, 200), "obj3"),
-            Helper.createDetection(Instant.ofEpochMilli(2000), new Point2D.Double(50, 50), "obj1"),
-            Helper.createDetection(Instant.ofEpochMilli(2000), new Point2D.Double(50, 50), "obj2"),
-            Helper.createDetection(Instant.ofEpochMilli(2000), new Point2D.Double(50, 50), "obj3"),
-            Helper.createDetection(Instant.ofEpochMilli(2000), new Point2D.Double(50, 200), "obj4"),
-            Helper.createDetection(Instant.ofEpochMilli(10200), new Point2D.Double(50, 50), "obj1"),
-            Helper.createDetection(Instant.ofEpochMilli(10200), new Point2D.Double(50, 50), "obj2")
-            );
+            Helper.createDetection(Instant.ofEpochMilli(0000), new Point2D.Double(50, 50), "dummy"),
+            
+            Helper.createDetection(Instant.ofEpochMilli(1000), new Point2D.Double(50, 50), "obj1"),
+            Helper.createDetection(Instant.ofEpochMilli(1000), new Point2D.Double(50, 50), "obj2"),
+            Helper.createDetection(Instant.ofEpochMilli(1000), new Point2D.Double(50, 200), "obj3"),
+            
+            Helper.createDetection(Instant.ofEpochMilli(3000), new Point2D.Double(50, 50), "obj1"),
+            Helper.createDetection(Instant.ofEpochMilli(3000), new Point2D.Double(50, 50), "obj2"),
+            Helper.createDetection(Instant.ofEpochMilli(3000), new Point2D.Double(50, 50), "obj3"),
+            Helper.createDetection(Instant.ofEpochMilli(3000), new Point2D.Double(50, 200), "obj4"),
+
+            Helper.createDetection(Instant.ofEpochMilli(9900), new Point2D.Double(50, 50), "obj1"),
+            Helper.createDetection(Instant.ofEpochMilli(9900), new Point2D.Double(50, 50), "obj2"),
+
+            Helper.createDetection(Instant.ofEpochMilli(10100), new Point2D.Double(50, 50), "dummy")
+        );
             
         AreaOccupancyJob testee = new AreaOccupancyJob(jobEntity, Duration.ofSeconds(10), 0.001, 0.1, observationConsumerMock);
 
@@ -62,16 +68,11 @@ public class AreaOccupancyRunnerTest {
             testee.processNewDetection(det);
         }
 
-        testee.run();
-
         ArgumentCaptor<AreaOccupancyObservation> observationCaptor = ArgumentCaptor.forClass(AreaOccupancyObservation.class);
 
-        verify(observationConsumerMock, times(1)).accept(observationCaptor.capture());
-        assertThat(observationCaptor.getValue().occupancyTime().toEpochSecond()).isEqualTo(10);
+        verify(observationConsumerMock, times(2)).accept(observationCaptor.capture());
+        assertThat(observationCaptor.getValue().occupancyTime().toInstant().toEpochMilli()).isEqualTo(10100);
         assertThat(observationCaptor.getValue().count()).isEqualTo(2);
-
-        testee.run();
-        verifyNoMoreInteractions(observationConsumerMock);
     }
 
     @Test
@@ -94,13 +95,11 @@ public class AreaOccupancyRunnerTest {
             }
         }
 
-        testee.run();
-        
         ArgumentCaptor<AreaOccupancyObservation> observationCaptor = ArgumentCaptor.forClass(AreaOccupancyObservation.class);
         
-        verify(observationConsumerMock, times(1)).accept(observationCaptor.capture());
+        verify(observationConsumerMock, times(6)).accept(observationCaptor.capture());
         
-        assertThat(observationCaptor.getValue().count()).isEqualTo(20);
+        assertThat(observationCaptor.getAllValues().stream().map(o -> o.count())).containsExactly(0L, 22L, 19L, 19L, 21L, 20L);
     }
 
     static ObservationJobEntity prepareJobEntity(List<PointEntity> geometryPoints) {

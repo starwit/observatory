@@ -3,10 +3,16 @@ package de.starwit.service.jobs;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,19 +21,21 @@ import de.starwit.service.sae.SaeDetectionDto;
 
 /**
  * Provides storage for object trajectories (i.e. sequences of `SaeDetectionDto`)
- * Not thread-safe, should not be shared.
+ * of one camera stream. This must not be used across multiple camera streams!
+ * Not thread-safe, should not be shared across threads without synchronization.
  */
 public class TrajectoryStore {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private HashMap<String, LinkedList<SaeDetectionDto>> trajectoryByObjId = new HashMap<>();
-    protected final Duration TARGET_WINDOW;
 
-    public TrajectoryStore(Duration targetWindow) {
-        this.TARGET_WINDOW = targetWindow;
-    }
+    public TrajectoryStore() {}
 
+    /**
+     * Adds a detection to the trajectory of its object ID.
+     * Enforces timestamp monotonicity per object ID. Will reject detections otherwise.
+     */
     public void addDetection(SaeDetectionDto det) {
         if (det == null) {
             log.warn("Ignoring null detection");
@@ -78,6 +86,10 @@ public class TrajectoryStore {
         }
     }
 
+    public List<List<SaeDetectionDto>> getAll() {
+        return this.trajectoryByObjId.values().stream().map(Collections::unmodifiableList).toList();
+    }
+
     public void clear(SaeDetectionDto det) {
         LinkedList<SaeDetectionDto> trajectory = trajectoryByObjId.get(det.getObjectId());
         if (trajectory != null) {
@@ -85,18 +97,50 @@ public class TrajectoryStore {
         }
     }
     
-    public void trimTrajectory(SaeDetectionDto det) {
-        LinkedList<SaeDetectionDto> trajectory = this.trajectoryByObjId.get(det.getObjectId());
+    /**
+     * Trims the trajectory of `det` to the given target length, counting backwards from the most recent detection.
+     * Does not alter other trajectories.
+     * @param det
+     * @param targetLength
+     */
+    public void trimSingleRelative(SaeDetectionDto det, Duration targetLength) {
+        String objId = det.getObjectId();
+        LinkedList<SaeDetectionDto> trajectory = this.trajectoryByObjId.get(objId);
         if (trajectory == null) {
             return;
         }
+        
+        trimInternal(trajectory, trajectory.getLast().getCaptureTs().minus(targetLength));
+        tryPurge(objId);
+    }
 
-        while (!trajectory.isEmpty() && trajectory.getFirst().getCaptureTs().isBefore(trajectory.getLast().getCaptureTs().minus(TARGET_WINDOW))) {
-            trajectory.pollFirst();
+    /**
+     * Trims all trajectories to the given cut-off time, removing all detections older than `cutOff`.
+     * @param cutOff
+     */
+    public void trimAllAbsolute(Instant cutOff) {
+        Set<String> objectIds = new HashSet<>(this.trajectoryByObjId.keySet());
+        for (String objectId : objectIds) {
+            trimInternal(this.trajectoryByObjId.get(objectId), cutOff);
+            tryPurge(objectId);
         }
     }
 
-    public Duration trajectoryLength(SaeDetectionDto det) {
+    private void trimInternal(LinkedList<SaeDetectionDto> trajectory, Instant cutOff) {
+        while (trajectory != null && !trajectory.isEmpty() && trajectory.getFirst().getCaptureTs().isBefore(cutOff)) {
+            trajectory.pollFirst();
+            
+        }
+    }
+
+    private void tryPurge(String objId) {
+        LinkedList<SaeDetectionDto> trajectory = this.trajectoryByObjId.get(objId);
+        if (trajectory != null && trajectory.isEmpty()) {
+            this.trajectoryByObjId.remove(objId);
+        }
+    }
+
+    public Duration length(SaeDetectionDto det) {
         LinkedList<SaeDetectionDto> trajectory = this.trajectoryByObjId.get(det.getObjectId());
         if (trajectory == null || trajectory.isEmpty()) {
             return Duration.ZERO;
@@ -121,7 +165,7 @@ public class TrajectoryStore {
         keysToDelete.forEach(key -> trajectoryByObjId.remove(key));
     }
 
-    public int size() {
+    public int count() {
         return trajectoryByObjId.size();
     }
 }
