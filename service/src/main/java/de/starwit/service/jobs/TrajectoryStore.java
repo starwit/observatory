@@ -86,7 +86,17 @@ public class TrajectoryStore {
     }
     
     public void trimTrajectory(SaeDetectionDto det) {
-        LinkedList<SaeDetectionDto> trajectory = this.trajectoryByObjId.get(det.getObjectId());
+        trim(det.getObjectId());
+    }
+
+    public void trimAll() {
+        for (String objId : this.trajectoryByObjId.keySet()) {
+            trim(objId);
+        }
+    }
+
+    private void trim(String objId) {
+        LinkedList<SaeDetectionDto> trajectory = this.trajectoryByObjId.get(objId);
         if (trajectory == null) {
             return;
         }

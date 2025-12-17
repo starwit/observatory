@@ -100,7 +100,7 @@ public class AreaOccupancyJob implements JobInterface {
             }
             
             trajectoryStore.clearAll(trajectories);
-            observationConsumer.accept(new AreaOccupancyObservation(configEntity, trajectoryStore.getMostRecentTimestamp().atZone(ZoneOffset.UTC), objectCount));
+            observationConsumer.accept(new AreaOccupancyObservation(configEntity, trajectoryStore.getMostRecentCaptureTs().atZone(ZoneOffset.UTC), objectCount));
             
         }
     }

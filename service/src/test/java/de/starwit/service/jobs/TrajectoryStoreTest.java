@@ -1,16 +1,13 @@
 package de.starwit.service.jobs;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.Duration;
 import java.time.Instant;
-import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.data.convert.Jsr310Converters.InstantToDateConverter;
 
 import de.starwit.service.sae.SaeDetectionDto;
-import de.starwit.visionapi.Sae;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class TrajectoryStoreTest {
     
