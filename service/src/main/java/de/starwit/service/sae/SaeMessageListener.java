@@ -37,7 +37,11 @@ public class SaeMessageListener implements StreamListener<String, MapRecord<Stri
 
         List<SaeDetectionDto> dtoList = SaeDetectionDto.from(saeMsg);
         
-        dtoList.forEach(messageCallback);
+        try {
+            dtoList.forEach(messageCallback);
+        } catch (Exception e) {
+            log.error("Error processing SAE message", e);
+        }
     }
     
 }

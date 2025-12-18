@@ -33,8 +33,6 @@ public class AreaOccupancyJob implements JobInterface {
     private Instant mostRecentCaptureTs;
     private Instant lastRunCaptureTs;
     
-    private ReentrantLock lock = new ReentrantLock(true);
-    
     public AreaOccupancyJob(ObservationJobEntity configEntity, Duration analyzingWindow, double geoDistanceP95Threshold, double pxDistanceP95ThresholdScale, Consumer<AreaOccupancyObservation> observationConsumer) {
         this.configEntity = configEntity;
         this.ANALYZING_WINDOW = analyzingWindow;

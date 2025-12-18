@@ -40,7 +40,7 @@ public class TrajectoryStore {
         if (det == null) {
             log.warn("Ignoring null detection");
             return;
-        } 
+        }
 
         SaeDetectionDto lastDetection = this.getLast(det);
         if (lastDetection != null && det.getCaptureTs().isBefore(lastDetection.getCaptureTs())) {
@@ -129,7 +129,6 @@ public class TrajectoryStore {
     private void trimInternal(LinkedList<SaeDetectionDto> trajectory, Instant cutOff) {
         while (trajectory != null && !trajectory.isEmpty() && trajectory.getFirst().getCaptureTs().isBefore(cutOff)) {
             trajectory.pollFirst();
-            
         }
     }
 
