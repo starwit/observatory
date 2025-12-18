@@ -15,7 +15,6 @@ services:
       retries: 30
     volumes:
       - db:/var/lib/postgresql/data
-      - ./sample_data/observatory.sql:/docker-entrypoint-initdb.d/observatory.sql
     ports:
       - "5434:5432"
 
