@@ -2,16 +2,16 @@ package de.starwit.service.jobs;
 
 import java.util.List;
 
-import de.starwit.service.sae.SaeDetectionDto;
+import de.starwit.service.sae.SaeMessageDto;
 
 public interface RunnerInterface {
 
     List<? extends JobInterface> getActiveJobs();
 
-    default void messageHandler(SaeDetectionDto dto) {
+    default void messageHandler(SaeMessageDto dto) {
         for (JobInterface job : getActiveJobs()) {
             if (job.getConfigEntity().getCameraId().equals(dto.getCameraId())) {
-                job.processNewDetection(dto);
+                job.processNewMessage(dto);
             }
         }
     }

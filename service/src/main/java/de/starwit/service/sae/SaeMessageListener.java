@@ -1,7 +1,6 @@
 package de.starwit.service.sae;
 
 import java.util.Base64;
-import java.util.List;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
@@ -17,9 +16,9 @@ public class SaeMessageListener implements StreamListener<String, MapRecord<Stri
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private Consumer<SaeDetectionDto> messageCallback;
+    private Consumer<SaeMessageDto> messageCallback;
 
-    public SaeMessageListener(Consumer<SaeDetectionDto> messageCallback) {
+    public SaeMessageListener(Consumer<SaeMessageDto> messageCallback) {
         this.messageCallback = messageCallback;
     }
     
@@ -35,10 +34,10 @@ public class SaeMessageListener implements StreamListener<String, MapRecord<Stri
             return;
         }
 
-        List<SaeDetectionDto> dtoList = SaeDetectionDto.from(saeMsg);
+        SaeMessageDto dto = SaeMessageDto.from(saeMsg);
         
         try {
-            dtoList.forEach(messageCallback);
+            messageCallback.accept(dto);
         } catch (Exception e) {
             log.error("Error processing SAE message", e);
         }

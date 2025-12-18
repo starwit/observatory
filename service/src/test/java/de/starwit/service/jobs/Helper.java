@@ -3,9 +3,11 @@ package de.starwit.service.jobs;
 import java.awt.geom.Point2D;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Arrays;
 
 import de.starwit.persistence.observatory.entity.PointEntity;
 import de.starwit.service.sae.SaeDetectionDto;
+import de.starwit.service.sae.SaeMessageDto;
 
 public class Helper {
     
@@ -34,5 +36,15 @@ public class Helper {
         det.setConfidence(0.5);
         
         return det;
+    }
+
+    static SaeMessageDto createSaeMsg(Instant captureTs, Point2D center, String objectId) {
+        SaeDetectionDto det = createDetection(captureTs, center, objectId);
+        
+        SaeMessageDto dto = new SaeMessageDto();
+        dto.setCameraId("camId");
+        dto.setCaptureTs(captureTs);
+        dto.setDetections(Arrays.asList(det));
+        return dto;
     }
 }

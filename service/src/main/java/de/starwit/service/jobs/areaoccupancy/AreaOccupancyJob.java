@@ -6,7 +6,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 import org.apache.commons.math3.stat.descriptive.rank.Percentile;
@@ -18,6 +17,7 @@ import de.starwit.service.jobs.GeometryConverter;
 import de.starwit.service.jobs.JobInterface;
 import de.starwit.service.jobs.TrajectoryStore;
 import de.starwit.service.sae.SaeDetectionDto;
+import de.starwit.service.sae.SaeMessageDto;
 
 public class AreaOccupancyJob implements JobInterface {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -52,8 +52,11 @@ public class AreaOccupancyJob implements JobInterface {
     }
     
     @Override
-    public void processNewDetection(SaeDetectionDto dto) {
-        trajectoryStore.addDetection(dto);
+    public void processNewMessage(SaeMessageDto dto) {
+        for (SaeDetectionDto det : dto.getDetections()) {
+            trajectoryStore.addDetection(det);
+        }
+
         if (dto.getCaptureTs().isAfter(this.mostRecentCaptureTs)) {
             this.mostRecentCaptureTs = dto.getCaptureTs();
         }

@@ -11,6 +11,7 @@ import de.starwit.service.jobs.GeometryConverter;
 import de.starwit.service.jobs.JobInterface;
 import de.starwit.service.jobs.TrajectoryStore;
 import de.starwit.service.sae.SaeDetectionDto;
+import de.starwit.service.sae.SaeMessageDto;
 
 public class LineCrossingJob implements JobInterface {
 
@@ -37,14 +38,16 @@ public class LineCrossingJob implements JobInterface {
     }
 
     @Override
-    public void processNewDetection(SaeDetectionDto dto) {
-        trajectoryStore.addDetection(dto);
-        trajectoryStore.trimSingleRelative(dto, TARGET_WINDOW_SIZE);
-
-        if (isTrajectoryLongEnough(dto)) {
-            if (objectHasCrossed(dto)) {
-                observationConsumer.accept(new LineCrossingObservation(dto, getCrossingDirection(dto), configEntity));
-                trajectoryStore.clear(dto);
+    public void processNewMessage(SaeMessageDto dto) {
+        for (SaeDetectionDto det : dto.getDetections()) {
+            trajectoryStore.addDetection(det);
+            trajectoryStore.trimSingleRelative(det, TARGET_WINDOW_SIZE);
+    
+            if (isTrajectoryLongEnough(det)) {
+                if (objectHasCrossed(det)) {
+                    observationConsumer.accept(new LineCrossingObservation(det, getCrossingDirection(det), configEntity));
+                    trajectoryStore.clear(det);
+                }
             }
         }
 

@@ -3,7 +3,6 @@ package de.starwit.service.jobs;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.awt.geom.Point2D;
 import java.nio.file.Paths;
@@ -24,7 +23,7 @@ import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 import de.starwit.persistence.observatory.entity.PointEntity;
 import de.starwit.service.jobs.areaoccupancy.AreaOccupancyJob;
 import de.starwit.service.jobs.areaoccupancy.AreaOccupancyObservation;
-import de.starwit.service.sae.SaeDetectionDto;
+import de.starwit.service.sae.SaeMessageDto;
 import de.starwit.testing.SaeDump;
 import de.starwit.visionapi.Sae.SaeMessage;
 
@@ -44,28 +43,28 @@ public class AreaOccupancyJobTest {
         ));
         
         // The dummy entries just serve to trigger the event-based processing in the job
-        List<SaeDetectionDto> detections = Arrays.asList(
-            Helper.createDetection(Instant.ofEpochMilli(0000), new Point2D.Double(50, 50), "dummy"),
+        List<SaeMessageDto> messages = Arrays.asList(
+            Helper.createSaeMsg(Instant.ofEpochMilli(0000), new Point2D.Double(50, 50), "dummy"),
             
-            Helper.createDetection(Instant.ofEpochMilli(1000), new Point2D.Double(50, 50), "obj1"),
-            Helper.createDetection(Instant.ofEpochMilli(1000), new Point2D.Double(50, 50), "obj2"),
-            Helper.createDetection(Instant.ofEpochMilli(1000), new Point2D.Double(50, 200), "obj3"),
+            Helper.createSaeMsg(Instant.ofEpochMilli(1000), new Point2D.Double(50, 50), "obj1"),
+            Helper.createSaeMsg(Instant.ofEpochMilli(1000), new Point2D.Double(50, 50), "obj2"),
+            Helper.createSaeMsg(Instant.ofEpochMilli(1000), new Point2D.Double(50, 200), "obj3"),
             
-            Helper.createDetection(Instant.ofEpochMilli(3000), new Point2D.Double(50, 50), "obj1"),
-            Helper.createDetection(Instant.ofEpochMilli(3000), new Point2D.Double(50, 50), "obj2"),
-            Helper.createDetection(Instant.ofEpochMilli(3000), new Point2D.Double(50, 50), "obj3"),
-            Helper.createDetection(Instant.ofEpochMilli(3000), new Point2D.Double(50, 200), "obj4"),
+            Helper.createSaeMsg(Instant.ofEpochMilli(3000), new Point2D.Double(50, 50), "obj1"),
+            Helper.createSaeMsg(Instant.ofEpochMilli(3000), new Point2D.Double(50, 50), "obj2"),
+            Helper.createSaeMsg(Instant.ofEpochMilli(3000), new Point2D.Double(50, 50), "obj3"),
+            Helper.createSaeMsg(Instant.ofEpochMilli(3000), new Point2D.Double(50, 200), "obj4"),
 
-            Helper.createDetection(Instant.ofEpochMilli(9900), new Point2D.Double(50, 50), "obj1"),
-            Helper.createDetection(Instant.ofEpochMilli(9900), new Point2D.Double(50, 50), "obj2"),
+            Helper.createSaeMsg(Instant.ofEpochMilli(9900), new Point2D.Double(50, 50), "obj1"),
+            Helper.createSaeMsg(Instant.ofEpochMilli(9900), new Point2D.Double(50, 50), "obj2"),
 
-            Helper.createDetection(Instant.ofEpochMilli(10100), new Point2D.Double(50, 50), "dummy")
+            Helper.createSaeMsg(Instant.ofEpochMilli(10100), new Point2D.Double(50, 50), "dummy")
         );
             
         AreaOccupancyJob testee = new AreaOccupancyJob(jobEntity, Duration.ofSeconds(10), 0.001, 0.1, observationConsumerMock);
 
-        for (SaeDetectionDto det : detections) {
-            testee.processNewDetection(det);
+        for (SaeMessageDto msg : messages) {
+            testee.processNewMessage(msg);
         }
 
         ArgumentCaptor<AreaOccupancyObservation> observationCaptor = ArgumentCaptor.forClass(AreaOccupancyObservation.class);
@@ -90,16 +89,14 @@ public class AreaOccupancyJobTest {
         AreaOccupancyJob testee = new AreaOccupancyJob(jobEntity, Duration.ofSeconds(10), 0.001, 0.1, observationConsumerMock);
         
         for (SaeMessage msg : saeDump) {
-            for (SaeDetectionDto dto : SaeDetectionDto.from(msg)) {
-                testee.processNewDetection(dto);
-            }
+            testee.processNewMessage(SaeMessageDto.from(msg));
         }
 
         ArgumentCaptor<AreaOccupancyObservation> observationCaptor = ArgumentCaptor.forClass(AreaOccupancyObservation.class);
         
         verify(observationConsumerMock, times(6)).accept(observationCaptor.capture());
         
-        assertThat(observationCaptor.getAllValues().stream().map(o -> o.count())).containsExactly(0L, 22L, 19L, 19L, 21L, 20L);
+        assertThat(observationCaptor.getAllValues().stream().map(o -> o.count())).containsExactly(0L, 23L, 19L, 19L, 21L, 21L);
     }
 
     static ObservationJobEntity prepareJobEntity(List<PointEntity> geometryPoints) {

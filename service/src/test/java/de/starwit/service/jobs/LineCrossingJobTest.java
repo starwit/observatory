@@ -25,7 +25,7 @@ import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 import de.starwit.persistence.observatory.entity.PointEntity;
 import de.starwit.service.jobs.linecrossing.LineCrossingJob;
 import de.starwit.service.jobs.linecrossing.LineCrossingObservation;
-import de.starwit.service.sae.SaeDetectionDto;
+import de.starwit.service.sae.SaeMessageDto;
 import de.starwit.testing.SaeDump;
 import de.starwit.visionapi.Sae.SaeMessage;
 
@@ -44,14 +44,14 @@ public class LineCrossingJobTest {
         ));
 
         // No point on trajectory should be ON the counting line (b/c direction is then ambiguous)
-        List<SaeDetectionDto> detections = createLinearTrajectory(
+        List<SaeMessageDto> messages = createLinearTrajectory(
             new Point2D.Double(50, 55), new Point2D.Double(50, 155), 
             10, Duration.ofMillis(250));
 
         LineCrossingJob testee = new LineCrossingJob(jobEntity, Duration.ofSeconds(1), consumerMock);
 
-        for (SaeDetectionDto det : detections) {
-            testee.processNewDetection(det);
+        for (SaeMessageDto msg : messages) {
+            testee.processNewMessage(msg);
         }
         
         ArgumentCaptor<LineCrossingObservation> observationCaptor = ArgumentCaptor.forClass(LineCrossingObservation.class);
@@ -72,9 +72,7 @@ public class LineCrossingJobTest {
         LineCrossingJob testee = new LineCrossingJob(jobEntity, Duration.ofSeconds(1), consumerMock);
         
         for (SaeMessage msg : saeDump) {
-            for (SaeDetectionDto dto : SaeDetectionDto.from(msg)) {
-                testee.processNewDetection(dto);
-            }
+            testee.processNewMessage(SaeMessageDto.from(msg));
         }
 
         ArgumentCaptor<LineCrossingObservation> observationCaptor = ArgumentCaptor.forClass(LineCrossingObservation.class);
@@ -107,19 +105,19 @@ public class LineCrossingJobTest {
         return entity;
     }
 
-    static List<SaeDetectionDto> createLinearTrajectory(Point2D start, Point2D end, int numSteps, Duration stepInterval) {
-        List<SaeDetectionDto> trajectory = new ArrayList<>();
+    static List<SaeMessageDto> createLinearTrajectory(Point2D start, Point2D end, int numSteps, Duration stepInterval) {
+        List<SaeMessageDto> trajectory = new ArrayList<>();
 
         Instant startTime = Instant.now();
 
-        trajectory.add(Helper.createDetection(startTime, new Point2D.Double(start.getX(), start.getY()), "obj1"));
+        trajectory.add(Helper.createSaeMsg(startTime, new Point2D.Double(start.getX(), start.getY()), "obj1"));
         double currentX = start.getX();
         double currentY = start.getY();
         
         for (int i = 0; i < numSteps; i++) {
             currentX += (end.getX() - start.getX()) / numSteps;
             currentY += (end.getY() - start.getY()) / numSteps;
-            trajectory.add(Helper.createDetection(startTime.plus(stepInterval.multipliedBy(i+1)), new Point2D.Double(currentX, currentY), "obj1"));
+            trajectory.add(Helper.createSaeMsg(startTime.plus(stepInterval.multipliedBy(i+1)), new Point2D.Double(currentX, currentY), "obj1"));
         }
 
         return trajectory;
