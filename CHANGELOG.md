@@ -4,6 +4,12 @@ Changelog of observatory.
 
 ## Current Version ()
 
+### Bug Fixes
+
+-  prevent jobs from crashing ab#2010 ([18cd1](https://github.com/starwit/observatory/commit/18cd199cba79fac) Anett Hübner)  
+
+## refs/tags/1.4.0 (2025-12-05)
+
 ### Features
 
 -  Merge pull request #93 from starwit/feature/ab#1981-add-flow-type ([2c153](https://github.com/starwit/observatory/commit/2c153122d571c13) Anett Hübner)  
