@@ -36,6 +36,7 @@ public class LineCrossingJob implements JobInterface {
         return this.configEntity;
     }
 
+    @Override
     public void processNewDetection(SaeDetectionDto dto) {
         trajectoryStore.addDetection(dto);
         trajectoryStore.trimSingleRelative(dto, TARGET_WINDOW_SIZE);
