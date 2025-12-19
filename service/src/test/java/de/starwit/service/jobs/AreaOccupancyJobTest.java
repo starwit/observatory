@@ -72,6 +72,9 @@ public class AreaOccupancyJobTest {
         verify(observationConsumerMock, times(2)).accept(observationCaptor.capture());
         assertThat(observationCaptor.getValue().occupancyTime().toInstant().toEpochMilli()).isEqualTo(10100);
         assertThat(observationCaptor.getValue().count()).isEqualTo(2);
+
+        testee.processNewDetection(Helper.createDetection(Instant.ofEpochMilli(10100), new Point2D.Double(50, 50), "dummy2"));
+        verifyNoMoreInteractions(observationConsumerMock);
     }
 
     @Test
