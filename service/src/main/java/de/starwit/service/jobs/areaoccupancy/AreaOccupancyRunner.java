@@ -1,11 +1,9 @@
 package de.starwit.service.jobs.areaoccupancy;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -17,7 +15,6 @@ import org.springframework.data.redis.connection.stream.ReadOffset;
 import org.springframework.data.redis.connection.stream.StreamOffset;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
 import org.springframework.data.redis.stream.Subscription;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import de.starwit.persistence.observatory.entity.JobType;
@@ -40,7 +37,7 @@ public class AreaOccupancyRunner implements RunnerInterface {
     @Value("${sae.redisStreamPrefix:output}")
     private String REDIS_STREAM_PREFIX;
     
-    @Value("${areaOccupancy.analyzingWindow:10s}")
+    @Value("${areaOccupancy.analyzingWindow:5s}")
     private Duration ANALYZING_WINDOW;
 
     @Value("${areaOccupancy.geoDistanceP95Threshold:0.0001}")
@@ -102,19 +99,6 @@ public class AreaOccupancyRunner implements RunnerInterface {
             StreamOffset<String> streamOffset = StreamOffset.create(streamKey, ReadOffset.lastConsumed());
             Subscription redisSubscription = streamListenerContainer.receive(streamOffset, saeMessageListener);
             activeSubscriptions.add(redisSubscription);
-        }
-    }
-
-    // TODO: Change this back to simple duration format ("5s") after upgrading to Spring Boot 3.4.x
-    @Scheduled(fixedRateString = "${areaOccupancy.analyzingIntervalMs:5000}", timeUnit = TimeUnit.MILLISECONDS)
-    private void runJobs() {
-        for (AreaOccupancyJob job : activeJobs) {
-            // Skip processing if we have not received any new data within the last analyzing interval
-            if (job.getLastUpdate().isBefore(Instant.now().minus(job.getAnalyzingInterval()))) {
-                log.warn("Skipping processing due to stale data (" + job.getConfigEntity().getName() + ")");
-                continue;
-            }
-            job.run();
         }
     }
 

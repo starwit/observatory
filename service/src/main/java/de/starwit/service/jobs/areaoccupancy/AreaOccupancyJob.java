@@ -6,7 +6,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 import org.apache.commons.math3.stat.descriptive.rank.Percentile;
@@ -18,30 +17,33 @@ import de.starwit.service.jobs.GeometryConverter;
 import de.starwit.service.jobs.JobInterface;
 import de.starwit.service.jobs.TrajectoryStore;
 import de.starwit.service.sae.SaeDetectionDto;
+import de.starwit.service.sae.SaeMessageDto;
 
 public class AreaOccupancyJob implements JobInterface {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private ObservationJobEntity configEntity;
-    private Area polygon;
-    private Instant lastUpdate;
-    private Duration analyzingInterval;
-    private TrajectoryStore trajectoryStore;
-    private double GEO_DISTANCE_P95_THRESHOLD;
-    private double PX_DISTANCE_P95_THRESHOLD_SCALE;
-    private Consumer<AreaOccupancyObservation> observationConsumer;
+    private final ObservationJobEntity configEntity;
+    private final Duration ANALYZING_WINDOW;
+    private final double GEO_DISTANCE_P95_THRESHOLD;
+    private final double PX_DISTANCE_P95_THRESHOLD_SCALE;
+    private final Consumer<AreaOccupancyObservation> observationConsumer;
     
-    private ReentrantLock lock = new ReentrantLock(true);
+    private final Area polygon;
+    private final TrajectoryStore trajectoryStore;
+    private Instant mostRecentCaptureTs;
+    private Instant lastRunCaptureTs;
     
-    public AreaOccupancyJob(ObservationJobEntity configEntity, Duration analyzingInterval, double geoDistanceP95Threshold, double pxDistanceP95ThresholdScale, Consumer<AreaOccupancyObservation> observationConsumer) {
+    public AreaOccupancyJob(ObservationJobEntity configEntity, Duration analyzingWindow, double geoDistanceP95Threshold, double pxDistanceP95ThresholdScale, Consumer<AreaOccupancyObservation> observationConsumer) {
         this.configEntity = configEntity;
-        this.polygon = GeometryConverter.areaFrom(configEntity);
-        this.lastUpdate = Instant.ofEpochMilli(0);
-        this.analyzingInterval = analyzingInterval;
-        this.trajectoryStore = new TrajectoryStore(this.analyzingInterval);
+        this.ANALYZING_WINDOW = analyzingWindow;
         this.GEO_DISTANCE_P95_THRESHOLD = geoDistanceP95Threshold;
         this.PX_DISTANCE_P95_THRESHOLD_SCALE = pxDistanceP95ThresholdScale;
         this.observationConsumer = observationConsumer;
+        
+        this.polygon = GeometryConverter.areaFrom(configEntity);
+        this.trajectoryStore = new TrajectoryStore();
+        this.mostRecentCaptureTs = Instant.MIN;
+        this.lastRunCaptureTs = Instant.MIN;
     }
     
     @Override
@@ -49,55 +51,46 @@ public class AreaOccupancyJob implements JobInterface {
         return this.configEntity;
     }
     
-    public Instant getLastUpdate() {
-        return lastUpdate;
+    @Override
+    public void processNewMessage(SaeMessageDto dto) {
+        for (SaeDetectionDto det : dto.getDetections()) {
+            trajectoryStore.addDetection(det);
+        }
+
+        if (dto.getCaptureTs().isAfter(this.mostRecentCaptureTs)) {
+            this.mostRecentCaptureTs = dto.getCaptureTs();
+        }
+        trajectoryStore.trimAllAbsolute(this.mostRecentCaptureTs.minus(ANALYZING_WINDOW));
+
+        if (this.mostRecentCaptureTs.isAfter(this.lastRunCaptureTs.plus(ANALYZING_WINDOW))) {
+            run();
+            this.lastRunCaptureTs = this.mostRecentCaptureTs;
+        }
     }
     
-    public Duration getAnalyzingInterval() {
-        return analyzingInterval;
-    }
-
-    // `run()` and `processNewDetection()` are called from different threads, so we need to lock to make sure data is consistent.
-    // If this becomes a performance bottleneck, we could optimize this away, e.g. by using a queue for input data and updating the `TrajectoryStore` from that queue during `run()`
-    @Override
-    public void processNewDetection(SaeDetectionDto dto, Instant currentTime) {
-        lock.lock();
-
-        try {
-            trajectoryStore.addDetection(dto);
-            this.lastUpdate = currentTime;
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public void run() {
-        lock.lock();
-
-        try {
-            runInternal();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    private void runInternal() {
+    // TODO This runs inside the redis listener thread. Consider scheduling instead of direct call.
+    private void run() {
         long objectCount = 0;
-        List<List<SaeDetectionDto>> trajectories = trajectoryStore.getAllHealthyTrajectories();
-        
+
+        List<List<SaeDetectionDto>> trajectories = trajectoryStore.getAll();
+
         for (List<SaeDetectionDto> trajectory : trajectories) {
+            if (!isTrajectoryLongEnough(trajectory)) {
+                continue;
+            }
+
             List<Point2D> pointTrajectory = GeometryConverter.toCenterPoints(trajectory, configEntity.getGeoReferenced());
             Point2D avgPos = getAveragePosition(pointTrajectory);
 
             if (!polygon.contains(avgPos)) {
                 continue;
             }
-
-            // Use bounding box size as stationarity constraint if not geo-referenced (to compensate for perspective)
+            
             boolean stationary = false;
             if (configEntity.getGeoReferenced()) {
                 stationary = isStationary(pointTrajectory, GEO_DISTANCE_P95_THRESHOLD);
             } else {
+                // Use bounding box size as stationarity constraint if not geo-referenced (to compensate for distance scaling effects)
                 stationary = isStationary(pointTrajectory, getAverageBoundingBoxDiagonal(trajectory) * PX_DISTANCE_P95_THRESHOLD_SCALE);
             }
 
@@ -107,9 +100,14 @@ public class AreaOccupancyJob implements JobInterface {
             }
         }
         
-        trajectoryStore.purge();
+        observationConsumer.accept(new AreaOccupancyObservation(configEntity, this.mostRecentCaptureTs.atZone(ZoneOffset.UTC), objectCount));
+            
+    }
 
-        observationConsumer.accept(new AreaOccupancyObservation(configEntity, trajectoryStore.getMostRecentTimestamp().atZone(ZoneOffset.UTC), objectCount));
+    private boolean isTrajectoryLongEnough(List<SaeDetectionDto> trajectory) {
+        Instant start = trajectory.getFirst().getCaptureTs();
+        Instant end = trajectory.getLast().getCaptureTs();
+        return Duration.between(start, end).toMillis() > 0.8 * ANALYZING_WINDOW.toMillis();
     }
 
     /**

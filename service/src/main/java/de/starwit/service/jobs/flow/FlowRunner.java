@@ -3,7 +3,6 @@ package de.starwit.service.jobs.flow;
 import java.time.Duration;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,7 +21,6 @@ import de.starwit.persistence.observatory.entity.JobType;
 import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 import de.starwit.service.analytics.AreaOccupancyService;
 import de.starwit.service.analytics.LineCrossingService;
-import de.starwit.service.geojson.GeoJsonService;
 import de.starwit.service.jobs.JobInterface;
 import de.starwit.service.jobs.RunnerInterface;
 import de.starwit.service.jobs.linecrossing.LineCrossingJob;

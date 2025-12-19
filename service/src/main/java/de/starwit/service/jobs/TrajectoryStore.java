@@ -3,40 +3,54 @@ package de.starwit.service.jobs;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Deque;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.starwit.service.sae.SaeDetectionDto;
 
 /**
  * Provides storage for object trajectories (i.e. sequences of `SaeDetectionDto`)
- * Not thread-safe, should not be shared.
+ * of one camera stream. This must not be used across multiple camera streams!
+ * Not thread-safe, should not be shared across threads without synchronization.
  */
 public class TrajectoryStore {
-    private HashMap<String, LinkedList<SaeDetectionDto>> trajectoryByObjId = new HashMap<>();
-    private final Duration TARGET_WINDOW;
-    private Instant mostRecentTimestamp;
 
-    public TrajectoryStore(Duration targetWindow) {
-        this.TARGET_WINDOW = targetWindow;
-        this.mostRecentTimestamp = Instant.ofEpochSecond(0);
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+    private HashMap<String, LinkedList<SaeDetectionDto>> trajectoryByObjId = new HashMap<>();
+
+    public TrajectoryStore() {}
+
+    /**
+     * Adds a detection to the trajectory of its object ID.
+     * Enforces timestamp monotonicity per object ID. Will reject detections otherwise.
+     */
+    public void addDetection(SaeDetectionDto det) {
+        if (det == null) {
+            log.warn("Ignoring null detection");
+            return;
+        }
+
+        SaeDetectionDto lastDetection = this.getLast(det);
+        if (lastDetection != null && det.getCaptureTs().isBefore(lastDetection.getCaptureTs())) {
+            log.warn("Ignoring detection with timestamp {} on stream {} as it breaks monotonicity (last timestamp for stream is {})", det.getCameraId(), det.getCaptureTs(), lastDetection.getCaptureTs());
+            return;
+        }
+
+        LinkedList<SaeDetectionDto> trajectory = trajectoryByObjId.computeIfAbsent(det.getObjectId(), k -> new LinkedList<>());
+        trajectory.addLast(det);
     }
 
-    public void addDetection(SaeDetectionDto det) {
-        LinkedList<SaeDetectionDto> trajectory = trajectoryByObjId.get(det.getObjectId());
-        if (trajectory == null) {
-            trajectory = new LinkedList<>();
-            trajectoryByObjId.put(det.getObjectId(), trajectory);
-        }
-        trajectory.addLast(det);
-
-        if (det.getCaptureTs().isAfter(mostRecentTimestamp)) {
-            this.mostRecentTimestamp = det.getCaptureTs();
-        }
-        truncateTrajectories();
+    public boolean hasTrajectory(SaeDetectionDto det) {
+        return this.trajectoryByObjId.get(det.getObjectId()) != null;
     }
 
     public SaeDetectionDto getFirst(SaeDetectionDto det) {
@@ -69,62 +83,77 @@ public class TrajectoryStore {
         }
     }
 
+    public List<List<SaeDetectionDto>> getAll() {
+        return this.trajectoryByObjId.values().stream().map(Collections::unmodifiableList).toList();
+    }
+
     public void clear(SaeDetectionDto det) {
         LinkedList<SaeDetectionDto> trajectory = trajectoryByObjId.get(det.getObjectId());
         if (trajectory != null) {
             trajectory.clear();
         }
     }
+    
+    /**
+     * Trims the trajectory of `det` to the given target length, counting backwards from the most recent detection.
+     * Does not alter other trajectories.
+     * @param det
+     * @param targetLength
+     */
+    public void trimSingleRelative(SaeDetectionDto det, Duration targetLength) {
+        String objId = det.getObjectId();
+        LinkedList<SaeDetectionDto> trajectory = this.trajectoryByObjId.get(objId);
+        if (trajectory == null) {
+            return;
+        }
+        
+        trimInternal(trajectory, trajectory.getLast().getCaptureTs().minus(targetLength));
+        tryPurge(objId);
+    }
 
     /**
-     * Returns all trajectories that satisfy the target length (i.e. length > 0.80 * targetTrajectoryLength).
-     * As the trajectories are truncated during addDetection(), trajectory starts must by within the analyzing window.
-     * Trajectory length is defined by the time between the first and last detection in the trajectory.
-     * The analyzing window is relative to the most recent timestamp we have seen so far, there is no tie to the actual time!
-     * @return
+     * Trims all trajectories to the given cut-off time, removing all detections older than `cutOff`.
+     * @param cutOff
      */
-    public List<List<SaeDetectionDto>> getAllHealthyTrajectories() {
-        List<List<SaeDetectionDto>> trajectories = new ArrayList<>();
-        for (LinkedList<SaeDetectionDto> trajectory : trajectoryByObjId.values()) {
-            if (isHealthy(trajectory)) {
-                trajectories.add(new ArrayList<>(trajectory));
-            }
-        }
-        return trajectories;
-    }
-    
-    private boolean isHealthy(Deque<SaeDetectionDto> trajectory) {
-        return !trajectory.isEmpty() && trajectoryLength(trajectory).toMillis() > 0.8 * TARGET_WINDOW.toMillis();
-    }
-
-    public Instant getMostRecentTimestamp() {
-        return this.mostRecentTimestamp;
-    }
-
-    private void truncateTrajectories() {
-        for (Deque<SaeDetectionDto> trajectory : this.trajectoryByObjId.values()) {
-            while (!trajectory.isEmpty() && trajectory.getFirst().getCaptureTs().isBefore(this.mostRecentTimestamp.minus(TARGET_WINDOW))) {
-                trajectory.pollFirst();
-            }
+    public void trimAllAbsolute(Instant cutOff) {
+        Set<String> objectIds = new HashSet<>(this.trajectoryByObjId.keySet());
+        for (String objectId : objectIds) {
+            trimInternal(this.trajectoryByObjId.get(objectId), cutOff);
+            tryPurge(objectId);
         }
     }
 
-    private Duration trajectoryLength(Deque<SaeDetectionDto> trajectory) {
+    private void trimInternal(LinkedList<SaeDetectionDto> trajectory, Instant cutOff) {
+        while (trajectory != null && !trajectory.isEmpty() && trajectory.getFirst().getCaptureTs().isBefore(cutOff)) {
+            trajectory.pollFirst();
+        }
+    }
+
+    private void tryPurge(String objId) {
+        LinkedList<SaeDetectionDto> trajectory = this.trajectoryByObjId.get(objId);
+        if (trajectory != null && trajectory.isEmpty()) {
+            this.trajectoryByObjId.remove(objId);
+        }
+    }
+
+    public Duration length(SaeDetectionDto det) {
+        LinkedList<SaeDetectionDto> trajectory = this.trajectoryByObjId.get(det.getObjectId());
+        if (trajectory == null || trajectory.isEmpty()) {
+            return Duration.ZERO;
+        }
         return Duration.between(trajectory.getFirst().getCaptureTs(), trajectory.getLast().getCaptureTs());
     }
 
     /**
-     * Drops all trajectories whose most recent data point is older than (referenceTime - trajectoryLength),
-     * i.e. trajectories that would be truncated completely if a data point was to be added.
-     * @param referenceTime
+     * Drops all trajectories whose most recent data point is older than `cutOffTime`.
+     * @param cutOffTime
      */
-    public void purge(Instant referenceTime) {
+    public void purge(Instant cutOffTime) {
         List<String> keysToDelete = new ArrayList<>();
-        Instant cutOff = referenceTime.minus(TARGET_WINDOW);
         
         for (Entry<String, LinkedList<SaeDetectionDto>> entry: trajectoryByObjId.entrySet()) {
             LinkedList<SaeDetectionDto> trajectory = entry.getValue();
-            if (trajectory.isEmpty() || trajectory.getLast().getCaptureTs().isBefore(cutOff)) {
+            if (trajectory.isEmpty() || trajectory.getLast().getCaptureTs().isBefore(cutOffTime)) {
                 keysToDelete.add(entry.getKey());
             }
         }
@@ -132,11 +161,7 @@ public class TrajectoryStore {
         keysToDelete.forEach(key -> trajectoryByObjId.remove(key));
     }
 
-    public void purge() {
-        this.purge(this.mostRecentTimestamp);
-    }
-
-    public int size() {
+    public int count() {
         return trajectoryByObjId.size();
     }
 }
