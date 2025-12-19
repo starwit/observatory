@@ -2,7 +2,7 @@
 
 Changelog of observatory.
 
-## refs/tags/1.4.0 (2025-12-05)
+## refs/tags/1.4.1 (2025-12-18)
 
 ### Bug Fixes
 
