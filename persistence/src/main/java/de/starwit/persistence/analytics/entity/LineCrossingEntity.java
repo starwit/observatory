@@ -2,18 +2,12 @@ package de.starwit.persistence.analytics.entity;
 
 import java.time.ZonedDateTime;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import de.starwit.persistence.common.serializer.ZonedDateTimeDeserializer;
-import de.starwit.persistence.common.serializer.ZonedDateTimeSerializer;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
 
 /**
  * LineCrossing Entity class
@@ -24,8 +18,6 @@ public class LineCrossingEntity {
 
     @Id
     @Column(name = "crossing_time")
-    @JsonSerialize(using = ZonedDateTimeSerializer.class)
-    @JsonDeserialize(using = ZonedDateTimeDeserializer.class)
     private ZonedDateTime crossingTime;
 
     // entity fields

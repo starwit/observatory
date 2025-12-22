@@ -33,8 +33,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 @Service
 public class GeoJsonSenderService {
@@ -42,7 +42,7 @@ public class GeoJsonSenderService {
     private static final Logger log = LoggerFactory.getLogger(GeoJsonSenderService.class.getName());
 
     private final RestClient restClient;
-    private final ObjectMapper objectMapper;
+    private final JsonMapper mapper;
 
     @Value("${geojson.enabled:false}")
     private boolean geoJsonEnabled;
@@ -50,21 +50,21 @@ public class GeoJsonSenderService {
     @Value("${geojson.targetRestEndpointUrl:http://localhost:12345}")
     private URI GEO_JSON_URL;
 
-    //TODO fix this
+    // TODO fix this
     @Value("${geojson.requestTimeoutMs:2000}")
     private int requestTimeoutMs;
 
     public GeoJsonSenderService() {
-        this.objectMapper = new ObjectMapper();
+        this.mapper = new JsonMapper();
 
         JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory();
         requestFactory.setReadTimeout(Duration.ofMillis(2000));
-        
+
         this.restClient = RestClient.builder()
-            .requestFactory(makeTlsErrorIgnoringRequestFactory())
-            .build();
+                .requestFactory(makeTlsErrorIgnoringRequestFactory())
+                .build();
     }
-    
+
     @Async("geoJsonExecutor")
     public void sendGeoJson(GeoJsonObject geoJson) {
         if (!geoJsonEnabled) {
@@ -72,15 +72,15 @@ public class GeoJsonSenderService {
         }
 
         try {
-            String geoJsonString = objectMapper.writeValueAsString(geoJson);
+            String geoJsonString = mapper.writeValueAsString(geoJson);
             ResponseEntity<Void> response = restClient.post()
-                .uri(GEO_JSON_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(geoJsonString)
-                .retrieve().toBodilessEntity();
-            
+                    .uri(GEO_JSON_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(geoJsonString)
+                    .retrieve().toBodilessEntity();
+
             log.info("GeoJson response code: {}", response.getStatusCode());
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             log.error("Failed to send GeoJson", e);
         }
     }
@@ -97,26 +97,27 @@ public class GeoJsonSenderService {
         }
 
         SSLConnectionSocketFactory socketFactory = SSLConnectionSocketFactoryBuilder.create()
-            .setSslContext(sslContext)
-            .setHostnameVerifier(new NoopHostnameVerifier())
-            .build();
+                .setSslContext(sslContext)
+                .setHostnameVerifier(new NoopHostnameVerifier())
+                .build();
 
         Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
-            .register("https", socketFactory)
-            .register("http", new PlainConnectionSocketFactory())
-            .build();
+                .register("https", socketFactory)
+                .register("http", new PlainConnectionSocketFactory())
+                .build();
 
-        BasicHttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager(socketFactoryRegistry);
+        BasicHttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager(
+                socketFactoryRegistry);
 
         CloseableHttpClient httpClient = HttpClients.custom()
-            .setConnectionManager(connectionManager)
-            .build();
-        
+                .setConnectionManager(connectionManager)
+                .build();
+
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
         requestFactory.setConnectionRequestTimeout(Duration.ofMillis(2000));
         requestFactory.setConnectionRequestTimeout(Duration.ofMillis(2000));
         requestFactory.setHttpClient(httpClient);
-        
+
         return requestFactory;
     }
 }
