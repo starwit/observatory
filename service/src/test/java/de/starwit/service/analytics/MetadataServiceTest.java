@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import de.starwit.persistence.analytics.entity.CoordinateEntity;
@@ -29,10 +29,10 @@ import de.starwit.persistence.observatory.entity.PointEntity;
 @ExtendWith(SpringExtension.class)
 public class MetadataServiceTest {
 
-    @MockBean
+    @MockitoBean
     MetadataRepository metadataRepository;
 
-    @MockBean
+    @MockitoBean
     CoordinateService coordinateService;
     
     @InjectMocks

@@ -1,7 +1,7 @@
 package de.starwit.rest.integration;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,17 +11,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import de.starwit.persistence.common.entity.AbstractEntity;
+import tools.jackson.databind.json.JsonMapper;
 
 @WebMvcTest()
 @Import({})
@@ -33,14 +31,13 @@ public abstract class AbstractControllerIntegrationTest<ENTITY extends AbstractE
     protected MockMvc mvc;
 
     @Autowired
-    protected ObjectMapper mapper;
+    protected JsonMapper mapper;
 
     @BeforeEach
     public void setup() {
         // create Object Mapper
-        mapper = new ObjectMapper();
-        JacksonTester.initFields(this, new ObjectMapper());
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper = new JsonMapper();
+        JacksonTester.initFields(this, mapper);
     }
 
     public abstract Class<ENTITY> getEntityClass();
@@ -55,7 +52,7 @@ public abstract class AbstractControllerIntegrationTest<ENTITY extends AbstractE
             File file = new File(res.getFile());
             ENTITY entity = mapper.readValue(file, getEntityClass());
             return entity;
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOG.error("JSON mapper failed", e);
             throw new Exception("JSON mapper failed");
         }
