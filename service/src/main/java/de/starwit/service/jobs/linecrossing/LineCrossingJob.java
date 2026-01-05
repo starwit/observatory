@@ -18,21 +18,22 @@ public class LineCrossingJob implements JobInterface {
     private final ObservationJobEntity configEntity;
     private final Duration TARGET_WINDOW_SIZE;
     private final Consumer<LineCrossingObservation> observationConsumer;
-    
+
     private final Line2D countingLine;
     private final Boolean isGeoReferenced;
     private final TrajectoryStore trajectoryStore;
-    
-    public LineCrossingJob(ObservationJobEntity configEntity, Duration targetWindowSize, Consumer<LineCrossingObservation> observationConsumer) {
+
+    public LineCrossingJob(ObservationJobEntity configEntity, Duration targetWindowSize,
+            Consumer<LineCrossingObservation> observationConsumer) {
         this.configEntity = configEntity;
         this.TARGET_WINDOW_SIZE = targetWindowSize;
         this.observationConsumer = observationConsumer;
-        
+
         this.countingLine = GeometryConverter.lineFrom(this.configEntity);
         this.isGeoReferenced = this.configEntity.getGeoReferenced();
         this.trajectoryStore = new TrajectoryStore();
     }
-    
+
     public ObservationJobEntity getConfigEntity() {
         return this.configEntity;
     }
@@ -42,10 +43,11 @@ public class LineCrossingJob implements JobInterface {
         for (SaeDetectionDto det : dto.getDetections()) {
             trajectoryStore.addDetection(det);
             trajectoryStore.trimSingleRelative(det, TARGET_WINDOW_SIZE);
-    
+
             if (isTrajectoryLongEnough(det)) {
                 if (objectHasCrossed(det)) {
-                    observationConsumer.accept(new LineCrossingObservation(det, getCrossingDirection(det), configEntity));
+                    observationConsumer
+                            .accept(new LineCrossingObservation(det, getCrossingDirection(det), configEntity));
                     trajectoryStore.clear(det);
                 }
             }
@@ -65,7 +67,7 @@ public class LineCrossingJob implements JobInterface {
         Line2D trajectory = new Line2D.Double(firstPoint, lastPoint);
         return trajectory.intersectsLine(countingLine);
     }
-    
+
     private Direction getCrossingDirection(SaeDetectionDto det) {
         Point2D trajectoryEnd = GeometryConverter.toCenterPoint(trajectoryStore.getLast(det), isGeoReferenced);
         int ccw = countingLine.relativeCCW(trajectoryEnd);

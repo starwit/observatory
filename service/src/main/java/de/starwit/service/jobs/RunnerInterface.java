@@ -8,7 +8,7 @@ public interface RunnerInterface {
 
     List<? extends JobInterface> getActiveJobs();
 
-    default void messageHandler(SaeMessageDto dto) {
+    default void handleMessage(SaeMessageDto dto) {
         for (JobInterface job : getActiveJobs()) {
             if (job.getConfigEntity().getCameraId().equals(dto.getCameraId())) {
                 job.processNewMessage(dto);

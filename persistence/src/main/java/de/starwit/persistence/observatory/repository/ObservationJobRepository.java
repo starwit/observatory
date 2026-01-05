@@ -16,8 +16,10 @@ public interface ObservationJobRepository extends JpaRepository<ObservationJobEn
 
     List<ObservationJobEntity> findByEnabledTrue();
 
+    List<ObservationJobEntity> findDistinctByEnabledTrue();
+
     List<ObservationJobEntity> findByEnabledTrueAndType(JobType type);
-    
+
     void deleteByObservationAreaId(long observationAreaId);
 
 }

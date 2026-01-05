@@ -58,6 +58,10 @@ public class ObservationJobService {
         return observationJobRepository.findByEnabledTrue();
     }
 
+    public List<ObservationJobEntity> findDistinctByEnabledTrue() {
+        return observationJobRepository.findDistinctByEnabledTrue();
+    }
+
     public List<ObservationJobEntity> findActiveJobs(JobType type) {
         return observationJobRepository.findByEnabledTrueAndType(type);
     }
@@ -66,9 +70,9 @@ public class ObservationJobService {
         newJob.getGeometryPoints().forEach(p -> p.setObservationJob(newJob));
 
         ObservationJobEntity savedEntity = observationJobRepository.save(newJob);
-        
+
         refreshJobs();
-        
+
         return savedEntity;
     }
 
