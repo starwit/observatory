@@ -4,7 +4,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 
 import org.junit.jupiter.api.BeforeEach;

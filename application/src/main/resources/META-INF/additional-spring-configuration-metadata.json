@@ -1,0 +1,84 @@
+{
+    "properties": [
+        {
+            "name": "rest.base-path",
+            "type": "java.lang.String",
+            "description": "A description for 'rest.base-path'"
+        },
+        {
+            "name": "geojson.jobIncludeList",
+            "type": "java.lang.String",
+            "description": "A description for 'geojson.jobIncludeList'"
+        },
+        {
+            "name": "sae.redisStreamPrefix",
+            "type": "java.lang.String",
+            "description": "A description for 'sae.redisStreamPrefix'"
+        },
+        {
+            "name": "analytics.datasource.username",
+            "type": "java.lang.String",
+            "description": "A description for 'analytics.datasource.username'"
+        },
+        {
+            "name": "analytics.datasource.password",
+            "type": "java.lang.String",
+            "description": "A description for 'analytics.datasource.password'"
+        },
+        {
+            "name": "analytics.datasource.flyway.locations",
+            "type": "java.lang.String",
+            "description": "A description for 'analytics.datasource.flyway.locations'"
+        },
+        {
+            "name": "analytics.datasource.url",
+            "type": "java.lang.String",
+            "description": "A description for 'analytics.datasource.url'"
+        },
+        {
+            "name": "geojson.enabled",
+            "type": "java.lang.String",
+            "description": "A description for 'geojson.enabled'"
+        },
+        {
+            "name": "geojson.targetRestEndpointUrl",
+            "type": "java.lang.String",
+            "description": "A description for 'geojson.targetRestEndpointUrl'"
+        },
+        {
+            "name": "geojson.requestTimeoutMs",
+            "type": "java.lang.String",
+            "description": "A description for 'geojson.requestTimeoutMs'"
+        },
+        {
+            "name": "management.endpoints.web.base-path",
+            "type": "java.lang.String",
+            "description": "A description for 'management.endpoints.web.base-path'"
+        },
+        {
+            "name": "management.endpoint.health.show-details",
+            "type": "java.lang.String",
+            "description": "A description for 'management.endpoint.health.show-details'"
+        },
+        {
+            "name": "management.endpoints.web.exposure.include",
+            "type": "java.lang.String",
+            "description": "A description for 'management.endpoints.web.exposure.include'"
+        },
+        {
+            "name": "spring.data.rest.detection-strategy",
+            "type": "java.lang.String",
+            "description": "A description for 'spring.data.rest.detection-strategy'"
+        },
+        {
+            "name": "management.info.git.mode",
+            "type": "java.lang.String",
+            "description": "A description for 'management.info.git.mode'"
+        },
+        {
+            "name": "sae.redisStreamPrefix",
+            "type": "java.lang.String",
+            "description": "A description for 'sae.redisStreamPrefix'"
+        }
+    ]
+}

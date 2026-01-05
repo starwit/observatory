@@ -1,7 +1,5 @@
 package de.starwit.service.sae;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -30,8 +28,6 @@ public class RedisConfiguration {
 
         @Value("${sae.redisStreamPrefix:output}")
         private String REDIS_STREAM_PREFIX;
-
-        private Logger log = LoggerFactory.getLogger(this.getClass());
 
         @Value("${spring.data.redis.active:false}")
         private Boolean activateRedis;

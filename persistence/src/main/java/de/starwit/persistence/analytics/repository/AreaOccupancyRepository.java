@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import de.starwit.persistence.analytics.entity.AreaOccupancyEntity;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 
 /**
@@ -46,9 +45,9 @@ public class AreaOccupancyRepository {
         String queryString = "select a.count from areaoccupancy a where metadata_id = :metadataId and object_class_id = :objectClassId order by occupancy_time desc limit 1";
         try {
             return (Integer) getEntityManager().createNativeQuery(queryString)
-                .setParameter("metadataId", metadataId)
-                .setParameter("objectClassId", objectClassId)
-                .getSingleResult();
+                    .setParameter("metadataId", metadataId)
+                    .setParameter("objectClassId", objectClassId)
+                    .getSingleResult();
         } catch (Exception e) {
             return 0;
         }
