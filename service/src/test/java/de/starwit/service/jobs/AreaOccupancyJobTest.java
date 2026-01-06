@@ -82,22 +82,21 @@ public class AreaOccupancyJobTest {
 
     @Test
     public void testAreaOccupancyDump() throws IOException {
-        SaeDump saeDump = new SaeDump(Paths.get("src/test/resources/test.saedump"));
+        try (SaeDump saeDump = new SaeDump(Paths.get("src/test/resources/test.saedump"))) {
+            // The entire frame
+            ObservationJobEntity jobEntity = prepareJobEntity(Arrays.asList(
+                    Helper.createPoint(0, 0),
+                    Helper.createPoint(1, 0),
+                    Helper.createPoint(1, 1),
+                    Helper.createPoint(0, 1)));
 
-        // The entire frame
-        ObservationJobEntity jobEntity = prepareJobEntity(Arrays.asList(
-                Helper.createPoint(0, 0),
-                Helper.createPoint(1, 0),
-                Helper.createPoint(1, 1),
-                Helper.createPoint(0, 1)));
+            AreaOccupancyJob testee = new AreaOccupancyJob(jobEntity, Duration.ofSeconds(10), 0.001, 0.1,
+                    observationConsumerMock);
 
-        AreaOccupancyJob testee = new AreaOccupancyJob(jobEntity, Duration.ofSeconds(10), 0.001, 0.1,
-                observationConsumerMock);
-
-        for (SaeMessage msg : saeDump) {
-            testee.processNewMessage(SaeMessageDto.from(msg));
+            for (SaeMessage msg : saeDump) {
+                testee.processNewMessage(SaeMessageDto.from(msg));
+            }
         }
-        saeDump.close();
 
         ArgumentCaptor<AreaOccupancyObservation> observationCaptor = ArgumentCaptor
                 .forClass(AreaOccupancyObservation.class);
