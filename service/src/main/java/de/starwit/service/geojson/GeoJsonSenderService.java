@@ -114,7 +114,7 @@ public class GeoJsonSenderService {
                 .build();
 
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-        requestFactory.setConnectionRequestTimeout(Duration.ofMillis(2000));
+        requestFactory.setConnectTimeout(Duration.ofMillis(2000));
         requestFactory.setConnectionRequestTimeout(Duration.ofMillis(2000));
         requestFactory.setHttpClient(httpClient);
 
