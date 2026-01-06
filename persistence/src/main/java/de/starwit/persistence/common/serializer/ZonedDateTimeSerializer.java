@@ -22,7 +22,6 @@ public class ZonedDateTimeSerializer {
         public void serialize(ZonedDateTime date, JsonGenerator jgen, SerializationContext context) {
             jgen.writeString(date != null ? ZonedDateTime.ofInstant(date.toInstant(), ZoneId.of("UTC"))
                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")) : null);
-            ;
         }
 
     }
