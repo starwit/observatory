@@ -2,11 +2,6 @@ package de.starwit.persistence.analytics.entity;
 
 import java.time.ZonedDateTime;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import de.starwit.persistence.common.serializer.ZonedDateTimeDeserializer;
-import de.starwit.persistence.common.serializer.ZonedDateTimeSerializer;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -22,8 +17,6 @@ public class AreaOccupancyEntity {
 
     @Id
     @Column(name = "occupancy_time", nullable = false)
-    @JsonSerialize(using = ZonedDateTimeSerializer.class)
-    @JsonDeserialize(using = ZonedDateTimeDeserializer.class)
     private ZonedDateTime occupancyTime;
 
     @NotNull

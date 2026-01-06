@@ -62,3 +62,4 @@ test.log
 # Ignore database import files
 deployment/sample_data/*.sql
 application.properties
+docker-compose.yml

@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -71,14 +71,16 @@ public class ObservationJobControllerAcceptanceTest extends AbstractControllerAc
         // given
         ObservationJobEntity entity = readFromFile(data + "job1.json");
         MockHttpServletResponse response = create(entity);
-        ObservationJobEntity responseEntity = mapper.readValue(response.getContentAsString(), ObservationJobEntity.class);
+        ObservationJobEntity responseEntity = mapper.readValue(response.getContentAsString(),
+                ObservationJobEntity.class);
 
         // when
         response = retrieveById(responseEntity.getId());
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        ObservationJobEntity retrievedEntity = mapper.readValue(response.getContentAsString(), ObservationJobEntity.class);
+        ObservationJobEntity retrievedEntity = mapper.readValue(response.getContentAsString(),
+                ObservationJobEntity.class);
         assertThat(retrievedEntity.getId()).isEqualTo(responseEntity.getId());
         assertThat(retrievedEntity.getName()).isEqualTo(entity.getName());
         assertThat(retrievedEntity.getGeoReferenced()).isTrue();
@@ -93,7 +95,8 @@ public class ObservationJobControllerAcceptanceTest extends AbstractControllerAc
         // given
         ObservationJobEntity entity = readFromFile(data + "job1.json");
         MockHttpServletResponse response = create(entity);
-        ObservationJobEntity responseEntity = mapper.readValue(response.getContentAsString(), ObservationJobEntity.class);
+        ObservationJobEntity responseEntity = mapper.readValue(response.getContentAsString(),
+                ObservationJobEntity.class);
 
         // when
         response = update(responseEntity);
@@ -102,11 +105,13 @@ public class ObservationJobControllerAcceptanceTest extends AbstractControllerAc
 
         // then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        ObservationJobEntity retrievedEntity = mapper.readValue(response.getContentAsString(), ObservationJobEntity.class);
+        ObservationJobEntity retrievedEntity = mapper.readValue(response.getContentAsString(),
+                ObservationJobEntity.class);
         assertThat(retrievedEntity.getId()).isEqualTo(responseEntity.getId());
         assertThat(retrievedEntity.getName()).isEqualTo(entity.getName());
 
-        ObservationJobEntity checkEntity = mapper.readValue(checkResponse.getContentAsString(), ObservationJobEntity.class);
+        ObservationJobEntity checkEntity = mapper.readValue(checkResponse.getContentAsString(),
+                ObservationJobEntity.class);
         assertThat(checkEntity.getName()).isEqualTo(entity.getName());
         assertThat(checkEntity.getEnabled()).isEqualTo(entity.getEnabled());
         assertThat(checkEntity.getGeometryPoints().size()).isEqualTo(entity.getGeometryPoints().size());
@@ -118,7 +123,8 @@ public class ObservationJobControllerAcceptanceTest extends AbstractControllerAc
         // given
         ObservationJobEntity entity = readFromFile(data + "job1.json");
         MockHttpServletResponse response = create(entity);
-        ObservationJobEntity responseEntity = mapper.readValue(response.getContentAsString(), ObservationJobEntity.class);
+        ObservationJobEntity responseEntity = mapper.readValue(response.getContentAsString(),
+                ObservationJobEntity.class);
 
         // when
         response = delete(responseEntity.getId());
@@ -128,21 +134,22 @@ public class ObservationJobControllerAcceptanceTest extends AbstractControllerAc
         MockHttpServletResponse checkResponse = retrieveById(responseEntity.getId());
         assertThat(checkResponse.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
-    
+
     @Test
     public void canDeleteAll() throws Exception {
         // given
         ObservationJobEntity entity = readFromFile(data + "job1.json");
         create(entity);
-    
+
         // when
         MockHttpServletResponse deleteResponse = deleteAll();
-    
+
         assertThat(deleteResponse.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    
+
         MockHttpServletResponse checkResponse = retrieveAll();
         assertThat(checkResponse.getStatus()).isEqualTo(HttpStatus.OK.value());
-        ObservationJobEntity[] entities = mapper.readValue(checkResponse.getContentAsString(), ObservationJobEntity[].class);
+        ObservationJobEntity[] entities = mapper.readValue(checkResponse.getContentAsString(),
+                ObservationJobEntity[].class);
         assertThat(entities.length).isEqualTo(0);
     }
 
@@ -154,18 +161,18 @@ public class ObservationJobControllerAcceptanceTest extends AbstractControllerAc
         create(entity);
         entity.setObservationAreaId(2L);
         create(entity);
-    
+
         // when
         MockHttpServletResponse deleteResponse = deleteByObservationAreaId(1L);
-    
+
         assertThat(deleteResponse.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    
+
         MockHttpServletResponse checkResponse = retrieveAll();
         assertThat(checkResponse.getStatus()).isEqualTo(HttpStatus.OK.value());
-        ObservationJobEntity[] entities = mapper.readValue(checkResponse.getContentAsString(), ObservationJobEntity[].class);
+        ObservationJobEntity[] entities = mapper.readValue(checkResponse.getContentAsString(),
+                ObservationJobEntity[].class);
         assertThat(entities.length).isEqualTo(1);
         assertThat(entities[0].getObservationAreaId()).isEqualTo(2);
     }
 
 }
-    

@@ -1,0 +1,84 @@
+{
+    "properties": [
+        {
+            "name": "rest.base-path",
+            "type": "java.lang.String",
+            "description": "Base path for REST API endpoints"
+        },
+        {
+            "name": "geojson.jobIncludeList",
+            "type": "java.lang.String",
+            "description": "Jobs to include for GeoJSON export"
+        },
+        {
+            "name": "sae.redisStreamPrefix",
+            "type": "java.lang.String",
+            "description": "Prefix for SAE Redis streams"
+        },
+        {
+            "name": "analytics.datasource.username",
+            "type": "java.lang.String",
+            "description": "Username for timescale analytics database"
+        },
+        {
+            "name": "analytics.datasource.password",
+            "type": "java.lang.String",
+            "description": "Password for timescale analytics database"
+        },
+        {
+            "name": "analytics.datasource.flyway.locations",
+            "type": "java.lang.String",
+            "description": "Path to flyway scripts for timescale analytics database"
+        },
+        {
+            "name": "analytics.datasource.url",
+            "type": "java.lang.String",
+            "description": "Database URL for timescale analytics"
+        },
+        {
+            "name": "geojson.enabled",
+            "type": "java.lang.String",
+            "description": "A description for 'geojson.enabled'"
+        },
+        {
+            "name": "geojson.targetRestEndpointUrl",
+            "type": "java.lang.String",
+            "description": "A description for 'geojson.targetRestEndpointUrl'"
+        },
+        {
+            "name": "geojson.requestTimeoutMs",
+            "type": "java.lang.String",
+            "description": "Timeout for GeoJSON HTTP requests in milliseconds"
+        },
+        {
+            "name": "management.endpoints.web.base-path",
+            "type": "java.lang.String",
+            "description": "Base path for management web endpoints"
+        },
+        {
+            "name": "management.endpoint.health.show-details",
+            "type": "java.lang.String",
+            "description": "A description for 'management.endpoint.health.show-details'"
+        },
+        {
+            "name": "management.endpoints.web.exposure.include",
+            "type": "java.lang.String",
+            "description": "A description for 'management.endpoints.web.exposure.include'"
+        },
+        {
+            "name": "spring.data.rest.detection-strategy",
+            "type": "java.lang.String",
+            "description": "A description for 'spring.data.rest.detection-strategy'"
+        },
+        {
+            "name": "management.info.git.mode",
+            "type": "java.lang.String",
+            "description": "A description for 'management.info.git.mode'"
+        },
+        {
+            "name": "spring.data.redis.active",
+            "type": "java.lang.String",
+            "description": "Activate Redis usage for SAE data streams"
+        }
+    ]
+}
