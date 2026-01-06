@@ -9,13 +9,13 @@
 
     <groupId>de.starwit</groupId>
     <artifactId>observatory</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1-SNAPSHOT</version>
     <description>Runs analytics jobs on SAE outputs and persists results for visualization.</description>
     <packaging>pom</packaging>
 
     <scm>
         <connection>scm:git:https://github.com/starwit/observatory.git</connection>
-        <tag>2.0.0</tag>
+        <tag>1.2.0</tag>
     </scm>
 
     <properties>
