@@ -2,6 +2,12 @@
 
 Changelog of observatory.
 
+## Current Version ()
+
+### Features
+
+-  pull request #101 from starwit/feature/ab#2020-update-to-spring-boot-4 ([b03d3](https://github.com/starwit/observatory/commit/b03d362058478b4) Anett Hübner)  
+
 ## refs/tags/1.4.1 (2025-12-18)
 
 ### Bug Fixes
