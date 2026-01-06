@@ -3,37 +3,37 @@
         {
             "name": "rest.base-path",
             "type": "java.lang.String",
-            "description": "A description for 'rest.base-path'"
+            "description": "Base path for REST API endpoints"
         },
         {
             "name": "geojson.jobIncludeList",
             "type": "java.lang.String",
-            "description": "A description for 'geojson.jobIncludeList'"
+            "description": "Jobs to include for GeoJSON export"
         },
         {
             "name": "sae.redisStreamPrefix",
             "type": "java.lang.String",
-            "description": "A description for 'sae.redisStreamPrefix'"
+            "description": "Prefix for SAE Redis streams"
         },
         {
             "name": "analytics.datasource.username",
             "type": "java.lang.String",
-            "description": "A description for 'analytics.datasource.username'"
+            "description": "Username for timescale analytics database"
         },
         {
             "name": "analytics.datasource.password",
             "type": "java.lang.String",
-            "description": "A description for 'analytics.datasource.password'"
+            "description": "Password for timescale analytics database"
         },
         {
             "name": "analytics.datasource.flyway.locations",
             "type": "java.lang.String",
-            "description": "A description for 'analytics.datasource.flyway.locations'"
+            "description": "Path to flyway scripts for timescale analytics database"
         },
         {
             "name": "analytics.datasource.url",
             "type": "java.lang.String",
-            "description": "A description for 'analytics.datasource.url'"
+            "description": "Database URL for timescale analytics"
         },
         {
             "name": "geojson.enabled",
@@ -48,12 +48,12 @@
         {
             "name": "geojson.requestTimeoutMs",
             "type": "java.lang.String",
-            "description": "A description for 'geojson.requestTimeoutMs'"
+            "description": "Timeout for GeoJSON HTTP requests in milliseconds"
         },
         {
             "name": "management.endpoints.web.base-path",
             "type": "java.lang.String",
-            "description": "A description for 'management.endpoints.web.base-path'"
+            "description": "Base path for management web endpoints"
         },
         {
             "name": "management.endpoint.health.show-details",
@@ -76,9 +76,9 @@
             "description": "A description for 'management.info.git.mode'"
         },
         {
-            "name": "sae.redisStreamPrefix",
+            "name": "spring.data.redis.active",
             "type": "java.lang.String",
-            "description": "A description for 'sae.redisStreamPrefix'"
+            "description": "Activate Redis usage for SAE data streams"
         }
     ]
 }

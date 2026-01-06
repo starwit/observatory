@@ -16,6 +16,15 @@ More details on political and organizational background can be found here: https
 
 We are grateful for any contribution. Please refer to our [contribution guideline](CONTRIBUTING.md) and instructions document for any information.
 
+## Redis Integration
+
+It is possible to switch redis connector on/off via appilcation.properties. Also align redis connection and prefix:
+
+```
+sae.redisStreamPrefix=geomapper
+spring.data.redis.active=true/false
+```
+
 ## Observation Jobs
 
 Main task of Observatory is to run a multitude of observation jobs that turn raw tracking data into usable knowledge. This section thus lists all available jobs and a brief description of their intended function.
