@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import de.starwit.persistence.observatory.entity.JobType;
 import de.starwit.persistence.observatory.entity.ObservationJobEntity;
@@ -21,7 +21,7 @@ import de.starwit.service.jobs.RunnerInterface;
 import de.starwit.service.observatory.ObservationJobService;
 import jakarta.annotation.PostConstruct;
 
-@Service
+@Component
 public class LineCrossingRunner implements RunnerInterface {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
