@@ -27,8 +27,8 @@ public class ObservationJobEntity extends AbstractEntity<Long> {
     @Column(name = "type")
     private JobType type;
 
-    @Column(name = "camera_id")
-    private String cameraId;
+    @Column(name = "stream_key")
+    private String streamKey;
 
     @Column(name = "detection_class_id")
     private Integer detectionClassId;
@@ -75,12 +75,12 @@ public class ObservationJobEntity extends AbstractEntity<Long> {
         this.type = type;
     }
 
-    public String getCameraId() {
-        return cameraId;
+    public String getStreamKey() {
+        return streamKey;
     }
 
-    public void setCameraId(String cameraId) {
-        this.cameraId = cameraId;
+    public void setStreamKey(String streamKey) {
+        this.streamKey = streamKey;
     }
 
     public Integer getDetectionClassId() {

@@ -11,11 +11,6 @@
             "description": "Jobs to include for GeoJSON export"
         },
         {
-            "name": "sae.redisStreamPrefix",
-            "type": "java.lang.String",
-            "description": "Prefix for SAE Redis streams"
-        },
-        {
             "name": "analytics.datasource.username",
             "type": "java.lang.String",
             "description": "Username for timescale analytics database"

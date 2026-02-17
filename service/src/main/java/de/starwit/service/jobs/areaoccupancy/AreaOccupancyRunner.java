@@ -28,9 +28,6 @@ public class AreaOccupancyRunner implements RunnerInterface {
 
     public static final JobType JOB_TYPE = JobType.AREA_OCCUPANCY;
 
-    @Value("${sae.redisStreamPrefix:output}")
-    private String REDIS_STREAM_PREFIX;
-
     @Value("${areaOccupancy.analyzingWindow:5s}")
     private Duration ANALYZING_WINDOW;
 

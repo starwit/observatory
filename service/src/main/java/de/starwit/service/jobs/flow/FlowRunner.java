@@ -32,9 +32,6 @@ public class FlowRunner implements RunnerInterface {
     @Value("${lineCrossing.targetWindowSize:1s}")
     private Duration TARGET_WINDOW_SIZE;
 
-    @Value("${sae.redisStreamPrefix:output}")
-    private String REDIS_STREAM_PREFIX;
-
     @Autowired
     private LineCrossingService lineCrossingService;
 

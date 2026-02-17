@@ -89,7 +89,7 @@ public class ObservationJobService {
         existingJob.setObservationAreaId(jobUpdate.getObservationAreaId());
         existingJob.setType(jobUpdate.getType());
         existingJob.setEnabled(jobUpdate.getEnabled());
-        existingJob.setCameraId(jobUpdate.getCameraId());
+        existingJob.setStreamKey(jobUpdate.getStreamKey());
         existingJob.setClassification(jobUpdate.getClassification());
         existingJob.setDetectionClassId(jobUpdate.getDetectionClassId());
         existingJob.setGeoReferenced(jobUpdate.getGeoReferenced());

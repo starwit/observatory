@@ -2,7 +2,7 @@
 	"id": 1,
 	"name": "job1",
 	"observationAreaId": 1,
-	"cameraId": "RangelineSMedicalDr",
+	"streamKey": "RangelineSMedicalDr",
 	"detectionClassId": 2,
 	"type": "LINE_CROSSING",
 	"enabled": false,

@@ -26,9 +26,6 @@ public class RedisConfiguration {
         @Value("${spring.data.redis.port:6379}")
         private int redisPort;
 
-        @Value("${sae.redisStreamPrefix:output}")
-        private String REDIS_STREAM_PREFIX;
-
         @Value("${spring.data.redis.active:false}")
         private Boolean activateRedis;
 

@@ -12,7 +12,9 @@ public class SaeDetectionDto {
 
     private Instant captureTs;
 
-    private String cameraId;
+    private String streamKey;
+
+    private String sourceId;
 
     private String objectId;
 
@@ -40,12 +42,20 @@ public class SaeDetectionDto {
         this.captureTs = captureTs;
     }
 
-    public String getCameraId() {
-        return cameraId;
+    public String getStreamKey() {
+        return streamKey;
     }
 
-    public void setCameraId(String cameraId) {
-        this.cameraId = cameraId;
+    public void setStreamKey(String streamKey) {
+        this.streamKey = streamKey;
+    }
+
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(String cameraId) {
+        this.sourceId = cameraId;
     }
 
     public String getObjectId() {
@@ -122,15 +132,16 @@ public class SaeDetectionDto {
 
     @Override
     public String toString() {
-        return "SaeDetectionDto(" + cameraId + ", " + captureTs.toString() + ", " + objectId + ", " + classId + ")";
+        return "SaeDetectionDto(" + sourceId + ", " + captureTs.toString() + ", " + objectId + ", " + classId + ")";
     }
 
-    public static List<SaeDetectionDto> from(SaeMessage msg) {
+    public static List<SaeDetectionDto> from(String streamKey, SaeMessage msg) {
         List<SaeDetectionDto> results = new ArrayList<>();
         for (Detection det : msg.getDetectionsList()) {
             SaeDetectionDto dto = new SaeDetectionDto();
             dto.setCaptureTs(Instant.ofEpochMilli(msg.getFrame().getTimestampUtcMs()));
-            dto.setCameraId(msg.getFrame().getSourceId());
+            dto.setStreamKey(streamKey);
+            dto.setSourceId(msg.getFrame().getSourceId());
             dto.setObjectId(HexFormat.of().formatHex(det.getObjectId().toByteArray()));
             dto.setClassId(det.getClassId());
             dto.setConfidence((double) det.getConfidence());

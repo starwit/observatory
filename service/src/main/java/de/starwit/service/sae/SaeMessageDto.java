@@ -9,7 +9,9 @@ public class SaeMessageDto {
 
     private Instant captureTs;
 
-    private String cameraId;
+    private String streamKey;
+    
+    private String sourceId;
 
     private List<SaeDetectionDto> detections;
 
@@ -20,13 +22,21 @@ public class SaeMessageDto {
     public void setCaptureTs(Instant captureTs) {
         this.captureTs = captureTs;
     }
-
-    public String getCameraId() {
-        return cameraId;
+    
+    public String getStreamKey() {
+        return streamKey;
     }
 
-    public void setCameraId(String cameraId) {
-        this.cameraId = cameraId;
+    public void setStreamKey(String streamKey) {
+        this.streamKey = streamKey;
+    }
+
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(String cameraId) {
+        this.sourceId = cameraId;
     }
 
     public List<SaeDetectionDto> getDetections() {
@@ -39,15 +49,16 @@ public class SaeMessageDto {
 
     @Override
     public String toString() {
-        return "SaeMessageDto(" + cameraId + ", " + captureTs.toString() + ")";
+        return "SaeMessageDto(" + sourceId + ", " + captureTs.toString() + ")";
     }
 
-    public static SaeMessageDto from(SaeMessage msg) {
-        List<SaeDetectionDto> detections = SaeDetectionDto.from(msg);
+    public static SaeMessageDto from(String streamKey, SaeMessage msg) {
+        List<SaeDetectionDto> detections = SaeDetectionDto.from(streamKey, msg);
         
         SaeMessageDto dto = new SaeMessageDto();
         dto.setCaptureTs(Instant.ofEpochMilli(msg.getFrame().getTimestampUtcMs()));
-        dto.setCameraId(msg.getFrame().getSourceId());
+        dto.setSourceId(msg.getFrame().getSourceId());
+        dto.setStreamKey(streamKey);
         dto.setDetections(detections);
         return dto;
     }

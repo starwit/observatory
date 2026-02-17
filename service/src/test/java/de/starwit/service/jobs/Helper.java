@@ -30,7 +30,7 @@ public class Helper {
         det.setCaptureTs(captureTs);
 
         // defaults (we do not need to vary these)
-        det.setCameraId("camId");
+        det.setSourceId("camId");
         det.setClassId(1);
         det.setObjectId(objectId);
         det.setConfidence(0.5);
@@ -42,7 +42,7 @@ public class Helper {
         SaeDetectionDto det = createDetection(captureTs, center, objectId);
         
         SaeMessageDto dto = new SaeMessageDto();
-        dto.setCameraId("camId");
+        dto.setSourceId("camId");
         dto.setCaptureTs(captureTs);
         dto.setDetections(Arrays.asList(det));
         return dto;

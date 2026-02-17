@@ -5,7 +5,6 @@ app:
 analyticsJobRunInterval: 2000
 
 sae:
-  redisStreamPrefix: geomapper
   redisHost: localhost
   redisPort: 6379
 

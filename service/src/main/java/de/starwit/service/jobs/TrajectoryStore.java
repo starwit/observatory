@@ -41,7 +41,7 @@ public class TrajectoryStore {
 
         SaeDetectionDto lastDetection = this.getLast(det);
         if (lastDetection != null && det.getCaptureTs().isBefore(lastDetection.getCaptureTs())) {
-            log.warn("Ignoring detection with timestamp {} on stream {} as it breaks monotonicity (last timestamp for stream is {})", det.getCameraId(), det.getCaptureTs(), lastDetection.getCaptureTs());
+            log.warn("Ignoring detection with timestamp {} on stream {} as it breaks monotonicity (last timestamp for stream is {})", det.getStreamKey(), det.getCaptureTs(), lastDetection.getCaptureTs());
             return;
         }
 
