@@ -54,8 +54,8 @@ public class SaeDetectionDto {
         return sourceId;
     }
 
-    public void setSourceId(String cameraId) {
-        this.sourceId = cameraId;
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
     }
 
     public String getObjectId() {
