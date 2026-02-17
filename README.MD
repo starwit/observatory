@@ -18,7 +18,7 @@ We are grateful for any contribution. Please refer to our [contribution guidelin
 
 ## Redis Integration
 
-It is possible to switch redis connector on/off via appilcation.properties. Also align redis connection:
+It is possible to switch redis connector on/off via application.properties. Also align redis connection:
 
 ```
 spring.data.redis.active=true/false
