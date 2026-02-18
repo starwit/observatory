@@ -38,6 +38,7 @@ public class MetadataService implements ServiceInterface<MetadataEntity, Metadat
             metadata.setCenterLatitude(jobEntity.getCenterLatitude());
             metadata.setCenterLongitude(jobEntity.getCenterLongitude());
             metadata.setObservationAreaId(jobEntity.getObservationAreaId());
+            metadata.setDirection(jobEntity.getDirection());
 
             List<CoordinateEntity> coordinates = new ArrayList<>();
             if (jobEntity.getGeoReferenced()) {
