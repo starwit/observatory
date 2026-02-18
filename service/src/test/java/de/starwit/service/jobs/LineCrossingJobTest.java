@@ -74,7 +74,7 @@ public class LineCrossingJobTest {
         LineCrossingJob testee = new LineCrossingJob(jobEntity, Duration.ofSeconds(1), consumerMock);
 
         for (SaeMessage msg : saeDump) {
-            testee.processNewMessage(SaeMessageDto.from(msg));
+            testee.processNewMessage(SaeMessageDto.from("test", msg));
         }
 
         ArgumentCaptor<LineCrossingObservation> observationCaptor = ArgumentCaptor
@@ -99,7 +99,7 @@ public class LineCrossingJobTest {
 
     static ObservationJobEntity prepareJobEntity(List<PointEntity> geometryPoints) {
         ObservationJobEntity entity = new ObservationJobEntity();
-        entity.setCameraId("geomapper:stream1");
+        entity.setStreamKey("geomapper:stream1");
         entity.setDetectionClassId(2);
         entity.setGeometryPoints(geometryPoints);
         entity.setType(JobType.LINE_CROSSING);

@@ -67,8 +67,6 @@ spec:
               value: {{ .Values.databases.observatory.password }}
             - name: SERVER_PORT
               value: {{ .Values.app.port | quote }}
-            - name: SAE_REDISSTREAMPREFIX
-              value: {{ .Values.sae.redisStreamPrefix | quote }}
             - name: SAE_REDISHOST
               value: {{ .Values.sae.redisHost | quote }}
             - name: SAE_REDISPORT

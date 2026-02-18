@@ -30,9 +30,6 @@ public class StreamSubscriptionService {
     @Value("${spring.data.redis.active:false}")
     private Boolean activateRedis;
 
-    @Value("${sae.redisStreamPrefix:output}")
-    private String REDIS_STREAM_PREFIX;
-
     @Autowired
     SimpleMessageListener listener;
 
@@ -72,8 +69,8 @@ public class StreamSubscriptionService {
         Set<String> result = new HashSet<>();
         List<ObservationJobEntity> enabledJobEntities = observationJobService.findDistinctByEnabledTrue();
         enabledJobEntities.forEach(entity -> {
-            if (redisTemplate.hasKey(REDIS_STREAM_PREFIX + ":" + entity.getCameraId())) {
-                result.add(REDIS_STREAM_PREFIX + ":" + entity.getCameraId());
+            if (redisTemplate.hasKey(entity.getStreamKey())) {
+                result.add(entity.getStreamKey());
             }
         });
         return result;

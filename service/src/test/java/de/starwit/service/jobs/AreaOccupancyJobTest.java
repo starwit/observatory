@@ -94,7 +94,7 @@ public class AreaOccupancyJobTest {
 
         try (SaeDump saeDump = new SaeDump(Paths.get("src/test/resources/test.saedump"))) {
             for (SaeMessage msg : saeDump) {
-                testee.processNewMessage(SaeMessageDto.from(msg));
+                testee.processNewMessage(SaeMessageDto.from("test", msg));
             }
         }
 
@@ -109,7 +109,7 @@ public class AreaOccupancyJobTest {
 
     static ObservationJobEntity prepareJobEntity(List<PointEntity> geometryPoints) {
         ObservationJobEntity entity = new ObservationJobEntity();
-        entity.setCameraId("camId");
+        entity.setStreamKey("camId");
         entity.setDetectionClassId(1);
 
         entity.setGeometryPoints(geometryPoints);

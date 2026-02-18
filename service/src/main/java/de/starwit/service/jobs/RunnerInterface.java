@@ -10,7 +10,7 @@ public interface RunnerInterface {
 
     default void handleMessage(SaeMessageDto dto) {
         for (JobInterface job : getActiveJobs()) {
-            if (job.getConfigEntity().getCameraId().equals(dto.getCameraId())) {
+            if (job.getConfigEntity().getStreamKey().equals(dto.getStreamKey())) {
                 job.processNewMessage(dto);
             }
         }

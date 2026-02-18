@@ -18,10 +18,9 @@ We are grateful for any contribution. Please refer to our [contribution guidelin
 
 ## Redis Integration
 
-It is possible to switch redis connector on/off via appilcation.properties. Also align redis connection and prefix:
+It is possible to switch redis connector on/off via application.properties. Also align redis connection:
 
 ```
-sae.redisStreamPrefix=geomapper
 spring.data.redis.active=true/false
 ```
 
@@ -116,7 +115,7 @@ The generated chart can then be found in `application/target/helm`
     {
         "name": "job1",
         "observationAreaId": 1,
-        "cameraId": "stream1",
+        "streamKey": "stream1",
         "detectionClassId": 2,
         "type": "LINE_CROSSING",
         "enabled": true,

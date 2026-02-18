@@ -12,42 +12,52 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "observation_job")
 public class ObservationJobEntity extends AbstractEntity<Long> {
 
+    @NotNull
     @Column(name = "name")
     private String name;
 
+    @NotNull
     @Column(name = "observation_area_id")
     private Long observationAreaId;
-
+    
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
     private JobType type;
-
-    @Column(name = "camera_id")
-    private String cameraId;
-
+    
+    @NotNull
+    @Column(name = "stream_key")
+    private String streamKey;
+    
+    @NotNull
     @Column(name = "detection_class_id")
     private Integer detectionClassId;
-
+    
+    @NotNull
     @Column(name = "enabled")
     private Boolean enabled;
-
+    
+    @NotNull
     @Column(name = "classification")
     private String classification;
-
+    
+    @NotNull
     @Column(name = "geo_referenced")
     private Boolean geoReferenced;
-
+    
     @Column(name = "center_longitude")
     private BigDecimal centerLongitude;
-
+    
     @Column(name = "center_latitude")
     private BigDecimal centerLatitude;
-
+    
+    @NotNull
     @OneToMany(mappedBy = "observationJob", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<PointEntity> geometryPoints;
 
@@ -75,12 +85,12 @@ public class ObservationJobEntity extends AbstractEntity<Long> {
         this.type = type;
     }
 
-    public String getCameraId() {
-        return cameraId;
+    public String getStreamKey() {
+        return streamKey;
     }
 
-    public void setCameraId(String cameraId) {
-        this.cameraId = cameraId;
+    public void setStreamKey(String streamKey) {
+        this.streamKey = streamKey;
     }
 
     public Integer getDetectionClassId() {

@@ -34,6 +34,8 @@ public class SimpleMessageListener
     @Override
     public void onMessage(MapRecord<String, String, String> message) {
 
+        String streamKey = message.getStream();
+
         String b64Proto = message.getValue().get("proto_data_b64");
         SaeMessage saeMsg;
 
@@ -44,7 +46,7 @@ public class SimpleMessageListener
             return;
         }
 
-        SaeMessageDto dto = SaeMessageDto.from(saeMsg);
+        SaeMessageDto dto = SaeMessageDto.from(streamKey, saeMsg);
 
         try {
             flowRunner.handleMessage(dto);
