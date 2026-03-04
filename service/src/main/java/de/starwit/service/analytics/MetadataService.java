@@ -28,7 +28,7 @@ public class MetadataService implements ServiceInterface<MetadataEntity, Metadat
 
     public MetadataEntity saveMetadataForJob(ObservationJobEntity jobEntity) {
         
-        MetadataEntity metadata = metadataRepository.findFirstByNameAndClassification(jobEntity.getName(), jobEntity.getClassification());
+        MetadataEntity metadata = findCurrentMetadata(jobEntity);
 
         if (metadata == null) {
             metadata = new MetadataEntity();
@@ -68,6 +68,10 @@ public class MetadataService implements ServiceInterface<MetadataEntity, Metadat
     public MetadataEntity findFirstByNameAndClassification(String name, String classification) {
         MetadataEntity metadata = metadataRepository.findFirstByNameAndClassification(name, classification);
         return metadata;
+    }
+
+    public MetadataEntity findCurrentMetadata(ObservationJobEntity jobEntity) {
+        return metadataRepository.findFirstByNameAndClassificationOrderByIdDesc(jobEntity.getName(), jobEntity.getClassification());
     }
     
 }
