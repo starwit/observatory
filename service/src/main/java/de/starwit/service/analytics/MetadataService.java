@@ -10,6 +10,7 @@ import de.starwit.persistence.analytics.entity.CoordinateEntity;
 import de.starwit.persistence.analytics.entity.MetadataEntity;
 import de.starwit.persistence.analytics.repository.MetadataRepository;
 import de.starwit.persistence.observatory.entity.ObservationJobEntity;
+import de.starwit.persistence.observatory.entity.PointEntity;
 import de.starwit.service.impl.ServiceInterface;
 
 @Service
@@ -71,7 +72,35 @@ public class MetadataService implements ServiceInterface<MetadataEntity, Metadat
     }
 
     public MetadataEntity findCurrentMetadata(ObservationJobEntity jobEntity) {
-        return metadataRepository.findFirstByNameAndClassificationOrderByIdDesc(jobEntity.getName(), jobEntity.getClassification());
+        MetadataEntity latestMetadata = metadataRepository.findFirstByNameAndClassificationOrderByIdDesc(jobEntity.getName(), jobEntity.getClassification());
+        if (latestMetadata != null && metadataMatchesJob(latestMetadata, jobEntity)) {
+            return latestMetadata;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Checks if all metadata fields equal the corresponding job fields (i.e. whether given metadata entity belongs to the given job)
+     */
+    private boolean metadataMatchesJob(MetadataEntity metadata, ObservationJobEntity job) {
+        if (!metadata.getName().equals(job.getName())) return false;
+        if (!metadata.getClassification().equals(job.getClassification())) return false;
+        if (metadata.getGeoReferenced() != job.getGeoReferenced()) return false;
+        if (!metadata.getCenterLatitude().equals(job.getCenterLatitude())) return false;
+        if (!metadata.getCenterLongitude().equals(job.getCenterLongitude())) return false;
+        if (metadata.getObservationAreaId() != job.getObservationAreaId()) return false;
+        if (!metadata.getDirection().equals(job.getDirection())) return false;
+        if (job.getGeoReferenced()) {
+            for (int i = 0; i < metadata.getGeometryCoordinates().size(); i++) {
+                CoordinateEntity c1 = metadata.getGeometryCoordinates().get(i);
+                PointEntity c2 = job.getGeometryPoints().get(i);
+                if (!c1.getLatitude().equals(c2.getLatitude())) return false;
+                if (!c1.getLongitude().equals(c2.getLongitude())) return false;
+            }
+        }
+
+        return true;
     }
     
 }
