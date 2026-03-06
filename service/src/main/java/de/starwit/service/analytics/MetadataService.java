@@ -90,7 +90,7 @@ public class MetadataService implements ServiceInterface<MetadataEntity, Metadat
         if (!metadata.getCenterLatitude().equals(job.getCenterLatitude())) return false;
         if (!metadata.getCenterLongitude().equals(job.getCenterLongitude())) return false;
         if (metadata.getObservationAreaId() != job.getObservationAreaId()) return false;
-        if (!metadata.getDirection().equals(job.getDirection())) return false;
+        if (metadata.getDirection() != null && !metadata.getDirection().equals(job.getDirection())) return false;
         if (job.getGeoReferenced()) {
             for (int i = 0; i < metadata.getGeometryCoordinates().size(); i++) {
                 CoordinateEntity c1 = metadata.getGeometryCoordinates().get(i);
