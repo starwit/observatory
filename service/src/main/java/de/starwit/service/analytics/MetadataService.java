@@ -84,19 +84,21 @@ public class MetadataService implements ServiceInterface<MetadataEntity, Metadat
      * Checks if all metadata fields equal the corresponding job fields (i.e. whether given metadata entity belongs to the given job)
      */
     private boolean metadataMatchesJob(MetadataEntity metadata, ObservationJobEntity job) {
-        if (!metadata.getName().equals(job.getName())) return false;
-        if (!metadata.getClassification().equals(job.getClassification())) return false;
-        if (metadata.getGeoReferenced() != job.getGeoReferenced()) return false;
-        if (!metadata.getCenterLatitude().equals(job.getCenterLatitude())) return false;
-        if (!metadata.getCenterLongitude().equals(job.getCenterLongitude())) return false;
-        if (metadata.getObservationAreaId() != job.getObservationAreaId()) return false;
-        if (metadata.getDirection() != null && !metadata.getDirection().equals(job.getDirection())) return false;
+        if (metadata.getName() != null              && !metadata.getName().equals(job.getName()))                           return false;
+        if (metadata.getClassification() != null    && !metadata.getClassification().equals(job.getClassification()))       return false;
+        if (metadata.getGeoReferenced() != null     && !metadata.getGeoReferenced().equals(job.getGeoReferenced()))         return false;
+        if (metadata.getCenterLatitude() != null    && !metadata.getCenterLatitude().equals(job.getCenterLatitude()))       return false;
+        if (metadata.getCenterLongitude() != null   && !metadata.getCenterLongitude().equals(job.getCenterLongitude()))     return false;
+        if (metadata.getObservationAreaId() != null && !metadata.getObservationAreaId().equals(job.getObservationAreaId())) return false;
+        if (metadata.getDirection() != null         && !metadata.getDirection().equals(job.getDirection()))                 return false;
+
+        // Check if geometry matches (only if geoReferenced is true, otherwise geometry is not relevant and can be ignored)
         if (job.getGeoReferenced()) {
             for (int i = 0; i < metadata.getGeometryCoordinates().size(); i++) {
                 CoordinateEntity c1 = metadata.getGeometryCoordinates().get(i);
                 PointEntity c2 = job.getGeometryPoints().get(i);
-                if (!c1.getLatitude().equals(c2.getLatitude())) return false;
-                if (!c1.getLongitude().equals(c2.getLongitude())) return false;
+                if (c1.getLatitude() != null && !c1.getLatitude().equals(c2.getLatitude())) return false;
+                if (c1.getLongitude() != null && !c1.getLongitude().equals(c2.getLongitude())) return false;
             }
         }
 
