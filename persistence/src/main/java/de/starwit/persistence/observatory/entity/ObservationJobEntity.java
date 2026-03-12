@@ -56,7 +56,10 @@ public class ObservationJobEntity extends AbstractEntity<Long> {
     
     @Column(name = "center_latitude")
     private BigDecimal centerLatitude;
-    
+
+    @Column(name = "direction")
+    private String direction;
+
     @NotNull
     @OneToMany(mappedBy = "observationJob", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<PointEntity> geometryPoints;
@@ -147,6 +150,14 @@ public class ObservationJobEntity extends AbstractEntity<Long> {
 
     public void setCenterLatitude(BigDecimal centerLatitude) {
         this.centerLatitude = centerLatitude;
+    }
+
+    public String getDirection() {
+        return direction;
+    }
+
+    public void setDirection(String direction) {
+        this.direction = direction;
     }
     
 }

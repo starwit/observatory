@@ -1,0 +1,2 @@
+ALTER TABLE "metadata"
+    ADD COLUMN "direction" VARCHAR(255) DEFAULT NULL;

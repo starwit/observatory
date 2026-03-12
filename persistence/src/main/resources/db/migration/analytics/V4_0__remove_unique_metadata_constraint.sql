@@ -1,0 +1,1 @@
+ALTER TABLE "metadata" DROP CONSTRAINT "unique_name_classification";

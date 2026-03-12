@@ -35,6 +35,9 @@ public class MetadataEntity extends AbstractEntity<Long> {
     @Column(name = "observation_area_id")
     private Long observationAreaId;
 
+    @Column(name = "direction")
+    private String direction;
+
     @OneToMany(mappedBy = "metadata", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<CoordinateEntity> geometryCoordinates;
 
@@ -92,6 +95,14 @@ public class MetadataEntity extends AbstractEntity<Long> {
 
     public void setObservationAreaId(Long observationAreaId) {
         this.observationAreaId = observationAreaId;
+    }
+
+    public String getDirection() {
+        return direction;
+    }
+
+    public void setDirection(String direction) {
+        this.direction = direction;
     }
     
 }

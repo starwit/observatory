@@ -12,4 +12,6 @@ public interface MetadataRepository extends JpaRepository<MetadataEntity, Long> 
 
     public MetadataEntity findFirstByNameAndClassification(String name, String classification);
 
+    public MetadataEntity findFirstByNameAndClassificationOrderByIdDesc(String name, String classification);
+
 }

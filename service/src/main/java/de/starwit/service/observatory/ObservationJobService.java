@@ -96,6 +96,7 @@ public class ObservationJobService {
         existingJob.setGeometryPoints(jobUpdate.getGeometryPoints());
         existingJob.setCenterLatitude(jobUpdate.getCenterLatitude());
         existingJob.setCenterLongitude(jobUpdate.getCenterLongitude());
+        existingJob.setDirection(jobUpdate.getDirection());
 
         ObservationJobEntity updatedJob = observationJobRepository.save(existingJob);
 
