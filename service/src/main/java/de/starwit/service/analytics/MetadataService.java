@@ -28,7 +28,7 @@ public class MetadataService implements ServiceInterface<MetadataEntity, Metadat
     }
 
     public MetadataEntity saveMetadataForJob(ObservationJobEntity jobEntity) {
-        
+
         MetadataEntity metadata = findCurrentMetadata(jobEntity);
 
         if (metadata == null) {
@@ -49,7 +49,7 @@ public class MetadataService implements ServiceInterface<MetadataEntity, Metadat
                 }
             }
             metadata.setGeometryCoordinates(coordinates);
-            
+
             metadata = metadataRepository.saveAndFlush(metadata);
         }
 
@@ -72,7 +72,8 @@ public class MetadataService implements ServiceInterface<MetadataEntity, Metadat
     }
 
     public MetadataEntity findCurrentMetadata(ObservationJobEntity jobEntity) {
-        MetadataEntity latestMetadata = metadataRepository.findFirstByNameAndClassificationOrderByIdDesc(jobEntity.getName(), jobEntity.getClassification());
+        MetadataEntity latestMetadata = metadataRepository
+                .findFirstByNameAndClassificationOrderByIdDesc(jobEntity.getName(), jobEntity.getClassification());
         if (latestMetadata != null && metadataMatchesJob(latestMetadata, jobEntity)) {
             return latestMetadata;
         } else {
@@ -81,28 +82,46 @@ public class MetadataService implements ServiceInterface<MetadataEntity, Metadat
     }
 
     /**
-     * Checks if all metadata fields equal the corresponding job fields (i.e. whether given metadata entity belongs to the given job)
+     * Checks if all metadata fields equal the corresponding job fields (i.e.
+     * whether given metadata entity belongs to the given job)
      */
     private boolean metadataMatchesJob(MetadataEntity metadata, ObservationJobEntity job) {
-        if (metadata.getName() != null              && !metadata.getName().equals(job.getName()))                           return false;
-        if (metadata.getClassification() != null    && !metadata.getClassification().equals(job.getClassification()))       return false;
-        if (metadata.getGeoReferenced() != null     && !metadata.getGeoReferenced().equals(job.getGeoReferenced()))         return false;
-        if (metadata.getCenterLatitude() != null    && !metadata.getCenterLatitude().equals(job.getCenterLatitude()))       return false;
-        if (metadata.getCenterLongitude() != null   && !metadata.getCenterLongitude().equals(job.getCenterLongitude()))     return false;
-        if (metadata.getObservationAreaId() != null && !metadata.getObservationAreaId().equals(job.getObservationAreaId())) return false;
-        if (metadata.getDirection() != null         && !metadata.getDirection().equals(job.getDirection()))                 return false;
+        boolean matches = true;
 
-        // Check if geometry matches (only if geoReferenced is true, otherwise geometry is not relevant and can be ignored)
-        if (job.getGeoReferenced()) {
+        matches = matches && metadata.getName().equals(job.getName());
+        matches = matches && (metadata.getClassification() == null && job.getClassification() == null
+                || job.getClassification() != null && job.getClassification().equals(metadata.getClassification()));
+
+        matches = matches && (metadata.getGeoReferenced() == null && job.getGeoReferenced() == null
+                || job.getGeoReferenced() != null && job.getGeoReferenced().equals(metadata.getGeoReferenced()));
+
+        matches = matches && (metadata.getCenterLatitude() == null && job.getCenterLatitude() == null
+                || job.getCenterLatitude() != null && job.getCenterLatitude().equals(metadata.getCenterLatitude()));
+
+        matches = matches && (metadata.getCenterLongitude() == null && job.getCenterLongitude() == null
+                || job.getCenterLongitude() != null && job.getCenterLongitude().equals(metadata.getCenterLongitude()));
+
+        matches = matches && (metadata.getObservationAreaId() == null && job.getObservationAreaId() == null
+                || job.getObservationAreaId() != null
+                        && job.getObservationAreaId().equals(metadata.getObservationAreaId()));
+
+        matches = matches && (metadata.getDirection() == null && job.getDirection() == null
+                || job.getDirection() != null && job.getDirection().equals(metadata.getDirection()));
+
+        // Check if geometry matches (only if geoReferenced is true, otherwise geometry
+        // is not relevant and can be ignored)
+        if (matches && job.getGeoReferenced()) {
             for (int i = 0; i < metadata.getGeometryCoordinates().size(); i++) {
                 CoordinateEntity c1 = metadata.getGeometryCoordinates().get(i);
                 PointEntity c2 = job.getGeometryPoints().get(i);
-                if (c1.getLatitude() != null && !c1.getLatitude().equals(c2.getLatitude())) return false;
-                if (c1.getLongitude() != null && !c1.getLongitude().equals(c2.getLongitude())) return false;
+                if (c1.getLatitude() != null && !c1.getLatitude().equals(c2.getLatitude()))
+                    return false;
+                if (c1.getLongitude() != null && !c1.getLongitude().equals(c2.getLongitude()))
+                    return false;
             }
         }
 
-        return true;
+        return matches;
     }
-    
+
 }
