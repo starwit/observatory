@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.BindParam;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 import de.starwit.service.observatory.ObservationJobService;
+import jakarta.annotation.Nullable;
 
 @RestController
 @RequestMapping("${rest.base-path}/observation-job")
@@ -49,7 +51,8 @@ public class ObservationJobController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ObservationJobEntity> updateJob(@PathVariable Long id, @RequestBody ObservationJobEntity job) {
+    public ResponseEntity<ObservationJobEntity> updateJob(@PathVariable Long id,
+            @RequestBody ObservationJobEntity job) {
         if (observationJobService.findById(id) == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -71,6 +74,31 @@ public class ObservationJobController {
     public ResponseEntity<String> clearJobs() {
         observationJobService.deleteAll();
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/max-count-by-observation-area-id/{observationAreaId}/{classId}/{maxCount}")
+    public ResponseEntity<List<ObservationJobEntity>> setMaxCountByObservationAreaId(
+            @PathVariable Long observationAreaId,
+            @PathVariable Integer classId,
+            @Nullable @BindParam Integer maxCount) {
+        List<ObservationJobEntity> updatedJobs = observationJobService.updateMaxCount(observationAreaId, classId,
+                maxCount);
+        if (updatedJobs == null || updatedJobs.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<List<ObservationJobEntity>>(updatedJobs, HttpStatus.OK);
+    }
+
+    @GetMapping("/max-count-by-job-name/{jobName}/{classId}/{maxCount}")
+    public ResponseEntity<List<ObservationJobEntity>> setMaxCountByJobName(
+            @PathVariable String jobName,
+            @PathVariable Integer classId,
+            @Nullable @BindParam Integer maxCount) {
+        List<ObservationJobEntity> updatedJobs = observationJobService.updateMaxCountByName(jobName, classId, maxCount);
+        if (updatedJobs == null || updatedJobs.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<List<ObservationJobEntity>>(updatedJobs, HttpStatus.OK);
     }
 
     @DeleteMapping("/by-observation-area/{observationAreaId}")

@@ -29,10 +29,11 @@ public class AreaOccupancyService {
 
     @Transactional("analyticsTransactionManager")
     public void addEntry(ObservationJobEntity jobEntity, ZonedDateTime occupancyTime, Long count) {
-        log.info("Detected {} objects of class {} in area (area={}, name={})", count, jobEntity.getDetectionClassId(), jobEntity.getObservationAreaId(), jobEntity.getName());
-        
+        log.info("Detected {} objects of class {} in area (area={}, name={})", count, jobEntity.getDetectionClassId(),
+                jobEntity.getObservationAreaId(), jobEntity.getName());
+
         MetadataEntity metadata = metadataService.saveMetadataForJob(jobEntity);
-        
+
         AreaOccupancyEntity entity = new AreaOccupancyEntity();
         entity.setCount(Math.toIntExact(count));
         entity.setOccupancyTime(occupancyTime);
@@ -58,30 +59,39 @@ public class AreaOccupancyService {
 
     @Transactional("analyticsTransactionManager")
     public void updateCountFromFlow(ObservationJobEntity jobEntity, ZonedDateTime occupancyTime, Direction direction) {
-        log.info("Detected flow in direction {} of class {} in area (area={}, name={})", direction, jobEntity.getDetectionClassId(), jobEntity.getObservationAreaId(), jobEntity.getName());
-        
-        MetadataEntity metadata = metadataService.findFirstByNameAndClassification(jobEntity.getName(), jobEntity.getClassification());
+        log.info("Detected flow in direction {} of class {} in area (area={}, name={})", direction,
+                jobEntity.getDetectionClassId(), jobEntity.getObservationAreaId(), jobEntity.getName());
+
+        MetadataEntity metadata = metadataService.findFirstByNameAndClassification(jobEntity.getName(),
+                jobEntity.getClassification());
         if (metadata == null) {
-            metadata = metadataService.saveMetadataForJob(jobEntity);       
+            metadata = metadataService.saveMetadataForJob(jobEntity);
         }
 
         Integer lastCount = 0;
 
-        lastCount = areaoccupancyRepository.findFirstByMetadataIdAndObjectClassIdOrderByOccupancytime(metadata.getId(), jobEntity.getDetectionClassId());        
+        lastCount = areaoccupancyRepository.findFirstByMetadataIdAndObjectClassIdOrderByOccupancytime(metadata.getId(),
+                jobEntity.getDetectionClassId());
         AreaOccupancyEntity entity = new AreaOccupancyEntity();
-        
+
         if (Direction.in.equals(direction)) {
-            entity.setCount(lastCount + 1);
+            if (jobEntity.getMaxCount() == null || entity.getCount() < jobEntity.getMaxCount()) {
+                entity.setCount(lastCount + 1);
+            } else {
+                log.info("Max count of {} for job {} reached. Not increasing count.", jobEntity.getMaxCount(),
+                        jobEntity.getName());
+                entity.setCount(lastCount);
+            }
         } else if (lastCount > 0) {
             entity.setCount(lastCount - 1);
         } else {
             entity.setCount(0);
         }
+
         entity.setOccupancyTime(occupancyTime);
         entity.setObjectClassId(jobEntity.getDetectionClassId());
         entity.setMetadataId(metadata.getId());
         areaoccupancyRepository.insert(entity);
     }
-
 
 }

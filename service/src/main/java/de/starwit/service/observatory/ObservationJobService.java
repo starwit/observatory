@@ -76,6 +76,39 @@ public class ObservationJobService {
         return savedEntity;
     }
 
+    public List<ObservationJobEntity> updateMaxCount(Long observationAreaId, Integer detectionClassId,
+            Integer maxCount) {
+        List<ObservationJobEntity> existingJobs = observationJobRepository
+                .findByObservationAreaIdAndDetectionClassIdAndTypeIn(observationAreaId, detectionClassId,
+                        List.of(JobType.AREA_OCCUPANCY, JobType.FLOW));
+
+        if (existingJobs == null || existingJobs.isEmpty()) {
+            return null;
+        }
+
+        existingJobs.forEach(job -> job.setMaxCount(maxCount));
+        List<ObservationJobEntity> updatedJobs = observationJobRepository.saveAll(existingJobs);
+        refreshJobs();
+
+        return updatedJobs;
+    }
+
+    public List<ObservationJobEntity> updateMaxCountByName(String jobName, Integer detectionClassId, Integer maxCount) {
+        List<ObservationJobEntity> existingJobs = observationJobRepository
+                .findByNameAndDetectionClassIdAndTypeIn(jobName, detectionClassId,
+                        List.of(JobType.AREA_OCCUPANCY, JobType.FLOW));
+
+        if (existingJobs == null || existingJobs.isEmpty()) {
+            return null;
+        }
+
+        existingJobs.forEach(job -> job.setMaxCount(maxCount));
+        List<ObservationJobEntity> updatedJobs = observationJobRepository.saveAll(existingJobs);
+        refreshJobs();
+
+        return updatedJobs;
+    }
+
     public ObservationJobEntity update(Long id, ObservationJobEntity jobUpdate) {
         ObservationJobEntity existingJob = this.findById(id);
 
