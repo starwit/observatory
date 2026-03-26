@@ -75,7 +75,7 @@ public class AreaOccupancyService {
         AreaOccupancyEntity entity = new AreaOccupancyEntity();
 
         if (Direction.in.equals(direction)) {
-            if (jobEntity.getMaxCount() == null || entity.getCount() < jobEntity.getMaxCount()) {
+            if (jobEntity.getMaxCount() == null || lastCount < jobEntity.getMaxCount()) {
                 entity.setCount(lastCount + 1);
             } else {
                 log.info("Max count of {} for job {} reached. Not increasing count.", jobEntity.getMaxCount(),
