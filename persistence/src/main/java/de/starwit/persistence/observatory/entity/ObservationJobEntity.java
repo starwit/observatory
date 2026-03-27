@@ -11,6 +11,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
@@ -65,6 +66,7 @@ public class ObservationJobEntity extends AbstractEntity<Long> {
 
     @NotNull
     @OneToMany(mappedBy = "observationJob", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OrderBy("orderIdx ASC")
     private List<PointEntity> geometryPoints;
 
     public String getName() {
