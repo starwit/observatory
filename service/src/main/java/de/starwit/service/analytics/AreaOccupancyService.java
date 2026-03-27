@@ -62,11 +62,7 @@ public class AreaOccupancyService {
         log.info("Detected flow in direction {} of class {} in area (area={}, name={})", direction,
                 jobEntity.getDetectionClassId(), jobEntity.getObservationAreaId(), jobEntity.getName());
 
-        MetadataEntity metadata = metadataService.findFirstByNameAndClassification(jobEntity.getName(),
-                jobEntity.getClassification());
-        if (metadata == null) {
-            metadata = metadataService.saveMetadataForJob(jobEntity);
-        }
+        MetadataEntity metadata = metadataService.saveMetadataForJob(jobEntity);
 
         Integer lastCount = 0;
 
@@ -78,9 +74,9 @@ public class AreaOccupancyService {
             if (jobEntity.getMaxCount() == null || lastCount < jobEntity.getMaxCount()) {
                 entity.setCount(lastCount + 1);
             } else {
-                log.info("Max count of {} for job {} reached. Not increasing count.", jobEntity.getMaxCount(),
+                log.info("Max count of {} for job {} reached. Resetting to max count.", jobEntity.getMaxCount(),
                         jobEntity.getName());
-                entity.setCount(lastCount);
+                entity.setCount(jobEntity.getMaxCount());
             }
         } else if (lastCount > 0) {
             entity.setCount(lastCount - 1);

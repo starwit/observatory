@@ -76,25 +76,23 @@ public class ObservationJobController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/max-count-by-observation-area-id/{observationAreaId}/{classId}/{maxCount}")
-    public ResponseEntity<List<ObservationJobEntity>> setMaxCountByObservationAreaId(
-            @PathVariable Long observationAreaId,
+    @GetMapping("/max-count-by-job-name/{jobName}/{classId}/{maxCount}")
+    public ResponseEntity<List<ObservationJobEntity>> setMaxCountByJobName(
+            @PathVariable String jobName,
             @PathVariable Integer classId,
-            @Nullable @BindParam Integer maxCount) {
-        List<ObservationJobEntity> updatedJobs = observationJobService.updateMaxCount(observationAreaId, classId,
-                maxCount);
+            @PathVariable Integer maxCount) {
+        List<ObservationJobEntity> updatedJobs = observationJobService.updateMaxCountByName(jobName, classId, maxCount);
         if (updatedJobs == null || updatedJobs.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<List<ObservationJobEntity>>(updatedJobs, HttpStatus.OK);
     }
 
-    @GetMapping("/max-count-by-job-name/{jobName}/{classId}/{maxCount}")
-    public ResponseEntity<List<ObservationJobEntity>> setMaxCountByJobName(
+    @DeleteMapping("/max-count-by-job-name/{jobName}/{classId}")
+    public ResponseEntity<List<ObservationJobEntity>> clearMaxCountByJobName(
             @PathVariable String jobName,
-            @PathVariable Integer classId,
-            @Nullable @BindParam Integer maxCount) {
-        List<ObservationJobEntity> updatedJobs = observationJobService.updateMaxCountByName(jobName, classId, maxCount);
+            @PathVariable Integer classId) {
+        List<ObservationJobEntity> updatedJobs = observationJobService.updateMaxCountByName(jobName, classId, null);
         if (updatedJobs == null || updatedJobs.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
