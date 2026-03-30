@@ -6,6 +6,12 @@ Changelog of observatory.
 
 ### Features
 
+-  ab#2156: added max value for area occupancy jobs ([edc95](https://github.com/starwit/observatory/commit/edc95e5c0aec902) Anett Hübner)  
+
+## refs/tags/2.0.0 (2026-01-06)
+
+### Features
+
 -  pull request #101 from starwit/feature/ab#2020-update-to-spring-boot-4 ([b03d3](https://github.com/starwit/observatory/commit/b03d362058478b4) Anett Hübner)  
 
 ## refs/tags/1.4.1 (2025-12-18)
