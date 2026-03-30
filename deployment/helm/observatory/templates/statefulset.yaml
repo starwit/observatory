@@ -67,10 +67,10 @@ spec:
               value: {{ .Values.databases.observatory.password }}
             - name: SERVER_PORT
               value: {{ .Values.app.port | quote }}
-            - name: SAE_REDISHOST
-              value: {{ .Values.sae.redisHost | quote }}
-            - name: SAE_REDISPORT
-              value: {{ .Values.sae.redisPort | quote }}
+            - name: SPRING_DATA_REDIS_HOST
+              value: {{ .Values.spring.data.redis.host | quote }}
+            - name: SPRING_DATA_REDIS_PORT
+              value: {{ .Values.spring.data.redis.port | quote }}
             - name: ANALYTICS_JOBRUNINTERVAL
               value: {{ .Values.analyticsJobRunInterval | quote }}
             - name: ANALYTICS_DATASOURCE_URL
