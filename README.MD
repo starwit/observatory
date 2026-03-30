@@ -115,7 +115,7 @@ The generated chart can then be found in `application/target/helm`
     {
         "name": "job1",
         "observationAreaId": 1,
-        "streamKey": "stream1",
+        "streamKey": "geomapper:stream1",
         "detectionClassId": 2,
         "type": "LINE_CROSSING",
         "enabled": true,
