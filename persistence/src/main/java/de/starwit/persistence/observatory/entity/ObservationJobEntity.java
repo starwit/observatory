@@ -11,6 +11,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
@@ -25,43 +26,47 @@ public class ObservationJobEntity extends AbstractEntity<Long> {
     @NotNull
     @Column(name = "observation_area_id")
     private Long observationAreaId;
-    
+
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
     private JobType type;
-    
+
     @NotNull
     @Column(name = "stream_key")
     private String streamKey;
-    
+
     @NotNull
     @Column(name = "detection_class_id")
     private Integer detectionClassId;
-    
+
     @NotNull
     @Column(name = "enabled")
     private Boolean enabled;
-    
+
     @NotNull
     @Column(name = "classification")
     private String classification;
-    
+
     @NotNull
     @Column(name = "geo_referenced")
     private Boolean geoReferenced;
-    
+
     @Column(name = "center_longitude")
     private BigDecimal centerLongitude;
-    
+
     @Column(name = "center_latitude")
     private BigDecimal centerLatitude;
 
     @Column(name = "direction")
     private String direction;
 
+    @Column(name = "max_count")
+    private Integer maxCount;
+
     @NotNull
     @OneToMany(mappedBy = "observationJob", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OrderBy("orderIdx ASC")
     private List<PointEntity> geometryPoints;
 
     public String getName() {
@@ -159,5 +164,13 @@ public class ObservationJobEntity extends AbstractEntity<Long> {
     public void setDirection(String direction) {
         this.direction = direction;
     }
-    
+
+    public Integer getMaxCount() {
+        return maxCount;
+    }
+
+    public void setMaxCount(Integer maxCount) {
+        this.maxCount = maxCount;
+    }
+
 }
