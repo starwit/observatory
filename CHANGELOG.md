@@ -4,6 +4,13 @@ Changelog of observatory.
 
 ## Current Version ()
 
+### Bug Fixes
+
+-  added actuator ([948e8](https://github.com/starwit/observatory/commit/948e83d100c13f3) Anett Hübner)  
+-  changed redis values in helm chart ([9cb83](https://github.com/starwit/observatory/commit/9cb83e7efdc99c0) Anett Hübner)  
+
+## refs/tags/2.1.0 (2026-03-30)
+
 ### Features
 
 -  ab#2156: added max value for area occupancy jobs ([edc95](https://github.com/starwit/observatory/commit/edc95e5c0aec902) Anett Hübner)  
