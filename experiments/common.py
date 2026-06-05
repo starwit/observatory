@@ -8,7 +8,7 @@ def read_area_csv(file: Path, area_filter: List[str]) -> pd.DataFrame:
     area_df = pd.read_csv(file)
     # Drop all uninteresting columns
     area_df = area_df[['occupancy_time', 'name', 'count']]
-    area_df['occupancy_time'] = pd.to_datetime(area_df['occupancy_time'], format='ISO8601')
+    area_df['occupancy_time'] = pd.to_datetime(area_df['occupancy_time'], format='ISO8601', utc=True)
     area_df = area_df.loc[area_df['name'].isin(area_filter)]
 
     # Create time buckets by flooring the time value
