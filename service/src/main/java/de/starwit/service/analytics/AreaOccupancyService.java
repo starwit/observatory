@@ -1,5 +1,6 @@
 package de.starwit.service.analytics;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -7,6 +8,7 @@ import java.time.ZonedDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +28,18 @@ public class AreaOccupancyService {
 
     @Autowired
     private MetadataService metadataService;
+
+    @Value("${areaOccupancy.flowIdleDecreaseEnabled:false}")
+    private boolean FLOW_IDLE_DECREASE_ENABLED;
+
+    @Value("${areaOccupancy.flowIdleDecreaseThreshold:1h}")
+    private Duration FLOW_IDLE_DECREASE_THRESHOLD;
+
+    @Value("${areaOccupancy.flowIdleDecreaseInterval:15m}")
+    private Duration FLOW_IDLE_DECREASE_INTERVAL;
+
+    @Value("${areaOccupancy.flowIdleDecreaseFactor:1}")
+    private int FLOW_IDLE_DECREASE_FACTOR;
 
     @Transactional("analyticsTransactionManager")
     public void addEntry(ObservationJobEntity jobEntity, ZonedDateTime occupancyTime, Long count) {
@@ -64,26 +78,37 @@ public class AreaOccupancyService {
 
         MetadataEntity metadata = metadataService.saveMetadataForJob(jobEntity);
 
-        Integer lastCount = 0;
+        AreaOccupancyEntity lastEntity = areaoccupancyRepository
+                .findFirstByMetadataIdAndObjectClassIdOrderByOccupancytime(metadata.getId(),
+                        jobEntity.getDetectionClassId());
+        int lastCount = lastEntity == null ? 0 : lastEntity.getCount();
 
-        lastCount = areaoccupancyRepository.findFirstByMetadataIdAndObjectClassIdOrderByOccupancytime(metadata.getId(),
-                jobEntity.getDetectionClassId());
-        AreaOccupancyEntity entity = new AreaOccupancyEntity();
-
+        int newCount;
         if (Direction.in.equals(direction)) {
             if (jobEntity.getMaxCount() == null || lastCount < jobEntity.getMaxCount()) {
-                entity.setCount(lastCount + 1);
+                newCount = lastCount + 1;
             } else {
                 log.info("Max count of {} for job {} reached. Resetting to max count.", jobEntity.getMaxCount(),
                         jobEntity.getName());
-                entity.setCount(jobEntity.getMaxCount());
+                newCount = jobEntity.getMaxCount();
             }
         } else if (lastCount > 0) {
-            entity.setCount(lastCount - 1);
+            newCount = lastCount - 1;
         } else {
-            entity.setCount(0);
+            newCount = 0;
         }
 
+        // Slowly pull count towards zero after times of no activity (assumption is that area is empty if no activity)
+        if (FLOW_IDLE_DECREASE_ENABLED && lastEntity != null) {
+            Duration elapsed = Duration.between(lastEntity.getOccupancyTime(), occupancyTime);
+            if (elapsed.compareTo(FLOW_IDLE_DECREASE_THRESHOLD) > 0) {
+                long steps = elapsed.dividedBy(FLOW_IDLE_DECREASE_INTERVAL);
+                newCount = Math.max(0, newCount - Math.toIntExact(steps * FLOW_IDLE_DECREASE_FACTOR));
+            }
+        }
+
+        AreaOccupancyEntity entity = new AreaOccupancyEntity();
+        entity.setCount(newCount);
         entity.setOccupancyTime(occupancyTime);
         entity.setObjectClassId(jobEntity.getDetectionClassId());
         entity.setMetadataId(metadata.getId());
