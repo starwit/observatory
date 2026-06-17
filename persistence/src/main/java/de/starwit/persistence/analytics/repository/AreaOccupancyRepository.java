@@ -47,7 +47,6 @@ public class AreaOccupancyRepository {
                 .createNativeQuery(queryString, AreaOccupancyEntity.class)
                 .setParameter("metadataId", metadataId)
                 .setParameter("objectClassId", objectClassId)
-                .setMaxResults(1)
                 .getResultList();
         return result.isEmpty() ? null : result.get(0);
     }
