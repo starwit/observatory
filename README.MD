@@ -42,6 +42,23 @@ In a defined area this job counts how many vehicles are not moving and so consid
 It works by reconstructing and windowing object trajectories (length of analyzing window: `areaOccupancy.analyzingWindow`). Every new detection is added to its corresponding object trajectory. In regular intervals (`areaOccupancy.analyzingIntervalMs`) the trajectories are evaluated. The algorithm checks all objects that have trajectories of at least 80% the length of `areaOccupancy.analyzingWindow` if they have been stationary within that window. If yes, the object is added to the count.
 The stationary detection works by taking the entire (windowed) trajectory, calculating the average position and then checking if the average position is within the defined area and the 95-percentile of distances to that average point is smaller than the given threshold. For non-geo-referenced jobs the property `areaOccupancy.pxDistanceP95ThresholdScale` defines that threshold on the 95-percentile through a scaling factor on the individual bounding box diagonal (to account for objects being smaller if they're further away from the camera). For geo-referenced jobs the property `areaOccupancy.geoDistanceP95Threshold` directly defines the 95-percentile threshold in coordinate space (there is a known relationship to distance in meters). E.g. in northern Germany a distance of 0.0001 in geo-space translates to roughly 10m.
 
+### Flow-based Area Occupancy
+
+As an alternative to the detection-based approach above, area occupancy can also be maintained by counting in/out flow events (e.g. from a `LINE_CROSSING` job at an entrance). Each inbound event increments the count by one, each outbound event decrements it (clamped to zero). An optional maximum count can be configured per job to cap the value.
+
+Because events can be missed (e.g. due to occlusion or tracking gaps), the count may drift upward over time even when the area is empty. The **idle decrease** feature compensates for this by gradually pulling the count towards zero whenever a long gap between events is detected:
+
+| Property | Default | Description |
+|---|---|---|
+| `areaOccupancy.flowIdleDecreaseEnabled` | `false` | Enable/disable idle decrease |
+| `areaOccupancy.flowIdleDecreaseThreshold` | `1h` | Minimum gap before decrease kicks in |
+| `areaOccupancy.flowIdleDecreaseInterval` | `15m` | Count is reduced by one step per interval |
+| `areaOccupancy.flowIdleDecreaseFactor` | `1` | Amount subtracted per step |
+
+When a new flow event arrives and the elapsed time since the last recorded entry exceeds `flowIdleDecreaseThreshold`, the number of full `flowIdleDecreaseInterval` periods in that gap is computed and `steps × flowIdleDecreaseFactor` is subtracted from the count (after applying the in/out delta), clamped at zero.
+
+These properties can be set in `application.properties` or via the corresponding Helm values under `areaOccupancy.*`.
+
 ## How to Deploy/Install
 
 Helm is the preferred tool to install Observatory. Installation can be done with the following command:

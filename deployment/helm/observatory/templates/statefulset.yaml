@@ -83,7 +83,14 @@ spec:
             - name: ANALYTICS_TIMESCALE_DATASOURCE_FLYWAY_LOCATIONS
               value: "classpath:db/migration/analytics-timescale"
             {{- end }}
-
+            - name: AREAOCCUPANCY_FLOWIDLEDECREASEENABLED
+              value: {{ .Values.areaOccupancy.flowIdleDecreaseEnabled | quote }}
+            - name: AREAOCCUPANCY_FLOWIDLEDECREASETHRESHOLD
+              value: {{ .Values.areaOccupancy.flowIdleDecreaseThreshold | quote }}
+            - name: AREAOCCUPANCY_FLOWIDLEDECREASEINTERVAL
+              value: {{ .Values.areaOccupancy.flowIdleDecreaseInterval | quote }}
+            - name: AREAOCCUPANCY_FLOWIDLEDECREASEFACTOR
+              value: {{ .Values.areaOccupancy.flowIdleDecreaseFactor | quote }}
             - name: SERVER_SERVLET_CONTEXT_PATH
               value: {{ .Values.app.context_path | quote }}
             {{- with .Values.extraEnv }}
