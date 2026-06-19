@@ -18,6 +18,12 @@ app:
 
 analyticsJobRunInterval: 2000
 
+areaOccupancy:
+  flowIdleDecreaseEnabled: false
+  flowIdleDecreaseThreshold: 1h
+  flowIdleDecreaseInterval: 15m
+  flowIdleDecreaseFactor: 1
+
 spring:
   data:
     redis:

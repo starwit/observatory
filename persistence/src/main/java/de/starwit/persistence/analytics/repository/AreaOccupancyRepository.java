@@ -41,15 +41,13 @@ public class AreaOccupancyRepository {
         return getEntityManager().createNativeQuery(queryString).getResultList();
     }
 
-    public Integer findFirstByMetadataIdAndObjectClassIdOrderByOccupancytime(Long metadataId, Integer objectClassId) {
-        String queryString = "select a.count from areaoccupancy a where metadata_id = :metadataId and object_class_id = :objectClassId order by occupancy_time desc limit 1";
-        try {
-            return (Integer) getEntityManager().createNativeQuery(queryString)
-                    .setParameter("metadataId", metadataId)
-                    .setParameter("objectClassId", objectClassId)
-                    .getSingleResult();
-        } catch (Exception e) {
-            return 0;
-        }
+    public AreaOccupancyEntity findFirstByMetadataIdAndObjectClassIdOrderByOccupancytime(Long metadataId, Integer objectClassId) {
+        String queryString = "select * from areaoccupancy where metadata_id = :metadataId and object_class_id = :objectClassId order by occupancy_time desc limit 1";
+        List<AreaOccupancyEntity> result = getEntityManager()
+                .createNativeQuery(queryString, AreaOccupancyEntity.class)
+                .setParameter("metadataId", metadataId)
+                .setParameter("objectClassId", objectClassId)
+                .getResultList();
+        return result.isEmpty() ? null : result.get(0);
     }
 }
