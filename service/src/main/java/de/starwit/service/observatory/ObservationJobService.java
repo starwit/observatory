@@ -142,6 +142,7 @@ public class ObservationJobService {
         refreshJobs();
     }
 
+    // TOOD This does not actually refresh subscriptions (see scheduled job in StreamSubscriptionService)
     private void refreshJobs() {
         lineCrossingRunner.refreshJobs();
         areaOccupancyRunner.refreshJobs();

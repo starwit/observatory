@@ -53,6 +53,7 @@ public class StreamSubscriptionService {
         }
     }
 
+    // TODO Subscriptions are never deleted
     private void subscribeToStream() {
         Set<String> streamKeys = getAllStreamKeys();
         for (String key : streamKeys) {
@@ -69,6 +70,7 @@ public class StreamSubscriptionService {
         Set<String> result = new HashSet<>();
         List<ObservationJobEntity> enabledJobEntities = observationJobService.findDistinctByEnabledTrue();
         enabledJobEntities.forEach(entity -> {
+            // TODO We should not do this, as streams are to be treated as ephemeral (at best this does not add any value)
             if (redisTemplate.hasKey(entity.getStreamKey())) {
                 result.add(entity.getStreamKey());
             }
