@@ -2,6 +2,12 @@
 
 Changelog of observatory.
 
+## Current Version ()
+
+### Bug Fixes
+
+-  ab#2299 remove max count for detection areas ([71355](https://github.com/starwit/observatory/commit/713556a197426ac) Anett Hübner)  
+
 ## refs/tags/2.1.1 (2026-03-30)
 
 ### Bug Fixes
