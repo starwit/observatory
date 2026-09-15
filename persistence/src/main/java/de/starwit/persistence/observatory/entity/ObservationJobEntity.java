@@ -61,9 +61,6 @@ public class ObservationJobEntity extends AbstractEntity<Long> {
     @Column(name = "direction")
     private String direction;
 
-    @Column(name = "max_count")
-    private Integer maxCount;
-
     @NotNull
     @OneToMany(mappedBy = "observationJob", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @OrderBy("orderIdx ASC")
@@ -163,14 +160,6 @@ public class ObservationJobEntity extends AbstractEntity<Long> {
 
     public void setDirection(String direction) {
         this.direction = direction;
-    }
-
-    public Integer getMaxCount() {
-        return maxCount;
-    }
-
-    public void setMaxCount(Integer maxCount) {
-        this.maxCount = maxCount;
     }
 
 }

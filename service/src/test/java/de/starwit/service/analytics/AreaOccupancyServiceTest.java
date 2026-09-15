@@ -57,7 +57,7 @@ public class AreaOccupancyServiceTest {
         when(areaoccupancyRepository.findFirstByMetadataIdAndObjectClassIdOrderByOccupancytime(any(), any()))
                 .thenReturn(null);
 
-        areaOccupancyService.updateCountFromFlow(jobEntity(null), TIME, Direction.in);
+        areaOccupancyService.updateCountFromFlow(jobEntity(), TIME, Direction.in);
 
         assertThat(captureInsertedCount()).isEqualTo(1);
     }
@@ -67,7 +67,7 @@ public class AreaOccupancyServiceTest {
         when(areaoccupancyRepository.findFirstByMetadataIdAndObjectClassIdOrderByOccupancytime(any(), any()))
                 .thenReturn(lastEntry(5, TIME));
 
-        areaOccupancyService.updateCountFromFlow(jobEntity(null), TIME.plusMinutes(30), Direction.in);
+        areaOccupancyService.updateCountFromFlow(jobEntity(), TIME.plusMinutes(30), Direction.in);
 
         assertThat(captureInsertedCount()).isEqualTo(6);
     }
@@ -77,7 +77,7 @@ public class AreaOccupancyServiceTest {
         when(areaoccupancyRepository.findFirstByMetadataIdAndObjectClassIdOrderByOccupancytime(any(), any()))
                 .thenReturn(lastEntry(10, TIME));
 
-        areaOccupancyService.updateCountFromFlow(jobEntity(null), TIME.plusHours(2), Direction.out);
+        areaOccupancyService.updateCountFromFlow(jobEntity(), TIME.plusHours(2), Direction.out);
 
         // delta first: 10 - 1 = 9; decay: 7200s / 900s = 8 steps -> max(0, 9 - 8) = 1
         assertThat(captureInsertedCount()).isEqualTo(1);
@@ -88,7 +88,7 @@ public class AreaOccupancyServiceTest {
         when(areaoccupancyRepository.findFirstByMetadataIdAndObjectClassIdOrderByOccupancytime(any(), any()))
                 .thenReturn(lastEntry(2, TIME));
 
-        areaOccupancyService.updateCountFromFlow(jobEntity(null), TIME.plusHours(3), Direction.out);
+        areaOccupancyService.updateCountFromFlow(jobEntity(), TIME.plusHours(3), Direction.out);
 
         // delta first: 2 - 1 = 1; decay: 10800s / 900s = 12 steps -> max(0, 1 - 12) = 0
         assertThat(captureInsertedCount()).isEqualTo(0);
@@ -99,7 +99,7 @@ public class AreaOccupancyServiceTest {
         when(areaoccupancyRepository.findFirstByMetadataIdAndObjectClassIdOrderByOccupancytime(any(), any()))
                 .thenReturn(lastEntry(5, TIME));
 
-        areaOccupancyService.updateCountFromFlow(jobEntity(null), TIME.plusHours(1), Direction.in);
+        areaOccupancyService.updateCountFromFlow(jobEntity(), TIME.plusHours(1), Direction.in);
 
         assertThat(captureInsertedCount()).isEqualTo(6);
     }
@@ -110,9 +110,10 @@ public class AreaOccupancyServiceTest {
         when(areaoccupancyRepository.findFirstByMetadataIdAndObjectClassIdOrderByOccupancytime(any(), any()))
                 .thenReturn(lastEntry(10, TIME));
 
-        areaOccupancyService.updateCountFromFlow(jobEntity(null), TIME.plusHours(2), Direction.out);
+        areaOccupancyService.updateCountFromFlow(jobEntity(), TIME.plusHours(2), Direction.out);
 
-        // delta only: 10 - 1 = 9; decay would otherwise apply since elapsed (2h) exceeds threshold (1h)
+        // delta only: 10 - 1 = 9; decay would otherwise apply since elapsed (2h)
+        // exceeds threshold (1h)
         assertThat(captureInsertedCount()).isEqualTo(9);
     }
 
@@ -131,12 +132,11 @@ public class AreaOccupancyServiceTest {
         return entity;
     }
 
-    private static ObservationJobEntity jobEntity(Integer maxCount) {
+    private static ObservationJobEntity jobEntity() {
         ObservationJobEntity entity = new ObservationJobEntity();
         entity.setName("job1");
         entity.setDetectionClassId(1);
         entity.setObservationAreaId(1L);
-        entity.setMaxCount(maxCount);
         return entity;
     }
 }
