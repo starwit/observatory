@@ -84,21 +84,17 @@ public class AreaOccupancyService {
         int lastCount = lastEntity == null ? 0 : lastEntity.getCount();
 
         int newCount;
+
         if (Direction.in.equals(direction)) {
-            if (jobEntity.getMaxCount() == null || lastCount < jobEntity.getMaxCount()) {
-                newCount = lastCount + 1;
-            } else {
-                log.info("Max count of {} for job {} reached. Resetting to max count.", jobEntity.getMaxCount(),
-                        jobEntity.getName());
-                newCount = jobEntity.getMaxCount();
-            }
+            newCount = lastCount + 1;
         } else if (lastCount > 0) {
             newCount = lastCount - 1;
         } else {
             newCount = 0;
         }
 
-        // Slowly pull count towards zero after times of no activity (assumption is that area is empty if no activity)
+        // Slowly pull count towards zero after times of no activity (assumption is that
+        // area is empty if no activity)
         if (FLOW_IDLE_DECREASE_ENABLED && lastEntity != null) {
             Duration elapsed = Duration.between(lastEntity.getOccupancyTime(), occupancyTime);
             if (elapsed.compareTo(FLOW_IDLE_DECREASE_THRESHOLD) > 0) {
