@@ -91,6 +91,8 @@ spec:
               value: {{ .Values.areaOccupancy.flowIdleDecreaseInterval | quote }}
             - name: AREAOCCUPANCY_FLOWIDLEDECREASEFACTOR
               value: {{ .Values.areaOccupancy.flowIdleDecreaseFactor | quote }}
+            - name: SAE_MONOTONICITYFILTERENABLED
+              value: {{ .Values.sae.monotonicityFilterEnabled | quote }}
             - name: SERVER_SERVLET_CONTEXT_PATH
               value: {{ .Values.app.context_path | quote }}
             {{- with .Values.extraEnv }}

@@ -24,6 +24,9 @@ areaOccupancy:
   flowIdleDecreaseInterval: 15m
   flowIdleDecreaseFactor: 1
 
+sae:
+  monotonicityFilterEnabled: false
+
 spring:
   data:
     redis:
