@@ -1,5 +1,6 @@
 package de.starwit.persistence.analytics.repository;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
@@ -32,6 +33,16 @@ public class LineCrossingRepository {
                 .setParameter("metadataId", entity.getMetadataId())
                 .executeUpdate();
    }
+
+    @Transactional("analyticsTransactionManager")
+    public int deleteByMetadataIdsFrom(List<Long> metadataIds, ZonedDateTime cutoff) {
+        String deleteString = "delete from linecrossing where metadata_id in (:metadataIds) and crossing_time >= :cutoff";
+
+        return entityManager.createNativeQuery(deleteString)
+                .setParameter("metadataIds", metadataIds)
+                .setParameter("cutoff", cutoff)
+                .executeUpdate();
+    }
 
     // TODO
     public List<LineCrossingEntity> findFirst100() {

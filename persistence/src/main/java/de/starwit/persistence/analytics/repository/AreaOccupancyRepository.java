@@ -1,5 +1,6 @@
 package de.starwit.persistence.analytics.repository;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
@@ -33,6 +34,17 @@ public class AreaOccupancyRepository {
                 .setParameter("count", entity.getCount())
                 .setParameter("classId", entity.getObjectClassId())
                 .setParameter("metadataId", entity.getMetadataId())
+                .executeUpdate();
+    }
+
+    @Transactional("analyticsTransactionManager")
+    public int deleteByMetadataIdsAndObjectClassIdFrom(List<Long> metadataIds, Integer objectClassId, ZonedDateTime cutoff) {
+        String deleteString = "delete from areaoccupancy where metadata_id in (:metadataIds) and object_class_id = :objectClassId and occupancy_time >= :cutoff";
+
+        return getEntityManager().createNativeQuery(deleteString)
+                .setParameter("metadataIds", metadataIds)
+                .setParameter("objectClassId", objectClassId)
+                .setParameter("cutoff", cutoff)
                 .executeUpdate();
     }
 
