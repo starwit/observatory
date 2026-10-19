@@ -59,7 +59,7 @@ public class StreamSubscriptionService {
         for (String key : streamKeys) {
             if (!subscribedStreams.contains(key)) {
                 log.debug("Subscribing to " + key);
-                StreamOffset<String> streamOffset = StreamOffset.create(key, ReadOffset.latest());
+                StreamOffset<String> streamOffset = StreamOffset.create(key, ReadOffset.lastConsumed());
                 streamMessageListenerContainer.receive(streamOffset, listener);
                 subscribedStreams.add(key);
             }

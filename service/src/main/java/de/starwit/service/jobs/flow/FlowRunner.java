@@ -16,6 +16,7 @@ import de.starwit.persistence.observatory.entity.JobType;
 import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 import de.starwit.service.analytics.AreaOccupancyService;
 import de.starwit.service.analytics.LineCrossingService;
+import de.starwit.service.jobs.FrameCounter;
 import de.starwit.service.jobs.JobInterface;
 import de.starwit.service.jobs.RunnerInterface;
 import de.starwit.service.jobs.linecrossing.LineCrossingJob;
@@ -39,6 +40,9 @@ public class FlowRunner implements RunnerInterface {
     private ObservationJobService observationJobService;
 
     @Autowired
+    private FrameCounter frameCounter;
+
+    @Autowired
     private AreaOccupancyService areaOccupancyService;
 
     private List<LineCrossingJob> activeJobs = new ArrayList<>();
@@ -51,6 +55,11 @@ public class FlowRunner implements RunnerInterface {
     @Override
     public List<? extends JobInterface> getActiveJobs() {
         return this.activeJobs;
+    }
+
+    @Override
+    public FrameCounter getFrameCounter() {
+        return this.frameCounter;
     }
 
     @Override

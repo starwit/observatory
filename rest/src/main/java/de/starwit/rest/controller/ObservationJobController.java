@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import de.starwit.persistence.observatory.entity.ObservationJobEntity;
+import de.starwit.service.jobs.FrameCounter;
 import de.starwit.service.observatory.ObservationJobService;
 
 @RestController
@@ -24,6 +25,9 @@ public class ObservationJobController {
 
     @Autowired
     private ObservationJobService observationJobService;
+
+    @Autowired
+    private FrameCounter frameCounter;
 
     @GetMapping("/all")
     public ResponseEntity<List<ObservationJobEntity>> getAllJobs() {
@@ -37,6 +41,14 @@ public class ObservationJobController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(jobEntity, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/frame-count")
+    public ResponseEntity<Long> getFrameCount(@PathVariable Long id) {
+        if (observationJobService.findById(id) == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(frameCounter.get(id), HttpStatus.OK);
     }
 
     @PostMapping

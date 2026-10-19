@@ -1,6 +1,7 @@
 package de.starwit.rest.acceptance;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 
@@ -173,6 +175,69 @@ public class ObservationJobControllerAcceptanceTest extends AbstractControllerAc
                 ObservationJobEntity[].class);
         assertThat(entities.length).isEqualTo(1);
         assertThat(entities[0].getObservationAreaId()).isEqualTo(2);
+    }
+
+    @Test
+    public void canRetrieveFrameCount() throws Exception {
+        // given
+        ObservationJobEntity entity = readFromFile(data + "job1.json");
+        MockHttpServletResponse response = create(entity);
+        ObservationJobEntity responseEntity = mapper.readValue(response.getContentAsString(),
+                ObservationJobEntity.class);
+
+        // when
+        response = mvc.perform(get(restpath + "/" + responseEntity.getId() + "/frame-count")).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo("0");
+    }
+
+    @Test
+    public void frameCountOfUnknownJobIsNotFound() throws Exception {
+        MockHttpServletResponse response = mvc.perform(get(restpath + "/999999/frame-count")).andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    public void canDeleteAnalyticsDataAfterCutoff() throws Exception {
+        // given
+        ObservationJobEntity entity = readFromFile(data + "job1.json");
+        MockHttpServletResponse response = create(entity);
+        ObservationJobEntity responseEntity = mapper.readValue(response.getContentAsString(),
+                ObservationJobEntity.class);
+
+        // when
+        response = mvc.perform(MockMvcRequestBuilders.delete(
+                "/api/analytics/job/" + responseEntity.getId() + "/after/2026-10-05T16:00:00Z"))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    public void deleteAnalyticsDataOfUnknownJobIsNotFound() throws Exception {
+        MockHttpServletResponse response = mvc.perform(MockMvcRequestBuilders.delete(
+                "/api/analytics/job/999999/after/2026-10-05T16:00:00Z"))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    public void deleteAnalyticsDataWithMalformedCutoffIsBadRequest() throws Exception {
+        ObservationJobEntity entity = readFromFile(data + "job1.json");
+        MockHttpServletResponse response = create(entity);
+        ObservationJobEntity responseEntity = mapper.readValue(response.getContentAsString(),
+                ObservationJobEntity.class);
+
+        response = mvc.perform(MockMvcRequestBuilders.delete(
+                "/api/analytics/job/" + responseEntity.getId() + "/after/not-a-timestamp"))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
 }

@@ -16,6 +16,7 @@ import de.starwit.persistence.observatory.entity.JobType;
 import de.starwit.persistence.observatory.entity.ObservationJobEntity;
 import de.starwit.service.analytics.AreaOccupancyService;
 import de.starwit.service.geojson.GeoJsonService;
+import de.starwit.service.jobs.FrameCounter;
 import de.starwit.service.jobs.JobInterface;
 import de.starwit.service.jobs.RunnerInterface;
 import de.starwit.service.observatory.ObservationJobService;
@@ -41,6 +42,9 @@ public class AreaOccupancyRunner implements RunnerInterface {
     private ObservationJobService observationJobService;
 
     @Autowired
+    private FrameCounter frameCounter;
+
+    @Autowired
     private AreaOccupancyService areaOccupancyService;
 
     @Autowired
@@ -56,6 +60,11 @@ public class AreaOccupancyRunner implements RunnerInterface {
     @Override
     public List<? extends JobInterface> getActiveJobs() {
         return this.activeJobs;
+    }
+
+    @Override
+    public FrameCounter getFrameCounter() {
+        return this.frameCounter;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package de.starwit.persistence.analytics.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,5 +15,7 @@ public interface MetadataRepository extends JpaRepository<MetadataEntity, Long> 
     public MetadataEntity findFirstByNameAndClassification(String name, String classification);
 
     public MetadataEntity findFirstByNameAndClassificationOrderByIdDesc(String name, String classification);
+
+    public List<MetadataEntity> findByNameAndClassification(String name, String classification);
 
 }
