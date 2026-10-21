@@ -1,0 +1,17 @@
+apiVersion: 1
+
+datasources:
+  - name: Analytics
+    uid: analytics
+    type: grafana-postgresql-datasource
+    access: proxy
+    url: analytics:5432
+    user: analytics
+    isDefault: true
+    jsonData:
+      database: analytics
+      sslmode: disable
+      postgresVersion: 1700
+      timescaledb: false
+    secureJsonData:
+      password: analytics
