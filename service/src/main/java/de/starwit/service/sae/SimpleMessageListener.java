@@ -1,7 +1,5 @@
 package de.starwit.service.sae;
 
-import java.util.Base64;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,7 @@ import jakarta.annotation.PostConstruct;
 
 @Component
 public class SimpleMessageListener
-        implements StreamListener<String, MapRecord<String, String, String>> {
+        implements StreamListener<String, MapRecord<String, String, byte[]>> {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -44,17 +42,16 @@ public class SimpleMessageListener
     }
 
     @Override
-    public void onMessage(MapRecord<String, String, String> message) {
+    public void onMessage(MapRecord<String, String, byte[]> message) {
 
         String streamKey = message.getStream();
 
-        String b64Proto = message.getValue().get("proto_data_b64");
         SaeMessage saeMsg;
 
         try {
-            saeMsg = SaeMessage.parseFrom(Base64.getDecoder().decode(b64Proto));
+            saeMsg = SaeMessageDecoder.decode(message.getValue());
         } catch (InvalidProtocolBufferException e) {
-            log.warn("Received invalid proto");
+            log.warn("Received invalid proto on stream {}: {}", streamKey, e.getMessage());
             return;
         }
 

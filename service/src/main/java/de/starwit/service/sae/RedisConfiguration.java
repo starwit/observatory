@@ -11,8 +11,10 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 import org.springframework.data.redis.connection.stream.MapRecord;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
+import org.springframework.data.redis.stream.StreamMessageListenerContainer.StreamMessageListenerContainerOptions;
 
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.ClientOptions.DisconnectedBehavior;
@@ -56,8 +58,15 @@ public class RedisConfiguration {
 
         @Bean
         @ConditionalOnProperty(value = "spring.data.redis.active", havingValue = "true", matchIfMissing = false)
-        StreamMessageListenerContainer<String, MapRecord<String, String, String>> streamMessageListenerContainer() {
-                return StreamMessageListenerContainer.create(lettuceConnectionFactory());
+        StreamMessageListenerContainer<String, MapRecord<String, String, byte[]>> streamMessageListenerContainer() {
+                // Field values must stay binary: proto_data holds raw protobuf bytes, which would be
+                // corrupted by the default String (UTF-8) deserialization.
+                StreamMessageListenerContainerOptions<String, MapRecord<String, String, byte[]>> options = StreamMessageListenerContainerOptions
+                                .builder()
+                                .<String, byte[]>hashKeySerializer(RedisSerializer.string())
+                                .<String, byte[]>hashValueSerializer(RedisSerializer.byteArray())
+                                .build();
+                return StreamMessageListenerContainer.create(lettuceConnectionFactory(), options);
         }
 
 }

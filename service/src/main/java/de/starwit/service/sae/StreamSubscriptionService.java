@@ -39,7 +39,7 @@ public class StreamSubscriptionService {
     private Set<String> subscribedStreams = new HashSet<>();
 
     @Autowired(required = false)
-    StreamMessageListenerContainer<String, MapRecord<String, String, String>> streamMessageListenerContainer;
+    StreamMessageListenerContainer<String, MapRecord<String, String, byte[]>> streamMessageListenerContainer;
 
     @Scheduled(fixedDelay = 5000)
     public void detectStreamsAndResubscribe() {
