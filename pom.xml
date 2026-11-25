@@ -22,7 +22,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-boot-version>4.2.0</spring-boot-version>
-        <openapi-version>3.2.0</openapi-version>
+        <openapi-version>3.2.1</openapi-version>
         <vision-api.version>3.0.0</vision-api.version>
         <java.version>25</java.version>
     </properties>
